@@ -13,3 +13,13 @@ export interface LordBase {
     type: string;
     role: string;
 }
+
+export interface TeamMember {
+    did: number;
+    name: string;
+    shortName: string;
+    skills: {};
+    stats: {};
+    traits: {};
+    passions: {};
+}

@@ -93,7 +93,7 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   isMarked(name : string)  {
-    return this.char.marks.indexOf(name)>=0;
+    return this.char.marks && this.char.marks.indexOf(name)>=0;
   }
 
   getTrait(name : string)  {

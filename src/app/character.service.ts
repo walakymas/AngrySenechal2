@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 
-import { Lord, LordBase } from './lord';
+import { Lord, LordBase, TeamMember } from './lord';
 import { Base } from './base';
 import { Logger } from './logger.service';
 import { environment } from './../environments/environment';
@@ -63,6 +63,13 @@ export class CharacterService {
     return this.http.get<LordBase[]>(`${environment.url}list`).pipe(
       tap(_ => this.logger.log(`fetched lord list`)),
       catchError(this.handleError<LordBase[]>(`getList`))
+    );
+  }
+
+  getTeam(): Observable<TeamMember[]> {
+    return this.http.get<TeamMember[]>(`${environment.url}players`).pipe(
+      tap(_ => this.logger.log(`fetched lord list`)),
+      catchError(this.handleError<TeamMember[]>(`getTeam`))
     );
   }
 

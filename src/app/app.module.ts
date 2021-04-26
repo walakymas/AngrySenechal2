@@ -13,6 +13,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { NpcDetailComponent } from './npc-detail/npc-detail.component';
+import { TeamComponent } from './team/team.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { NpcDetailComponent } from './npc-detail/npc-detail.component';
     CharacterDetailComponent,
     MessagesComponent,
     NpcDetailComponent,
+    TeamComponent,
   ],
   imports: [
     BrowserModule,

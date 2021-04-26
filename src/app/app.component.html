@@ -1,7 +1,15 @@
 <nav>
-  <ng-container *ngFor="let c of list" >
-    <button mat-raised-button *ngIf="c.type=='pc' && c.role!='King' && c.role!='Lord' " routerLink="character/{{c.name}}">{{c.name}}</button>
-  </ng-container>
+  <div class="nav">
+    <button mat-raised-button routerLink="team">Team</button>
+    <ng-container *ngFor="let c of list" >
+      <button mat-raised-button *ngIf="c.type=='pc' && c.role!='King' && c.role!='Lord' " routerLink="character/{{c.name}}">{{c.name}}</button>
+    </ng-container>
+  </div>
+  <div class="nav">
+    <mat-select [(value)]="lastChar" (selectionChange)="navigateTo($event.value)">
+      <mat-option *ngFor="let c of list" value="{{c.name}}" >{{c.name}}</mat-option>
+    </mat-select>  
+  </div>
 </nav>
 <router-outlet></router-outlet>
 <app-messages></app-messages>

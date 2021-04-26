@@ -1,0 +1,50 @@
+<div id="teamdiv">
+    <div class="row">
+        <div class="col-1">
+<table class="team">
+    <tbody>
+        <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+        <tr id="str"><th>Strength</th><th *ngFor="let m of team">{{m['stats']['str']}}</th></tr>
+        <tr id="dex"><th>Dexterity</th><th *ngFor="let m of team">{{m['stats']['dex']}}</th></tr>
+        <tr id="con"><th>Constitution</th><th *ngFor="let m of team">{{m['stats']['con']}}</th></tr>
+        <tr id="siz"><th>Size</th><th *ngFor="let m of team">{{m['stats']['siz']}}</th></tr>
+        <tr id="app"><th>Appearence</th><th *ngFor="let m of team">{{m['stats']['app']}}</th></tr>
+        <tr id="dam"><th>Damage</th><th *ngFor="let m of team">{{detail(m, 'Damage')}}d6</th></tr>
+        <tr id="hr"><th>Healing Rate</th><th *ngFor="let m of team">{{detail(m, 'Healing Rate')}}</th></tr>
+        <tr id="mhp"><th>Max HP</th><th *ngFor="let m of team">{{detail(m, 'Max HP')}}</th></tr>
+        <tr id="ahp"><th>Actual HP</th><th *ngFor="let m of team">{{detail(m, 'Actual HP')}}</th></tr>
+        <tr id="chi"><th>Chirurgery</th><th *ngFor="let m of team">{{detail(m, 'Chirurgery')}}</th></tr>
+        <tr id="mr"><th>Move Rate</th><th *ngFor="let m of team">{{detail(m, 'Move Rate')}}</th></tr>
+        <tr id="unc"><th>Unconscious</th><th *ngFor="let m of team">{{detail(m, 'Unconscious')}}</th></tr>
+        <tr id="mw"><th>Major Wound</th><th *ngFor="let m of team">{{detail(m, 'Major Wound')}}</th></tr>
+        <tr id="kno"><th>Knockdown</th><th *ngFor="let m of team">{{detail(m, 'Knockdown')}}</th></tr>
+    </tbody>
+    <tbody id="traits">
+        <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+        <tr *ngFor="let p of teamprop('traits','')"><th>{{p}}</th><td *ngFor="let m of team">{{m['traits'][p]}}</td></tr>
+    </tbody>
+    <tbody id="passions">
+        <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+        <tr *ngFor="let p of teamprop('passions','')"><th>{{p}}</th><td *ngFor="let m of team">{{m['passions'][p]}}</td></tr>
+    </tbody>
+</table>
+</div>
+<div class="col-1">
+    <table class="team">
+        <tbody id="weapons">
+            <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+            <tr *ngFor="let p of teamprop('skills','Weapons')"><th>{{p}}</th><td *ngFor="let m of team">{{m['skills']['Weapons'][p]}}</td></tr>
+        </tbody>
+        <tbody id="other">
+            <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+            <tr *ngFor="let p of teamprop('skills','Other')"><th>{{p}}</th><td *ngFor="let m of team">{{m['skills']['Other'][p]}}</td></tr>
+        </tbody>
+        <tbody id="combat">
+            <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+            <tr *ngFor="let p of teamprop('skills','Combat')"><th>{{p}}</th><td *ngFor="let m of team">{{m['skills']['Combat'][p]}}</td></tr>
+        </tbody>
+    </table>
+    </div>
+    </div>
+</div>
+
