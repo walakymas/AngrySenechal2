@@ -1,0 +1,23 @@
+.mat-expansion-panel-header {
+	margin: 2px 0 0 0;
+	padding: .5em .5em .5em .7em;
+	font-size: 100%;
+    border-top-right-radius: 6px;
+    border-top-left-radius: 6px;
+    border: 1px solid #9B8565;
+    background: #003147;
+    font-weight: normal;
+    color: #ffffff;
+}
+
+.mat-expansion-panel-spacing {
+    margin: 0 0;
+}
+
+.mat-expansion-panel-header.mat-expanded
+{
+    border: 1px solid #b9a78e;
+	background: #9B8565;
+	font-weight: normal;
+	color: #ffffff;
+}

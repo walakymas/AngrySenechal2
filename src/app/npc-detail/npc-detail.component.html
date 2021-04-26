@@ -1,0 +1,10 @@
+<p *ngIf="npc.char['description']">{{npc.char['description']}}</p>
+<img width="100%" src="{{npc.char['url']}}" *ngIf="npc.char['url']"/>
+<table width="100%">
+    <tr *ngFor="let m of npc.char['stats'] | keyvalue"><th style="text-transform:'uppercase'">{{m.key}}</th><td>{{m.value}}</td></tr>
+    <tr *ngFor="let m of npc.char['main'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+    <tr *ngFor="let m of npc.char['skills']['Other'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+    <tr *ngFor="let m of npc.char['skills']['Weapons'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+    <tr *ngFor="let m of npc.char['skills']['Combat'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+    <tr *ngFor="let m of npc.char['passions'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+</table>

@@ -1,0 +1,201 @@
+
+<div class="row">
+    <div class="col-1"><h2 id="mainhead">Main </h2>
+        <ul id='main'>
+            <li *ngFor="let m of char.char['main'] | keyvalue ">
+                <span class="gold">{{m.key}}</span> {{m.value}}
+            </li>
+        </ul>
+
+    </div> <!-- 33.33% -->
+    <div class="col-1"><h2 id="stathead">Statistics</h2>
+        <ul id="statistics">
+            <li><span class="gold">SIZ</span> {{char.char['stats']['siz']}}</li>
+            <li><span class="gold">DEX</span> {{char.char['stats']['dex']}}</li>
+            <li><span class="gold">STR</span> {{char.char['stats']['str']}}</li>
+            <li><span class="gold">CON</span> {{char.char['stats']['con']}}</li>
+            <li><span class="gold">APP</span> {{char.char['stats']['app']}}</li>
+            <li><span class="gold">Damage</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Damage')}}d6</strong></li>
+            <li><span class="gold">Healing Rate</span> <em> (STR+CON)/6=</em> <strong> {{getDetail('Healing Rate')}}</strong></li>
+            <li><span class="gold">Move Rate</span> <em> (STR+DEX)/6=</em> <strong> {{getDetail('Move Rate')}}</strong></li>
+            <li><span class="gold">Total Hitpoints</span> <em> (CON+SIZ)/6=</em> <strong> {{getDetail('Total Hitpoints')}}</strong></li>
+            <li><span class="gold">Unconscious</span> <em> (HP)/4=</em> <strong> {{getDetail('Unconscious')}}</strong></li>
+            <li><span class="gold">Major Wound</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Major Wound')}}</strong></li>
+            <li><span class="gold">Knockdown</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
+        </ul>
+
+    </div> <!-- 33.33% -->
+    <div class="col-1">
+        <div>
+            {{char.char['name']}}
+        </div>
+        <div style="text-align: center"><img class="Image-Frame" id='charimg' src="{{char.char['url']}}" width="200"> </div>
+        <div class="row">
+
+            <div class="col-1" style="text-align: center"><img class="Image-Frame" id="editchar" src="https://rmc.library.cornell.edu/medievalbook/pics/225pixW/4600BdMs20_cover.jpg" width="100" ></div>
+            <div class="col-1" style="text-align: center"><a id="pdf" href="" target="sheet"><img class="Image-Frame" src="https://pappcseperke.hu/wp-content/uploads/2021/02/Stundenbuch_Grey-FitzPayn.jpg" width="100" ></a></div>
+            <div class="col-1" style="text-align: center"><img class="Image-Frame" id="newchar" src="https://cdn.discordapp.com/attachments/784174179972153364/822584896606306324/6735dacb397d.png" width="100" ></div>
+        </div>
+    </div> <!-- 33.33% -->
+</div>
+
+<div class="row">
+    <div class="col-1">
+        <div class="FontSizeBig">
+            <span class="gold">GLORY:</span>
+            <span id="glory"> {{details['glory']}}</span>
+        </div>
+    </div>
+    <div class="col-1">
+        <div class="FontSizeBig"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
+    </div>
+    <div class="col-1">
+        <div class="FontSizeBig">
+            <span class="gold">HP:</span> <span id="hp"> {{details['hp']}}</span>
+        </div>
+        <div>
+            <fieldset id="health">
+                <legend>Health</legend>
+                <label for="healthmod">Change</label>
+                <input id="healthmod" type="number" value="0"/>
+                <label for="chineed">Chirurgery</label>
+                <input type="checkbox" name="chineed" id="chineed" [checked]="char.char['health']['chirurgery']"/>
+                <div class="controlgroup">
+                    <button id="wound"  title="Wound">-</button>
+                    <button id="heal" title="Heal">+</button>
+                    <button id="sunday" title="Weekly heal">Sun</button>
+                    <button id="completeheal" title="Complette (Winter)">Comp</button>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-1">
+        <h2 id="traithead">Personality Traits</h2>
+        <table class="traits">
+            <tbody *ngFor="let t of base['traits'] "><tr>
+                <td><mat-checkbox [checked]="isMarked(t[0])" (change)="mark($event.checked, t[0])"></mat-checkbox></td><td >{{getTrait(t[0])}}</td><td >{{t[0]}}</td><td class="pagan">{{t[1]}}</td><td >{{20-getTrait(t[0])}}</td><td><mat-checkbox [checked]="isMarked(t[1])" (change)="mark($event.checked, t[1])"></mat-checkbox></td>
+            </tr> 
+            <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t[0])}}%"></div><div  style="width:{{100-5*getTrait(t[0])}}%" class="ratioRed"></div></div></td><td></td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-1">
+        <h2 class="skillhead">Skills</h2>
+        <ul id="skills">
+            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
+        </ul>
+    </div>
+    <div class="col-1">
+        <h2 class="skillhead">Combat Skills</h2>
+        <ul id="combat">
+            <li *ngFor="let m of char.char['skills']['Weapons'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
+            <li *ngFor="let m of char.char['skills']['Combat'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
+        </ul>
+        <h2 id="passionhead">Passions</h2>
+        <ul id="passions">
+            <li *ngFor="let m of char.char['passions'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+        <h2 id="eventshead">Events</h2>
+        <mat-accordion>
+            <mat-expansion-panel  *ngFor="let y of details['years']" hideToggle>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                   {{y}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div *ngFor="let e of getEvents(y)" ><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span>{{e['description']}}</span></div>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+    <div class="col-1">
+        <mat-accordion>
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Combat gear
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <table width="100%" class="stats">
+                    <thead>
+                    <tr><th>Weapon</th><td>
+                        <mat-select [(value)]="char.char['combat']['weapon']">
+                            <mat-option *ngFor="let m of base.weapons | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
+                        </mat-select>
+                    </td></tr>
+                    <tr><th>Shield</th><td>
+                        <mat-select [(value)]="char.char['combat']['shield']">
+                            <mat-option *ngFor="let m of base.shields | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
+                        </mat-select>
+                    </td></tr>
+                    <tr><th>Armor</th><td>
+                        <mat-select [(value)]="char.char['combat']['armor']">
+                            <mat-option *ngFor="let m of base.armors | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
+                        </mat-select>
+                    </td></tr>
+                    </thead>
+                    <tbody id="combatgear">
+                        <tr><th>Skill</th><td>{{weapon['skill']}}</td></tr>
+                        <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
+                        <tr><th>Damage reduction</th><td>{{base.armors[char.char['combat']['armor']]['red']}}
+                            + {{base.shields[char.char['combat']['shield']]['red']}} </td></tr>
+                         <tr><th>Dex modifier</th><td>{{base.armors[char.char['combat']['armor']]['red']}}</td></tr>
+                         <tr><th>Effective Dex</th><td>{{char.char['stats']['dex'] + base.armors[char.char['combat']['armor']]['red']}}</td></tr>
+                    </tbody>
+                </table>
+            </mat-expansion-panel>
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Army
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <table width="100%" id="army" class="stats">
+                    <tr *ngFor="let m of char.char['army'] | keyvalue "><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+                </table>
+            </mat-expansion-panel>
+            <mat-expansion-panel hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    Horses
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <h5>Main</h5>
+                <table width="100%" id="horses" class="stats">
+                    <tr><th>Type</th><td id="htyp" colspan="2"></td></tr>
+                    <tr><th>SIZ</th><td id="hsiz"></td><th>CON</th><td id="hcon"></td></tr>
+                    <tr><th>DEX</th><td id="hdex"></td><th>STR</th><td id="hstr"></td></tr>
+                    <tr><th>Damage</th><td id="hdam" colspan="2"></td></tr>
+                    <tr><th>Move</th><td id="hmov"></td><th>Armor</th><td id="harm"></td></tr>
+                    <tr><th>Total Hitpoints</th><td id="hhp"></td><th>Healing Rate</th><td id="hhea"></td></tr>
+                </table>
+                <h5>Others</h5>
+                <table  width="100%" id="hother" class="stats">
+                </table>
+            </mat-expansion-panel>
+            <mat-expansion-panel  *ngFor="let m of char.char['npcs'] | keyvalue " hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{m.key}} ({{m.value['connection']}})
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-npc-detail *ngIf="m.value['dbid']" [dbid]="m.value['dbid']"></app-npc-detail>
+                <table *ngIf="!m.value['dbid']">
+                    <tr *ngFor="let s of m.value['show'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
+                    <tr *ngFor="let s of m.value['skills'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
+                </table>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </div>
+</div>
+<div class="row" id="descriptions">
+    <h2>Description</h2>
+    <span class="contrastedText">{{char.char['description']}}</span>
+    <br/>
+    <span class="contrastedText">{{char.char['longdescription']}}</span>
+</div>
