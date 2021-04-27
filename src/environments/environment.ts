@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   url: "http://localhost:8000/",
+  prefix: '?',
+  hook: 'https://discord.com/api/webhooks/824616310029418498/wFNAgUSKl22K69U4fai1k5exyeqnXx9XbCTDa9xVk2CBb36n0cItFF_KF1CUhbNWejBz'
 };
 
 /*

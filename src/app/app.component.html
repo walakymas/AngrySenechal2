@@ -6,9 +6,12 @@
     </ng-container>
   </div>
   <div class="nav">
-    <mat-select [(value)]="lastChar" (selectionChange)="navigateTo($event.value)">
-      <mat-option *ngFor="let c of list" value="{{c.name}}" >{{c.name}}</mat-option>
-    </mat-select>  
+    <mat-form-field appearance="fill">
+      <mat-label>Select character</mat-label>
+      <mat-select [(value)]="lastChar" (selectionChange)="navigateTo($event.value)">
+        <mat-option *ngFor="let c of list" value="{{c.name}}" >{{c.name}}</mat-option>
+      </mat-select>  
+    </mat-form-field>
   </div>
 </nav>
 <router-outlet></router-outlet>

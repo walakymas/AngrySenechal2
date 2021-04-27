@@ -14,6 +14,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { NpcDetailComponent } from './npc-detail/npc-detail.component';
 import { TeamComponent } from './team/team.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { TeamComponent } from './team/team.component';
     MatCheckboxModule,
     MatExpansionModule,
     MatSnackBarModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
   ],
   providers: [HttpClientModule],
   bootstrap: [AppComponent]

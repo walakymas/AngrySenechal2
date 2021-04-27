@@ -1,6 +1,6 @@
 export interface Lord {
     year: number;
-    modified: number;
+    modified: string;
     marks: string[];
     events: [];
     char: {};
@@ -14,7 +14,20 @@ export interface LordBase {
     role: string;
 }
 
-export interface TeamMember {
+export class LordDetail {
+    damage: number;
+    hr: number;
+    hp: number;
+    ahp: number;
+    mr: number;
+    unc: number;
+    chi: string;
+    wounds: string;
+    mw: number;
+    kno: number;
+}
+
+export class TeamMember {
     did: number;
     name: string;
     shortName: string;
@@ -22,4 +35,5 @@ export interface TeamMember {
     stats: {};
     traits: {};
     passions: {};
+    detail: LordDetail;
 }

@@ -66,6 +66,20 @@ export class CharacterService {
     );
   }
 
+  bot(command : string): Observable<String> {  
+    return this.http.post<String>(environment.hook,
+      new HttpParams()
+      .set('username', 'CaptainHook')
+      .set('content',environment.prefix+command).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`hook pulled`)),
+      catchError(this.handleError<String>(`getList`))
+    );
+  }
+
   getTeam(): Observable<TeamMember[]> {
     return this.http.get<TeamMember[]>(`${environment.url}players`).pipe(
       tap(_ => this.logger.log(`fetched lord list`)),
