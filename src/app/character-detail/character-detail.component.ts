@@ -16,7 +16,8 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 export class CharacterDetailComponent implements OnInit {
 //  id : number = 32;
   id : number = 63;
-
+  traits: Trait[] = []
+  
   char : Lord;
   details: {};
   weapon: {};
@@ -40,7 +41,15 @@ export class CharacterDetailComponent implements OnInit {
     console.log('route:'+name)
     let id = +name;
 
-    this.service.getBase().then(b => this.base = b);
+    this.service.getBase().then( t => 
+      {
+        console.log('base in team')
+        this.base = t;
+        for(let t in this.base.traits) {
+          this.traits.push(new Trait(this.base.traits[t][0].substring(0,3).toLowerCase(), this.base.traits[t][0], this.base.traits[t][1]));
+        }
+      }
+    );
     if (id > 0) {
       this.service.getLord(id).subscribe( l => this.setLord(l));
     } else {
@@ -99,6 +108,9 @@ export class CharacterDetailComponent implements OnInit {
   getTrait(name : string)  {
     return this.char.char['traits'][name.toLowerCase().substring(0,3)]
   }
+  shortTrait(name : string)  {
+    name.toLowerCase().substring(0,3);
+  }
 
   getEvents(year) {
     const events = [];
@@ -137,5 +149,25 @@ export class CharacterDetailComponent implements OnInit {
 //      let snackBarRef = this.snackBar.open('Lord refreshed');
     })
   }
+  public saveProjectName( project: object,prop: string, newName: string ) : void {
+		// CAUTION: Normally, I would emit some sort of "rename" event to the calling
+		// context. But, for the sake of simplicity, I'm just mutating the project
+		// directly since having several sibling components that both edit project names
+		// is incidental and not the focus of this exploration.
+    console.log(JSON.stringify(project)+':'+prop+':'+newName)
+		project[prop] = newName;
+    this.service.modify(this.char).then(c => {
+      this.setLord(this.char);
+      let snackBarRef = this.snackBar.open('Lord refreshed');
+    })
+	}
+  sampleClick(){
+    console.log('clicked!!');
+  }
+}
+export class Trait {
 
+  constructor (  public short: string,
+    public first: string,
+    public second: string) {}
 }

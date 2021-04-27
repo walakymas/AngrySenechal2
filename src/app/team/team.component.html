@@ -28,8 +28,8 @@
     <tbody id="traits">
         <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
         <ng-container *ngFor="let t of traits">
-            <tr><th>{{t.first}}</th><td *ngFor="let m of team">{{m['traits'][t.short]}}</td></tr>
-            <tr><th>{{t.second}}</th><td *ngFor="let m of team">{{20-m['traits'][t.short]}}</td></tr>
+            <tr><th (click)="bot(t.first)">{{t.first}}</th><td *ngFor="let m of team" (click)="bot(t.first, m)">{{m['traits'][t.short]}}</td></tr>
+            <tr><th (click)="bot(t.second)">{{t.second}}</th><td *ngFor="let m of team" (click)="bot(t.second, m)">{{20-m['traits'][t.short]}}</td></tr>
         </ng-container>
     </tbody>
     <tbody id="passions">
@@ -42,15 +42,15 @@
     <table class="team">
         <tbody id="weapons">
             <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
-            <tr *ngFor="let p of teamprop('skills','Weapons')"><th>{{p}}</th><td *ngFor="let m of team">{{m['skills']['Weapons'][p]}}</td></tr>
+            <tr *ngFor="let p of teamprop('skills','Weapons')" ><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Weapons'][p]}}</td></tr>
         </tbody>
         <tbody id="other">
             <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
-            <tr *ngFor="let p of teamprop('skills','Other')"><th>{{p}}</th><td *ngFor="let m of team">{{m['skills']['Other'][p]}}</td></tr>
+            <tr *ngFor="let p of teamprop('skills','Other')" ><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Other'][p]}}</td></tr>
         </tbody>
         <tbody id="combat">
             <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
-            <tr *ngFor="let p of teamprop('skills','Combat')"><th>{{p}}</th><td *ngFor="let m of team">{{m['skills']['Combat'][p]}}</td></tr>
+            <tr *ngFor="let p of teamprop('skills','Combat')"><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Combat'][p]}}</td></tr>
         </tbody>
     </table>
     </div>

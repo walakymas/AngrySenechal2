@@ -51,6 +51,21 @@ export class CharacterService {
     return this.base;
   }
 
+
+  modify(l:Lord) : Promise<Lord>{
+    return this.http.post<Lord>(`${environment.url}modify`,
+      new HttpParams()
+      .set('id',  l.char['dbid'])
+      .set('json', JSON.stringify( l.char)).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set mark `)),
+      catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
+
   getLord(id: number): Observable<Lord> {
     const url = `${environment.url}${this.characterUrl}?id=${id}`;
     return this.http.get<Lord>(url).pipe(

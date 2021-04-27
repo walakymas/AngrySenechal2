@@ -15,7 +15,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { NpcDetailComponent } from './npc-detail/npc-detail.component';
 import { TeamComponent } from './team/team.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
+import { EditableComponent } from "./editable.component";
+import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,6 +25,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MessagesComponent,
     NpcDetailComponent,
     TeamComponent,
+    EditableComponent,
   ],
   imports: [
     BrowserModule,
@@ -34,7 +36,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatExpansionModule,
     MatSnackBarModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FormsModule
   ],
   providers: [HttpClientModule],
   bootstrap: [AppComponent]

@@ -1,0 +1,24 @@
+
+:host {
+	display: contents ;
+}
+
+.editor {
+	display: flex ;
+	padding: 5px 5px 5px 5px ;
+}
+.editor	input {
+    font-size: inherit ;
+    margin-right: 10px ;
+    width: 40px ;
+}
+
+.editor	button {
+    font-size: inherit ;
+    margin-right: 10px ;
+}
+
+.editor	a {
+    cursor: pointer ;
+    text-decoration: underline ;
+}

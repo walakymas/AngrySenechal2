@@ -1,20 +1,43 @@
+<div *ngIf="char; else noChar" >
 
 <div class="row">
     <div class="col-1"><h2 id="mainhead">Main </h2>
         <ul id='main'>
             <li *ngFor="let m of char.char['main'] | keyvalue ">
                 <span class="gold">{{m.key}}</span> {{m.value}}
+                <!-- <ng-template *ngIf="{{m.key==='Born'}}">
+                    <span class="gold">Age</span> {{char.year - m.value}}
+                </ng-template>-->
             </li>
         </ul>
 
     </div> <!-- 33.33% -->
     <div class="col-1"><h2 id="stathead">Statistics</h2>
         <ul id="statistics">
-            <li><span class="gold">SIZ</span> {{char.char['stats']['siz']}}</li>
-            <li><span class="gold">DEX</span> {{char.char['stats']['dex']}}</li>
-            <li><span class="gold">STR</span> {{char.char['stats']['str']}}</li>
-            <li><span class="gold">CON</span> {{char.char['stats']['con']}}</li>
-            <li><span class="gold">APP</span> {{char.char['stats']['app']}}</li>
+            <li><span class="gold">SIZ</span>
+            <app-editable
+                value="{{char.char['stats']['siz']}}"
+                (valueChange)="saveProjectName( char.char['stats'], 'siz', $event )"
+            ></app-editable></li>
+            <li><span class="gold">DEX</span><app-editable
+                value="{{char.char['stats']['dex']}}"
+                (valueChange)="saveProjectName( char.char['stats'], 'dex', $event )"
+            ></app-editable></li>
+            <li><span class="gold">STR</span>
+            <app-editable
+                value="{{char.char['stats']['str']}}"
+                (valueChange)="saveProjectName( char.char['stats'], 'str', $event )"
+            ></app-editable></li>
+            <li><span class="gold">CON</span>
+            <app-editable
+                value="{{char.char['stats']['con']}}"
+                (valueChange)="saveProjectName( char.char['stats'], 'con', $event )"
+            ></app-editable></li>
+            <li><span class="gold">APP</span>
+            <app-editable
+                value="{{char.char['stats']['app']}}"
+                (valueChange)="saveProjectName( char.char['stats'], 'app', $event )"
+            ></app-editable></li>
             <li><span class="gold">Damage</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Damage')}}d6</strong></li>
             <li><span class="gold">Healing Rate</span> <em> (STR+CON)/6=</em> <strong> {{getDetail('Healing Rate')}}</strong></li>
             <li><span class="gold">Move Rate</span> <em> (STR+DEX)/6=</em> <strong> {{getDetail('Move Rate')}}</strong></li>
@@ -74,28 +97,47 @@
     <div class="col-1">
         <h2 id="traithead">Personality Traits</h2>
         <table class="traits">
-            <tbody *ngFor="let t of base['traits'] "><tr>
-                <td><mat-checkbox [checked]="isMarked(t[0])" (change)="mark($event.checked, t[0])"></mat-checkbox></td><td >{{getTrait(t[0])}}</td><td >{{t[0]}}</td><td class="pagan">{{t[1]}}</td><td >{{20-getTrait(t[0])}}</td><td><mat-checkbox [checked]="isMarked(t[1])" (change)="mark($event.checked, t[1])"></mat-checkbox></td>
+            <tbody *ngFor="let t of traits"><tr>
+                <td><mat-checkbox [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td ><app-editable
+                    value="{{char.char['traits'][t.short]}}"
+                    (valueChange)="saveProjectName( char.char['traits'], t.short, $event )"
+                ></app-editable></td><td >{{t.first}}</td><td class="pagan">{{t.second}}</td><td ><app-editable
+                    value="{{20-char.char['traits'][t.short]}}"
+                    (valueChange)="saveProjectName( char.char['traits'], t.short, 20-$event )"
+                ></app-editable></td><td><mat-checkbox [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
             </tr> 
-            <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t[0])}}%"></div><div  style="width:{{100-5*getTrait(t[0])}}%" class="ratioRed"></div></div></td><td></td></tr>
+            <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t.short)}}%"></div><div  style="width:{{100-5*getTrait(t.short)}}%" class="ratioRed"></div></div></td><td></td></tr>
             </tbody>
         </table>
     </div>
     <div class="col-1">
         <h2 class="skillhead">Skills</h2>
         <ul id="skills">
-            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
+            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" 
+                (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+                value="{{char.char['skills']['Other'][m.key]}}"
+                (valueChange)="saveProjectName( char.char['skills']['Other'], m.key, $event )"
+            ></app-editable></li>
         </ul>
     </div>
     <div class="col-1">
         <h2 class="skillhead">Combat Skills</h2>
         <ul id="combat">
-            <li *ngFor="let m of char.char['skills']['Weapons'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
-            <li *ngFor="let m of char.char['skills']['Combat'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
+            <li *ngFor="let m of char.char['skills']['Weapons'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+                value="{{char.char['skills']['Weapons'][m.key]}}"
+                (valueChange)="saveProjectName( char.char['skills']['Weapons'], m.key, $event )"
+            ></app-editable></li>
+            <li *ngFor="let m of char.char['skills']['Combat'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+                value="{{char.char['skills']['Combat'][m.key]}}"
+                (valueChange)="saveProjectName( char.char['skills']['Combat'], m.key, $event )"
+            ></app-editable></li>
         </ul>
         <h2 id="passionhead">Passions</h2>
         <ul id="passions">
-            <li *ngFor="let m of char.char['passions'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span> {{m.value}}</li>
+            <li *ngFor="let m of char.char['passions'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+                value="{{char.char['passions'][m.key]}}"
+                (valueChange)="saveProjectName( char.char['passions'], m.key, $event )"
+            ></app-editable></li>
         </ul>
     </div>
 </div>
@@ -199,3 +241,6 @@
     <br/>
     <span class="contrastedText">{{char.char['longdescription']}}</span>
 </div>
+
+</div>
+<ng-template #noChar>Loading</ng-template>
