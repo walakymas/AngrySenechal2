@@ -212,7 +212,7 @@
                     <tr *ngFor="let m of char.char['army'] | keyvalue "><th>{{m.key}}</th><td>{{m.value}}</td></tr>
                 </table>
             </mat-expansion-panel>
-            <mat-expansion-panel hideToggle>
+            <mat-expansion-panel hideToggle *ngIf="main_horse">
                 <mat-expansion-panel-header>
                   <mat-panel-title>
                     Horses
@@ -220,15 +220,23 @@
                 </mat-expansion-panel-header>
                 <h5>Main</h5>
                 <table width="100%" id="horses" class="stats">
-                    <tr><th>Type</th><td id="htyp" colspan="2"></td></tr>
-                    <tr><th>SIZ</th><td id="hsiz"></td><th>CON</th><td id="hcon"></td></tr>
-                    <tr><th>DEX</th><td id="hdex"></td><th>STR</th><td id="hstr"></td></tr>
-                    <tr><th>Damage</th><td id="hdam" colspan="2"></td></tr>
-                    <tr><th>Move</th><td id="hmov"></td><th>Armor</th><td id="harm"></td></tr>
-                    <tr><th>Total Hitpoints</th><td id="hhp"></td><th>Healing Rate</th><td id="hhea"></td></tr>
+                    <tr><th>Type</th><td id="htyp" colspan="2" style="text-transform: capitalize">{{char.char['winter']['horses'][0]}}</td></tr>
+                    <tr><th>SIZ</th><td id="hsiz">{{main_horse['siz']}}</td><th>CON</th><td id="hcon">{{main_horse['con']}}</td></tr>
+                    <tr><th>DEX</th><td id="hdex">{{main_horse['dex']}}</td><th>STR</th><td id="hstr">{{main_horse['str']}}</td></tr>
+                    <tr><th>Damage</th><td id="hdam" colspan="2">{{main_horse['dam']}}</td></tr>
+                    <tr><th>Move</th><td id="hmov">{{main_horse['mov']}}</td><th>Armor</th><td id="harm">{{main_horse['arm']}}</td></tr>
+                    <tr><th>Total Hitpoints</th><td id="hhp">{{main_horse['siz']+main_horse['con']}}</td><th>Healing Rate</th><td id="hhea">{{main_horse['hea']}}</td></tr>
                 </table>
                 <h5>Others</h5>
                 <table  width="100%" id="hother" class="stats">
+                    <ng-container *ngFor="let h of char.char['winter']['horses']; index as i">
+                        <tr *ngIf="i>0">
+                            <th style="text-transform: capitalize">{{h}}</th>
+                            <td><span class="gold">Move</span>  {{base.horsetypes[h]['mov']}}</td>
+                            <td><span class="gold">Armor</span> {{base.horsetypes[h]['arm']}}</td>
+                            <td><span class="gold">HP</span> {{base.horsetypes[h]['siz']+base.horsetypes[h]['con']}}</td>
+                        </tr>
+                    </ng-container>
                 </table>
             </mat-expansion-panel>
             <mat-expansion-panel  *ngFor="let m of char.char['npcs'] | keyvalue " hideToggle>

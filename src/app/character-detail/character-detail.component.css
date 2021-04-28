@@ -4,7 +4,7 @@
 	font-size: 100%;
     border-top-right-radius: 6px;
     border-top-left-radius: 6px;
-    border: 1px solid #9B8565;
+    border: 1px solid var(--goldHighlight2);
     background: inherit;
     font-weight: normal;
     color: #ffffff;
@@ -13,11 +13,19 @@
 .mat-expansion-panel-header-title {
     color: white;
 }
-
-
-.mat-select, .mat-select-value {
-    background-color: #958061;
+body {
+    margin: 0px;
+    font-family: 'Overlock', serif;
 }
+
+
+.mat-mini-fab.mat-accent ,
+.mat-select,
+.mat-select-value
+{
+    background-color: var(--goldHighlight2);
+}
+
 
 .mat-expansion-panel {
     background-color: inherit;
@@ -31,11 +39,17 @@
 .mat-expansion-panel-header.mat-expanded
 {
     border: 1px solid #b9a78e;
-	background: #9B8565;
+	background:var(--goldHighlight2);
 	font-weight: normal;
 	color: #ffffff;
 }
 
 fieldset button {
    margin-right: 20px;
+}
+
+.mat-expansion-panel-header.mat-expanded:focus,.mat-expansion-panel-header.mat-expanded:hover{background:var(--goldHighlight2)}
+
+fieldset {
+    border-color: var(--goldHighlight2);
 }

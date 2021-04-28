@@ -11,6 +11,7 @@
 --contrastedTextColor:#cccdd1;
 --goldHighlight:#958061;
 --goldHighlight2:#9B8565;
+--goldHighlight3: #61533f;
 --blue:#446ac0;
 --medievalGreen:#5B8647;
 --medievalRed:#8F3826;
@@ -18,10 +19,11 @@
 
 /*text font, main text color, bg color */
 body {
+  margin: 0px;
   font-family: 'Overlock', serif;
   background-color: var(--darkGray);
   color:var(--lightGray);
-  font-size: 1.2em;
+  font-size: 1em;
 }
 
 /*box sizing - making sure that the padding and border are included in the total width and height of the elements*/
@@ -37,6 +39,21 @@ body {
 [class*="col-"] {
   float: left;
   padding: 15px;
+}
+/* defining column widths */
+#teamdiv .col-1 {width: 50%;}
+#teamdiv .col-2 {width: 100%;}
+
+[class*="col-"] {
+  float: left;
+  padding: 15px;
+}
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  [class*="col-"] {
+    width: 100%;
+  }
+  #teamdiv .col-1 {width: 100%;}
 }
 
 .row {margin: 0% auto; max-width:1200px;}
@@ -245,15 +262,6 @@ table.team {
     width: 100%;
 }
 
-/* defining column widths */
-#teamdiv .col-1 {width: 50%;}
-#teamdiv .col-2 {width: 100%;}
-
-[class*="col-"] {
-  float: left;
-  padding: 15px;
-}
-
 .row {margin: 0% auto; max-width:1200px;}
 
 
@@ -267,4 +275,10 @@ table.team {
 #health input[type="number"] { width: 50px }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: var(--goldHighlight2);
+}
+
+.mat-checkbox-frame {
+  border-color: var(--goldHighlight3);
+}

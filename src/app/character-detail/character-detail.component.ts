@@ -22,6 +22,7 @@ export class CharacterDetailComponent implements OnInit {
   details: {};
   weapon: {};
   base : Base;
+  main_horse = {};
   snackBarConfig: MatSnackBarConfig;
   constructor(
     private route: ActivatedRoute,
@@ -116,6 +117,9 @@ export class CharacterDetailComponent implements OnInit {
         this.details['chi'] = this.char.char['health']['chirurgery']
       }
     }
+    this.main_horse = this.base.horsetypes[this.char.char['winter']['horses'][0]]
+    this.main_horse['hea'] = Math.round((this.main_horse['str']*1+this.main_horse['con']*1)/10);
+    this.main_horse['unc'] = Math.round((this.main_horse['siz']*1+this.main_horse['con']*1)/4);
   }
 
   getMarkClass(name : string)  {
