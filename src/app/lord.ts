@@ -27,10 +27,21 @@ export class LordDetail {
     kno: number;
 }
 
-export class TeamMember {
-    did: number;
+export class LordData {
     name: string;
     shortName: string;
+    player:string;
+    memberId:string;
+    url:string;
+    main:{};
+    npcs:{};
+    health:{};
+    winter:{};
+    did: number;
+    army:{};
+    combat:{};
+    description:string;
+    longdescription:string;
     skills: {};
     stats: {};
     traits: {};

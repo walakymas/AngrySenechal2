@@ -1,6 +1,6 @@
 
 :host {
-	display: contents ;
+	display: inline-block ;
 }
 
 .editor {
@@ -10,7 +10,7 @@
 .editor	input {
     font-size: inherit ;
     margin-right: 10px ;
-    width: 40px ;
+    width: 50px ;
 }
 
 .editor	button {

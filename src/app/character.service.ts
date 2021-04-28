@@ -1,6 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 
-import { Lord, LordBase, TeamMember } from './lord';
+import { Lord, LordBase, LordData } from './lord';
 import { Base } from './base';
 import { Logger } from './logger.service';
 import { environment } from './../environments/environment';
@@ -50,7 +50,20 @@ export class CharacterService {
     }
     return this.base;
   }
-
+  
+  modifyProp(dbid:number, prop:string, value:string) : Promise<Lord>{
+    return this.http.post<Lord>(`${environment.url}modify`,
+      new HttpParams()
+      .set('id',  ''+dbid)
+      .set(prop,value).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set mark `)),
+      catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
 
   modify(l:Lord) : Promise<Lord>{
     return this.http.post<Lord>(`${environment.url}modify`,
@@ -95,10 +108,10 @@ export class CharacterService {
     );
   }
 
-  getTeam(): Observable<TeamMember[]> {
-    return this.http.get<TeamMember[]>(`${environment.url}players`).pipe(
+  getTeam(): Observable<LordData[]> {
+    return this.http.get<LordData[]>(`${environment.url}players`).pipe(
       tap(_ => this.logger.log(`fetched lord list`)),
-      catchError(this.handleError<TeamMember[]>(`getTeam`))
+      catchError(this.handleError<LordData[]>(`getTeam`))
     );
   }
 

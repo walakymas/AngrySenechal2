@@ -37,11 +37,9 @@ export class EditableComponent {
 
 	// I initialize the editable component.
 	constructor() {
-        console.log(`EditableComponent: ${this.value}`)
 		this.isEditing = false;
 		this.pendingValue = 0;
 		this.valueChangeEvents = new EventEmitter();
-
 	}
 
 	// ---

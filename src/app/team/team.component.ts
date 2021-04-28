@@ -2,7 +2,7 @@ import { HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Base } from '../base';
 import { CharacterService } from '../character.service';
-import { LordDetail, TeamMember } from '../lord';
+import { LordDetail, LordData } from '../lord';
 
 @Component({
   selector: 'app-team',
@@ -10,7 +10,7 @@ import { LordDetail, TeamMember } from '../lord';
   styleUrls: ['./team.component.css']
 })
 export class TeamComponent implements OnInit {
-  team : TeamMember[];
+  team : LordData[];
   base: Base;
   traits: Trait[] = [];
   constructor(private service: CharacterService,
@@ -29,7 +29,7 @@ export class TeamComponent implements OnInit {
     this.service.getTeam().subscribe( t => this.setTeam(t));
   }
   
-  setTeam(t: TeamMember[])  {
+  setTeam(t: LordData[])  {
     this.team = t;
     for (let ti in t) {
       const m = t[ti];
@@ -64,7 +64,7 @@ export class TeamComponent implements OnInit {
     }
   }
   
-  detail(m: TeamMember, type : string)  {
+  detail(m: LordData, type : string)  {
       if (type === 'Damage') 
           return Math.round((m['stats']['str']*1+m['stats']['siz']*1)/6);
       else if (type === 'Healing Rate') 
@@ -113,7 +113,7 @@ export class TeamComponent implements OnInit {
     return keys;
   }
 
-  bot(p:string, m:TeamMember) {
+  bot(p:string, m:LordData) {
     let p_ = p.replace(/ /g,'_');
     let command = m?`check ${p_} <@!${m['memberId']}>`:`team ${p_}`;
     this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));

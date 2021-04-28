@@ -3,12 +3,14 @@
 <div class="row">
     <div class="col-1"><h2 id="mainhead">Main </h2>
         <ul id='main'>
-            <li *ngFor="let m of char.char['main'] | keyvalue ">
-                <span class="gold">{{m.key}}</span> {{m.value}}
-                <!-- <ng-template *ngIf="{{m.key==='Born'}}">
+            <ng-container *ngFor="let m of char.char['main'] | keyvalue ">
+                <li  *ngIf="isEq(m.key, 'Born')">
                     <span class="gold">Age</span> {{char.year - m.value}}
-                </ng-template>-->
-            </li>
+                </li>
+                <li *ngIf="!isEq(m.key, 'Glory')">
+                    <span class="gold" >{{m.key}}</span> {{m.value}}
+                </li>
+            </ng-container>
         </ul>
 
     </div> <!-- 33.33% -->
@@ -17,26 +19,26 @@
             <li><span class="gold">SIZ</span>
             <app-editable
                 value="{{char.char['stats']['siz']}}"
-                (valueChange)="saveProjectName( char.char['stats'], 'siz', $event )"
+                (valueChange)="modifyProp( 'stats.siz', $event )"
             ></app-editable></li>
             <li><span class="gold">DEX</span><app-editable
                 value="{{char.char['stats']['dex']}}"
-                (valueChange)="saveProjectName( char.char['stats'], 'dex', $event )"
+                (valueChange)="modifyProp('stats.dex', $event )"
             ></app-editable></li>
             <li><span class="gold">STR</span>
             <app-editable
                 value="{{char.char['stats']['str']}}"
-                (valueChange)="saveProjectName( char.char['stats'], 'str', $event )"
+                (valueChange)="modifyProp( 'stats.str', $event )"
             ></app-editable></li>
             <li><span class="gold">CON</span>
             <app-editable
                 value="{{char.char['stats']['con']}}"
-                (valueChange)="saveProjectName( char.char['stats'], 'con', $event )"
+                (valueChange)="modifyProp( 'stats.con', $event )"
             ></app-editable></li>
             <li><span class="gold">APP</span>
             <app-editable
                 value="{{char.char['stats']['app']}}"
-                (valueChange)="saveProjectName( char.char['stats'], 'app', $event )"
+                (valueChange)="modifyProp( 'stats.app', $event )"
             ></app-editable></li>
             <li><span class="gold">Damage</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Damage')}}d6</strong></li>
             <li><span class="gold">Healing Rate</span> <em> (STR+CON)/6=</em> <strong> {{getDetail('Healing Rate')}}</strong></li>
@@ -50,15 +52,9 @@
     </div> <!-- 33.33% -->
     <div class="col-1">
         <div>
-            {{char.char['name']}}
+            <h2 id="stathead">{{char.char['name']}}</h2>
         </div>
         <div style="text-align: center"><img class="Image-Frame" id='charimg' src="{{char.char['url']}}" width="200"> </div>
-        <div class="row">
-
-            <div class="col-1" style="text-align: center"><img class="Image-Frame" id="editchar" src="https://rmc.library.cornell.edu/medievalbook/pics/225pixW/4600BdMs20_cover.jpg" width="100" ></div>
-            <div class="col-1" style="text-align: center"><a id="pdf" href="" target="sheet"><img class="Image-Frame" src="https://pappcseperke.hu/wp-content/uploads/2021/02/Stundenbuch_Grey-FitzPayn.jpg" width="100" ></a></div>
-            <div class="col-1" style="text-align: center"><img class="Image-Frame" id="newchar" src="https://cdn.discordapp.com/attachments/784174179972153364/822584896606306324/6735dacb397d.png" width="100" ></div>
-        </div>
     </div> <!-- 33.33% -->
 </div>
 
@@ -74,21 +70,36 @@
     </div>
     <div class="col-1">
         <div class="FontSizeBig">
-            <span class="gold">HP:</span> <span id="hp"> {{details['hp']}}</span>
+            <span class="gold">HP:</span> 
+            <span *ngIf="details['hp']==details['ahp']; else wounded"> {{details['hp']}}</span>
+            <ng-template #wounded>
+                <span matTooltip="{{details['wounds']}}"> {{details['ahp']}}/{{details['hp']}}</span>
+            </ng-template>
         </div>
         <div>
             <fieldset id="health">
                 <legend>Health</legend>
-                <label for="healthmod">Change</label>
-                <input id="healthmod" type="number" value="0"/>
+                <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
+                    <mat-icon>remove</mat-icon>
+                </button>                     
+                <button  mat-mini-fab color="accent" title="Heal" (click)="heal('heal')">
+                    <mat-icon>add</mat-icon>
+                </button>  
+                <input id="healthmod" type="number" matInput [(ngModel)]="healthmod"/>                    
+                
+                <br/>
+                
+                
+                <button  mat-mini-fab color="accent" title="Wealky Healing" (click)="heal('sunday')">
+                    <mat-icon>healing</mat-icon>
+                </button>                     
+                <button  mat-mini-fab color="accent" title="Complette (Winter)" (click)="heal('full')">
+                    <mat-icon>favorite</mat-icon>
+                </button>                    
+
                 <label for="chineed">Chirurgery</label>
-                <input type="checkbox" name="chineed" id="chineed" [checked]="char.char['health']['chirurgery']"/>
-                <div class="controlgroup">
-                    <button id="wound"  title="Wound">-</button>
-                    <button id="heal" title="Heal">+</button>
-                    <button id="sunday" title="Weekly heal">Sun</button>
-                    <button id="completeheal" title="Complette (Winter)">Comp</button>
-                </div>
+                <mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>
+                   
             </fieldset>
         </div>
     </div>
@@ -100,10 +111,10 @@
             <tbody *ngFor="let t of traits"><tr>
                 <td><mat-checkbox [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td ><app-editable
                     value="{{char.char['traits'][t.short]}}"
-                    (valueChange)="saveProjectName( char.char['traits'], t.short, $event )"
+                    (valueChange)="modifyProp( 'traits.'+t.short, $event )"
                 ></app-editable></td><td >{{t.first}}</td><td class="pagan">{{t.second}}</td><td ><app-editable
                     value="{{20-char.char['traits'][t.short]}}"
-                    (valueChange)="saveProjectName( char.char['traits'], t.short, 20-$event )"
+                    (valueChange)="modifyProp( 'traits.'+ t.short, 20-$event )"
                 ></app-editable></td><td><mat-checkbox [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
             </tr> 
             <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t.short)}}%"></div><div  style="width:{{100-5*getTrait(t.short)}}%" class="ratioRed"></div></div></td><td></td></tr>

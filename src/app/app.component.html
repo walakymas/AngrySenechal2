@@ -1,18 +1,42 @@
 <nav>
-  <div class="nav">
-    <button mat-raised-button routerLink="team">Team</button>
+  <button mat-button routerLink="team">
+    <mat-icon>groups</mat-icon>
+    Team
+  </button>
+  <button mat-button [matMenuTriggerFor]="players">
+    <mat-icon>local_police</mat-icon>
+    Players
+  </button>
+  <mat-menu #players="matMenu">
     <ng-container *ngFor="let c of list" >
-      <button mat-raised-button *ngIf="c.type=='pc' && c.role!='King' && c.role!='Lord' " routerLink="character/{{c.name}}">{{c.name}}</button>
+      <button mat-menu-item *ngIf="isPc(c)" routerLink="character/{{c.name}}">
+        <mat-icon >security</mat-icon>
+        {{c.name}}
+      </button>
     </ng-container>
-  </div>
-  <div class="nav">
-    <mat-form-field appearance="fill">
-      <mat-label>Select character</mat-label>
-      <mat-select [(value)]="lastChar" (selectionChange)="navigateTo($event.value)">
-        <mat-option *ngFor="let c of list" value="{{c.name}}" >{{c.name}}</mat-option>
-      </mat-select>  
-    </mat-form-field>
-  </div>
+  </mat-menu>
+  <button mat-button [matMenuTriggerFor]="all"><mat-icon>switch_account</mat-icon>All</button>
+  <mat-menu #all="matMenu">
+    
+    <button mat-menu-item [matMenuTriggerFor]="Lords"><mat-icon>male</mat-icon>Lords</button>
+    <button mat-menu-item [matMenuTriggerFor]="Ladies"><mat-icon>female</mat-icon>Ladies</button>
+    <button mat-menu-item [matMenuTriggerFor]="Other"><mat-icon>transgender</mat-icon>Other</button>
+  </mat-menu>
+  <mat-menu #Ladies="matMenu">
+    <ng-container *ngFor="let c of list" >
+      <button mat-menu-item *ngIf="isLady(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
+    </ng-container>
+  </mat-menu>
+  <mat-menu #Lords="matMenu">
+    <ng-container *ngFor="let c of list" >
+      <button mat-menu-item *ngIf="isLord(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
+    </ng-container>
+  </mat-menu>
+  <mat-menu #Other="matMenu">
+    <ng-container *ngFor="let c of list" >
+      <button mat-menu-item *ngIf="isOther(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
+    </ng-container>
+  </mat-menu>
 </nav>
 <router-outlet></router-outlet>
 <app-messages></app-messages>

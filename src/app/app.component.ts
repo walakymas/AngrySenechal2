@@ -23,8 +23,24 @@ export class AppComponent implements OnInit {
     this.service.getList().subscribe( l => this.list = l)
   }
 
+  isPc(c: LordBase) : boolean {
+    return c.type == "pc" &&  c.role != 'Lord' && c.role != 'King';
+  }
+
   getLink(c: LordBase) : string {
     return `character/${c.name}`
+  }
+
+  isLord(c: LordBase) : boolean {
+    return c && (c.name.indexOf('Lord')==0 || c.name.indexOf('Sir')==0 || c.name.indexOf('King')==0);
+  }
+
+  isLady(c: LordBase) : boolean {
+    return c && c.name.indexOf('Lady')==0;
+  }
+
+  isOther(c: LordBase) : boolean {
+    return !this.isLady(c) && !this.isLord(c);
   }
 
   navigateTo(value){

@@ -25,6 +25,7 @@
     "angular-inline-editors": "^2.0.4",
     "angular-material-icons": "^0.7.1",
     "express": "^4.17.1",
+    "material-design-icons": "^3.0.1",
     "material-icons-font": "^2.1.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

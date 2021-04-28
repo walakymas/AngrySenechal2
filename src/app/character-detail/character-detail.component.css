@@ -5,9 +5,23 @@
     border-top-right-radius: 6px;
     border-top-left-radius: 6px;
     border: 1px solid #9B8565;
-    background: #003147;
+    background: inherit;
     font-weight: normal;
     color: #ffffff;
+}
+
+.mat-expansion-panel-header-title {
+    color: white;
+}
+
+
+.mat-select, .mat-select-value {
+    background-color: #958061;
+}
+
+.mat-expansion-panel {
+    background-color: inherit;
+    color:inherit;
 }
 
 .mat-expansion-panel-spacing {
@@ -20,4 +34,8 @@
 	background: #9B8565;
 	font-weight: normal;
 	color: #ffffff;
+}
+
+fieldset button {
+   margin-right: 20px;
 }

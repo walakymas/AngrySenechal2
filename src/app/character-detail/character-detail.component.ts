@@ -6,7 +6,7 @@ import { Location } from '@angular/common';
 import { CharacterService } from './../character.service';
 import { Logger } from '../logger.service';
 import { Base } from '../base';
-import {MatSnackBar} from '@angular/material/snack-bar';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-character-detail',
@@ -17,18 +17,22 @@ export class CharacterDetailComponent implements OnInit {
 //  id : number = 32;
   id : number = 63;
   traits: Trait[] = []
-  
+  healthmod: number = 0;
   char : Lord;
   details: {};
   weapon: {};
   base : Base;
+  snackBarConfig: MatSnackBarConfig;
   constructor(
     private route: ActivatedRoute,
     private service: CharacterService,
     private location: Location,
     private logger: Logger,
     private snackBar: MatSnackBar
-    ) { }
+    ) { 
+      this.snackBarConfig = new MatSnackBarConfig();
+      this.snackBarConfig.duration = 2000;
+    }
 
 
   ngOnInit(): void {
@@ -94,7 +98,24 @@ export class CharacterDetailComponent implements OnInit {
     this.details['years'] = years;
     let maxhp = this.char.char['stats']['siz']*1+this.char.char['stats']['con']*1;
     this.details['hp'] = maxhp;
-
+    this.details['hr'] = Math.round((this.char.char['stats']['str']*1+this.char.char['stats']['con']*1)/10);
+    this.details['wounds'] = "";
+    this.details['ahp'] = maxhp;
+    if (this.char.char['health'] && this.char.char['health']['changes']) {
+      for(let ii in  this.char.char['health']['changes']) {
+        this.details['ahp'] += this.char.char['health']['changes'][ii]*1;
+        this.details['wounds']+=', '+this.char.char['health']['changes'][ii];
+        if (this.details['ahp'] < 0) {
+          this.details['ahp'] =0;
+        } else if (this.details['ahp']>this.details['hp']) {
+          this.details['ahp'] = this.details['hp'];
+        }
+      }
+      this.details['wounds'] = this.details['wounds'] .replace(/^,/,'');
+      if (this.details['ahp'] !=this.details['hp'] ) {
+        this.details['chi'] = this.char.char['health']['chirurgery']
+      }
+    }
   }
 
   getMarkClass(name : string)  {
@@ -146,23 +167,42 @@ export class CharacterDetailComponent implements OnInit {
   mark(checked: boolean, name: string) {
     this.service.setMark(name, this.char.char['memberId'], checked).then(c => {
       this.setLord(this.char);
-//      let snackBarRef = this.snackBar.open('Lord refreshed');
     })
   }
+
   public saveProjectName( project: object,prop: string, newName: string ) : void {
-		// CAUTION: Normally, I would emit some sort of "rename" event to the calling
-		// context. But, for the sake of simplicity, I'm just mutating the project
-		// directly since having several sibling components that both edit project names
-		// is incidental and not the focus of this exploration.
     console.log(JSON.stringify(project)+':'+prop+':'+newName)
 		project[prop] = newName;
     this.service.modify(this.char).then(c => {
-      this.setLord(this.char);
-      let snackBarRef = this.snackBar.open('Lord refreshed');
+      this.setLord(c);
+      this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
     })
 	}
-  sampleClick(){
-    console.log('clicked!!');
+
+  public modifyProp( prop: string, newName: string ) : void {
+    console.log(`${prop}:=${newName}`)
+    this.service.modifyProp(this.char.char['dbid'],prop, newName).then(c => {
+      this.setLord(c);
+      this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
+    })
+	}
+
+  public isEq(s1: string, s2:string):boolean{
+    let result = s1==s2; 
+    return result;
+  }
+  public heal(action:string) {
+    console.log(action+JSON.stringify(this.char.char['health']['changes']));
+    if (action=='wound') {
+      this.char.char['health']['changes'].push(this.healthmod*-1);
+    } else if (action=='heal') {
+      this.char.char['health']['changes'].push(this.healthmod*1);
+    } else if (action=='sunday') {
+      this.char.char['health']['changes'].push(this.details['hr']);
+    } else if (action=='full') {
+      this.char.char['health']['changes'] = [];
+    }
+    this.modifyProp('health.changes',JSON.stringify( this.char.char['health']['changes']))
   }
 }
 export class Trait {
