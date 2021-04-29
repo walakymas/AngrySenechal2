@@ -15,12 +15,13 @@
 --blue:#446ac0;
 --medievalGreen:#5B8647;
 --medievalRed:#8F3826;
+--mainFont: 'Overlock', serif;
 }
 
 /*text font, main text color, bg color */
 body {
   margin: 0px;
-  font-family: 'Overlock', serif;
+  font-family: var(--mainFont);
   background-color: var(--darkGray);
   color:var(--lightGray);
   font-size: 1em;
@@ -136,14 +137,10 @@ table.traits {
 .traits td:nth-child(4)
 {color:var(--goldHighlight);font-weight:bold;}
 
-#passions .ui-icon,
-#skills .ui-icon,
-#combat .ui-icon,
 #events tr,
 #eventshead,
-#stathead,
-.traitcheck,
-[bot] {
+.traitcheck
+{
     cursor: pointer
 }
 

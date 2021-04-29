@@ -221,6 +221,32 @@ export class CharacterDetailComponent implements OnInit {
     });
   }
 
+  editMain(l : Lord) {
+    let main : CharacterMain;
+
+    if (l) {
+      main = new CharacterMain(l.char['name'],l.char['shortName'],l.char['role'],l.char['url'],l.char['description'],l.char['longdescription'])
+    }
+
+    const dialogRef = this.dialog.open(CharacterMainDialog, {
+      width: '500px',
+      data: {main: main}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log(JSON.stringify(result))
+                this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
+        this.service.main(this.char, result).then(c => {
+          this.setLord(c);
+          this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
+        })        
+      } else {
+        this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
+      }
+    });
+  }
+
   editEvent(e) {
     let ge: GameEvent;
     if (e) {
@@ -254,6 +280,60 @@ export class Trait {
     public second: string) {}
 }
 
+export class CharacterMain {
+  constructor (  
+    public name: string,
+    public shortName: string,
+    public role: string,
+    public url: string,
+    public description: string = '',
+    public longdescription: string = '',
+    ) {}
+}
+
+@Component({
+  selector: 'character-main-dialog',
+  template: `
+  <div mat-dialog-content>
+      <mat-form-field appearance="fill" style="width:100%">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="data.main.name">
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:50%">
+        <mat-label>ShortName</mat-label>
+        <input matInput [(ngModel)]="data.main.shortName">
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:50%">
+        <mat-label>Role</mat-label>
+        <input matInput [(ngModel)]="data.main.role">
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:100%">
+        <mat-label>Url</mat-label>
+        <input matInput [(ngModel)]="data.main.url">
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:100%;">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="data.main.description" style="min-height:120px;"></textarea>
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:100%;">
+        <mat-label>LongDescription</mat-label>
+        <textarea matInput [(ngModel)]="data.main.longdescription" style="min-height:120px;"></textarea>
+      </mat-form-field>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="data.main" cdkFocusInitial>Save</button>
+  </div> `})
+export class CharacterMainDialog {
+  constructor(
+    private dialogRef: MatDialogRef<CharacterMainDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: {main: CharacterMain}) {
+      if (! data.main) {
+        data.main = new CharacterMain("","","","","","");
+      }
+    }
+}
+
 export class GameEvent {
   constructor (  public id: number = 0,
     public glory: number = 0,
@@ -261,9 +341,9 @@ export class GameEvent {
     public description: string = '') {}
 }
 
-@Component({
+@Component({ 
   selector: 'dialog-content-example-dialog',
-  template: `<h3 mat-dialog-title>Game Event</h3>
+  template: `
   <div mat-dialog-content>
       <mat-form-field appearance="fill" style="width:50%">
         <mat-label>Year</mat-label>
@@ -273,9 +353,9 @@ export class GameEvent {
         <mat-label>Glory</mat-label>
         <input type="number" matInput [(ngModel)]="data.event.glory">
       </mat-form-field>
-      <mat-form-field appearance="fill" style="width:100%">
+      <mat-form-field appearance="fill" style="width:100%;">
         <mat-label>Description</mat-label>
-        <textarea matInput [(ngModel)]="data.event.description"></textarea>
+        <textarea matInput [(ngModel)]="data.event.description" style="min-height:120px;"></textarea>
       </mat-form-field>
   </div>
   <div mat-dialog-actions align="end">
@@ -295,13 +375,3 @@ export class DialogContentExampleDialog {
       }
     }
 }
-
-/*
-<h2 mat-dialog-title>Install Angular</h2>
-  <mat-dialog-content class="mat-typography">
-  </mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
-  </mat-dialog-actions>  
-*/

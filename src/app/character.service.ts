@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 
-import { Lord, LordBase, LordData } from './lord';
+import { Lord, LordBase, LordData} from './lord';
+import { CharacterMain} from './character-detail/character-detail.component';
 import { Base } from './base';
 import { Logger } from './logger.service';
 import { environment } from './../environments/environment';
@@ -79,6 +80,41 @@ export class CharacterService {
       catchError(this.handleError<Lord>(`setMark`))
     ).toPromise();
   }
+
+  newChar(main: CharacterMain) : Promise<Lord>{
+    return this.http.post<Lord>(`${environment.url}newchar`,
+      new HttpParams()
+      .set('json', JSON.stringify(main))
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set mark `)),
+      catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
+
+  main(l:Lord, m: CharacterMain) : Promise<Lord>{
+    return this.http.post<Lord>(`${environment.url}modify`,
+      new HttpParams()
+      .set('id',  l.char['dbid'])
+      .set('name', m.name)
+      .set('shortName', m.shortName)
+      .set('role', m.role)
+      .set('url', m.url)
+      .set('description', m.description)
+      .set('longdescription', m.longdescription)
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set mark `)),
+      catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
+
 
   event(l:Lord, event : GameEvent) : Promise<Lord>{
     return this.http.post<Lord>(`${environment.url}event`,

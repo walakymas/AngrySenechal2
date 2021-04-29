@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CharactersComponent } from './characters/characters.component';
-import { CharacterDetailComponent, DialogContentExampleDialog } from './character-detail/character-detail.component';
+import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog } from './character-detail/character-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule} from '@angular/material/icon';
@@ -34,6 +34,7 @@ import { MatInputModule} from '@angular/material/input';
     TeamComponent,
     EditableComponent,
     DialogContentExampleDialog,
+    CharacterMainDialog,
   ],
   imports: [
     BrowserModule,
@@ -53,6 +54,7 @@ import { MatInputModule} from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
+    
   ],
   entryComponents:[MatDialogModule],
   providers: [HttpClientModule],

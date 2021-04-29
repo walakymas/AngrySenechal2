@@ -3,6 +3,9 @@ import { CharacterService } from './character.service';
 import { Logger } from './logger.service';
 import { Lord, LordBase } from './lord';
 import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
+import { CharacterMain, CharacterMainDialog } from './character-detail/character-detail.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,14 +14,20 @@ import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 export class AppComponent implements OnInit {
   list: LordBase[];
   lastChar:string;
+  snackBarConfig = new MatSnackBarConfig();
   constructor (
 
     private router: Router,
+    private arouter: ActivatedRoute,
     private service: CharacterService, 
     private logger: Logger,
-    ) {
-    
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog,
+    ) 
+  {
+    this.snackBarConfig.duration = 2000;
   }
+
   ngOnInit(): void {
     this.service.getList().subscribe( l => this.list = l)
   }
@@ -42,6 +51,31 @@ export class AppComponent implements OnInit {
   isOther(c: LordBase) : boolean {
     return !this.isLady(c) && !this.isLord(c);
   }
+
+  newChar() {
+    let main : CharacterMain;
+
+
+    const dialogRef = this.dialog.open(CharacterMainDialog, {
+      width: '500px',
+      data: {main: null}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log(JSON.stringify(result))
+        this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
+        this.service.newChar(result).then(c => {
+          this.router.navigate(['character/'+result['name']])
+          this.snackBar.open('Lord created','Ok',this.snackBarConfig);
+        })        
+      } else {
+        this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
+      }
+    });
+  }
+
+
 
   navigateTo(value){
     console.log(value);

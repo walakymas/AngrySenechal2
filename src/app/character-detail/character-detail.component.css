@@ -60,6 +60,16 @@ fieldset {
     font-size: 16px;
     font-weight: bold;
 }
+
 .mat-expansion-panel-header-title {
     display: block;
+}
+
+.mat-expansion-panel-content {
+    font: inherit;
+    letter-spacing: normal;
+}
+
+.event {
+    font-family: var(--mainFont);
 }

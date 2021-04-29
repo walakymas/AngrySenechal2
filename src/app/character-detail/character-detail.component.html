@@ -54,7 +54,7 @@
         <div>
             <h2 id="stathead">{{char.char['name']}}</h2>
         </div>
-        <div style="text-align: center"><img class="Image-Frame" id='charimg' src="{{char.char['url']}}" width="200"> </div>
+        <div style="text-align: center"><img class="Image-Frame" id='charimg' src="{{char.char['url']}}" width="200" (click)="editMain(char)"> </div>
     </div> <!-- 33.33% -->
 </div>
 
@@ -162,7 +162,7 @@
                    {{y}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span>{{e['description']}}</span></div>
+              <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)" class="event"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span style="white-space: pre-line;">{{e['description']}}</span></div>
             </mat-expansion-panel>
         </mat-accordion>
     </div>
