@@ -14,7 +14,7 @@
     <ng-container *ngFor="let c of list" >
       <button mat-menu-item *ngIf="isPc(c)" routerLink="character/{{c.name}}">
         <mat-icon >security</mat-icon>
-        {{c.na/me}}
+        {{c.name}}
       </button>
     </ng-container>
   </mat-menu>
