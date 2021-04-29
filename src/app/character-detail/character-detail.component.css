@@ -53,3 +53,13 @@ fieldset button {
 fieldset {
     border-color: var(--goldHighlight2);
 }
+
+.mat-expansion-panel-header {
+    font-family: 'Cormorant Unicase', serif;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+.mat-expansion-panel-header-title {
+    display: block;
+}

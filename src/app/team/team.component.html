@@ -1,4 +1,4 @@
-<div id="teamdiv">
+<div id="teamdiv" *ngIf="team; else noTeam">
     <div class="row">
         <div class="col-1">
 <table class="team">
@@ -57,3 +57,20 @@
     </div>
 </div>
 
+
+<ng-template #noTeam>
+    <style>
+        .wrapper {
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            height: calc(100vh - 20px);
+        }
+        .inner {
+            padding: 12px;
+        }
+    </style>
+    <div class="wrapper">
+        <mat-spinner class="inner"></mat-spinner>
+    </div>
+</ng-template>

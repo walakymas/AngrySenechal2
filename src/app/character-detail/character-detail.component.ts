@@ -1,13 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Lord } from './../lord';
-import { Observable, of } from 'rxjs';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
 import { CharacterService } from './../character.service';
 import { Logger } from '../logger.service';
 import { Base } from '../base';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
-
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 @Component({
   selector: 'app-character-detail',
   templateUrl: './character-detail.component.html',
@@ -29,7 +29,8 @@ export class CharacterDetailComponent implements OnInit {
     private service: CharacterService,
     private location: Location,
     private logger: Logger,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
     ) { 
       this.snackBarConfig = new MatSnackBarConfig();
       this.snackBarConfig.duration = 2000;
@@ -195,6 +196,7 @@ export class CharacterDetailComponent implements OnInit {
     let result = s1==s2; 
     return result;
   }
+
   public heal(action:string) {
     console.log(action+JSON.stringify(this.char.char['health']['changes']));
     if (action=='wound') {
@@ -208,6 +210,42 @@ export class CharacterDetailComponent implements OnInit {
     }
     this.modifyProp('health.changes',JSON.stringify( this.char.char['health']['changes']))
   }
+  openDialog() {
+    const dialogRef = this.dialog.open(DialogContentExampleDialog, {
+      width: '500px',
+      data: {char: this.char}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+    });
+  }
+
+  editEvent(e) {
+    let ge: GameEvent;
+    if (e) {
+      ge = new GameEvent(e['id'],e['glory'],e['year'],e['description'])
+    } 
+
+    const dialogRef = this.dialog.open(DialogContentExampleDialog, {
+      width: '500px',
+      data: {event: ge}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log(JSON.stringify(result))
+                this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
+        this.service.event(this.char, result).then(c => {
+          this.setLord(c);
+          this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
+        })        
+      } else {
+        this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
+      }
+    });
+
+  }
 }
 export class Trait {
 
@@ -215,3 +253,55 @@ export class Trait {
     public first: string,
     public second: string) {}
 }
+
+export class GameEvent {
+  constructor (  public id: number = 0,
+    public glory: number = 0,
+    public year: number = 0,
+    public description: string = '') {}
+}
+
+@Component({
+  selector: 'dialog-content-example-dialog',
+  template: `<h3 mat-dialog-title>Game Event</h3>
+  <div mat-dialog-content>
+      <mat-form-field appearance="fill" style="width:50%">
+        <mat-label>Year</mat-label>
+        <input type="number" matInput [(ngModel)]="data.event.year">
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:50%">
+        <mat-label>Glory</mat-label>
+        <input type="number" matInput [(ngModel)]="data.event.glory">
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:100%">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="data.event.description"></textarea>
+      </mat-form-field>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="delete" cdkFocusInitial *ngIf="delete">Delete</button>
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="data.event" cdkFocusInitial>Save</button>
+  </div> `})
+export class DialogContentExampleDialog {
+  delete: GameEvent;
+  constructor(
+    private dialogRef: MatDialogRef<DialogContentExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: {event: GameEvent}) {
+      if (! data.event) {
+        data.event = new GameEvent();
+      } else {
+        this.delete = new GameEvent(data.event.id, -1);
+      }
+    }
+}
+
+/*
+<h2 mat-dialog-title>Install Angular</h2>
+  <mat-dialog-content class="mat-typography">
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
+  </mat-dialog-actions>  
+*/

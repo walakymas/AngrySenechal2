@@ -282,3 +282,7 @@ html, body { height: 100%; }
 .mat-checkbox-frame {
   border-color: var(--goldHighlight3);
 }
+
+.mat-progress-spinner circle, .mat-spinner circle {
+  stroke: var(--goldHighlight2);
+}

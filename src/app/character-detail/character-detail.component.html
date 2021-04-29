@@ -154,7 +154,7 @@
 </div>
 <div class="row">
     <div class="col-2">
-        <h2 id="eventshead">Events</h2>
+        <h2 id="eventshead" (click)="editEvent(e)">Events</h2>
         <mat-accordion>
             <mat-expansion-panel  *ngFor="let y of details['years']" hideToggle>
               <mat-expansion-panel-header>
@@ -162,7 +162,7 @@
                    {{y}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
-              <div *ngFor="let e of getEvents(y)" ><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span>{{e['description']}}</span></div>
+              <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span>{{e['description']}}</span></div>
             </mat-expansion-panel>
         </mat-accordion>
     </div>
@@ -262,4 +262,19 @@
 </div>
 
 </div>
-<ng-template #noChar>Loading</ng-template>
+<ng-template #noChar>
+    <style>
+        .wrapper {
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            height: calc(100vh - 20px);
+        }
+        .inner {
+            padding: 12px;
+        }
+    </style>
+    <div class="wrapper">
+        <mat-spinner class="inner"></mat-spinner>
+    </div>
+</ng-template>

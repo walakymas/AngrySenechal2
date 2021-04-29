@@ -8,6 +8,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { waitForAsync } from '@angular/core/testing';
+import { GameEvent } from './character-detail/character-detail.component';
 
 
 
@@ -70,6 +71,24 @@ export class CharacterService {
       new HttpParams()
       .set('id',  l.char['dbid'])
       .set('json', JSON.stringify( l.char)).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set mark `)),
+      catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
+
+  event(l:Lord, event : GameEvent) : Promise<Lord>{
+    return this.http.post<Lord>(`${environment.url}event`,
+      new HttpParams()
+      .set('mid',  l.char['memberId'])
+      .set('year', ''+event.year)
+      .set('glory', ''+event.glory)
+      .set('eid', ''+event.id)
+      .set('description', event.description)
+      .toString(),
       {
         headers: new HttpHeaders()
           .set('Content-Type', 'application/x-www-form-urlencoded')
