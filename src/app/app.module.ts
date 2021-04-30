@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CharactersComponent } from './characters/characters.component';
-import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog } from './character-detail/character-detail.component';
+import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog } from './character-detail/character-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule} from '@angular/material/icon';
@@ -17,13 +17,14 @@ import { NpcDetailComponent } from './npc-detail/npc-detail.component';
 import { TeamComponent } from './team/team.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { EditableComponent } from "./editable.component";
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule} from '@angular/material/button';
 import { MatMenuModule} from '@angular/material/menu';
 import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MatDialogModule} from '@angular/material/dialog';
 import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule} from '@angular/material/input';
+import { NgJsonEditorModule } from 'ang-jsoneditor' 
 @NgModule({
   declarations: [
     AppComponent,
@@ -35,6 +36,7 @@ import { MatInputModule} from '@angular/material/input';
     EditableComponent,
     DialogContentExampleDialog,
     CharacterMainDialog,
+    CharacterJsonDialog,
   ],
   imports: [
     BrowserModule,
@@ -47,6 +49,7 @@ import { MatInputModule} from '@angular/material/input';
     MatSelectModule,
     MatTooltipModule,
     FormsModule,
+    ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
     MatMenuModule,
@@ -54,7 +57,7 @@ import { MatInputModule} from '@angular/material/input';
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    
+    NgJsonEditorModule,
   ],
   entryComponents:[MatDialogModule],
   providers: [HttpClientModule],

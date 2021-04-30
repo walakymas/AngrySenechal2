@@ -81,6 +81,20 @@ export class CharacterService {
     ).toPromise();
   }
 
+  modifyChar(char) : Promise<Lord>{
+    return this.http.post<Lord>(`${environment.url}modify`,
+      new HttpParams()
+      .set('id',  char['dbid'])
+      .set('json', JSON.stringify( char)).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set mark `)),
+      catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
+
   newChar(main: CharacterMain) : Promise<Lord>{
     return this.http.post<Lord>(`${environment.url}newchar`,
       new HttpParams()

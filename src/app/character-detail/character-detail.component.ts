@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { Lord } from './../lord';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
@@ -8,6 +8,9 @@ import { Base } from '../base';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
+
 @Component({
   selector: 'app-character-detail',
   templateUrl: './character-detail.component.html',
@@ -51,6 +54,7 @@ export class CharacterDetailComponent implements OnInit {
       {
         console.log('base in team')
         this.base = t;
+        this.traits = [];
         for(let t in this.base.traits) {
           this.traits.push(new Trait(this.base.traits[t][0].substring(0,3).toLowerCase(), this.base.traits[t][0], this.base.traits[t][1]));
         }
@@ -210,14 +214,22 @@ export class CharacterDetailComponent implements OnInit {
     }
     this.modifyProp('health.changes',JSON.stringify( this.char.char['health']['changes']))
   }
-  openDialog() {
-    const dialogRef = this.dialog.open(DialogContentExampleDialog, {
-      width: '500px',
-      data: {char: this.char}
+  jsonDialog() {
+    const dialogRef = this.dialog.open(CharacterJsonDialog, {
+      minWidth: '80vw',
+      minHeight: '80vh',
+
+      data: {lord: this.char}
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
+      if (result) {
+        this.service.modifyChar(result).then(c => {
+          this.setLord(c);
+          this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
+        })        
+      }
+
     });
   }
 
@@ -373,5 +385,44 @@ export class DialogContentExampleDialog {
       } else {
         this.delete = new GameEvent(data.event.id, -1);
       }
+    }
+}
+
+@Component({ 
+  selector: 'character-json-dialog',
+  styleUrls: ['../../../node_modules/jsoneditor/dist/jsoneditor.min.css'],
+  styles: [ `textarea.jsoneditor-text{min-height:350px;}`],
+  template: `
+  <div mat-dialog-content>
+    <form  [formGroup]="fg">
+      <json-editor [options]="editorOptions" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
+    </form>
+  </div>
+  <div mat-dialog-actions align="end">
+    {{lord.char['name']}}
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="char" cdkFocusInitial [disabled]="!char">Save</button>
+  </div> `})
+export class CharacterJsonDialog {
+  editorOptions : JsonEditorOptions;
+  lord: Lord;
+  @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
+  public fg: FormGroup;
+  jsonEditorForm = new FormControl();
+  char:any;
+  constructor(
+    private formBuilder: FormBuilder,
+    private dialogRef: MatDialogRef<DialogContentExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: {lord: Lord}) {
+      this.lord = data.lord;
+      this.editorOptions = new JsonEditorOptions()
+      this.editorOptions.modes = ['code', 'tree']; // set all allowed modes
+
+    }
+    ngOnInit(): void {
+      this.fg = this.formBuilder.group({
+        jsonEditorForm: [this.data.lord.char]
+      });
+      this.fg.controls.jsonEditorForm.valueChanges.subscribe( v => this.char = v )
     }
 }
