@@ -395,7 +395,7 @@ export class DialogContentExampleDialog {
   template: `
   <div mat-dialog-content>
     <form  [formGroup]="fg">
-      <json-editor [options]="editorOptions" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
+      <json-editor [options]="editorOptions" style="min-height: 500px;" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
     </form>
   </div>
   <div mat-dialog-actions align="end">
@@ -416,8 +416,8 @@ export class CharacterJsonDialog {
     @Inject(MAT_DIALOG_DATA) public data: {lord: Lord}) {
       this.lord = data.lord;
       this.editorOptions = new JsonEditorOptions()
-      this.editorOptions.modes = ['code', 'tree']; // set all allowed modes
-
+      this.editorOptions.modes = ['code', 'tree'];
+      this.editorOptions.mode = 'code'; 
     }
     ngOnInit(): void {
       this.fg = this.formBuilder.group({

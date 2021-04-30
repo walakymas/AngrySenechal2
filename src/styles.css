@@ -4,6 +4,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Unicase&display=swap');
 @import "~jsoneditor/dist/jsoneditor.min.css";
+textarea.jsoneditor-text{min-height:350px;}
+
 /*colors*/
 :root {
 --darkGray:#1c1c1c;
