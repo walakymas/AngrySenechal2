@@ -216,8 +216,8 @@ export class CharacterDetailComponent implements OnInit {
   }
   jsonDialog() {
     const dialogRef = this.dialog.open(CharacterJsonDialog, {
-      minWidth: '80vw',
-      minHeight: '80vh',
+      minWidth: '100vw',
+      minHeight: '100vh',
 
       data: {lord: this.char}
     });
@@ -390,12 +390,10 @@ export class DialogContentExampleDialog {
 
 @Component({ 
   selector: 'character-json-dialog',
-  styleUrls: ['../../../node_modules/jsoneditor/dist/jsoneditor.min.css'],
-  styles: [ `textarea.jsoneditor-text{min-height:350px;}`],
   template: `
   <div mat-dialog-content>
     <form  [formGroup]="fg">
-      <json-editor [options]="editorOptions" style="min-height: 500px;" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
+      <json-editor [options]="editorOptions" class="jsondialog" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
     </form>
   </div>
   <div mat-dialog-actions align="end">

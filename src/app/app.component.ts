@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CharacterService } from './character.service';
+import { MessageService } from './message.service';
 import { Logger } from './logger.service';
 import { Lord, LordBase } from './lord';
 import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
@@ -14,6 +15,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 export class AppComponent implements OnInit {
   list: LordBase[];
   lastChar:string;
+  token:string;
   snackBarConfig = new MatSnackBarConfig();
   constructor (
 
@@ -21,6 +23,7 @@ export class AppComponent implements OnInit {
     private arouter: ActivatedRoute,
     private service: CharacterService, 
     private logger: Logger,
+    private message: MessageService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
     ) 
@@ -75,7 +78,18 @@ export class AppComponent implements OnInit {
     });
   }
 
+  loginBase(l) {
+    this.message.add(`login as ${l.name}`)
+    this.service.startLogin(l).then(token => 
+      {
+        window.localStorage.setItem('token',token);
+        this.token = token;
+      })
+  }
 
+  logout() {
+    this.message.add("logout")
+  }
 
   navigateTo(value){
     console.log(value);

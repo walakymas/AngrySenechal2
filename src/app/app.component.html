@@ -1,4 +1,16 @@
-<nav>
+<nav><div>
+  <button mat-icon-button [matMenuTriggerFor]="mainMenu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #mainMenu="matMenu">
+    <button mat-menu-item [matMenuTriggerFor]="login"><mat-icon>login</mat-icon>Login</button>
+    <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
+  </mat-menu>
+  <mat-menu #login="matMenu">
+    <ng-container *ngFor="let c of list" >
+      <button mat-menu-item *ngIf="c.type=='pc'" (click)="loginBase(c)"><mat-icon >security</mat-icon>{{c.name}}</button>
+    </ng-container>
+  </mat-menu>
   <button mat-button (click)="newChar()">
     <mat-icon>person_add</mat-icon>
   </button> 
@@ -40,6 +52,7 @@
       <button mat-menu-item *ngIf="isOther(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
     </ng-container>
   </mat-menu>
+</div><div>{{token}}</div>
 </nav>
 <router-outlet></router-outlet>
 <app-messages></app-messages>

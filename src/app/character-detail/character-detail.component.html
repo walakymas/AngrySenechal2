@@ -73,6 +73,9 @@
                       <button mat-menu-item disabled>
                         Npcs
                       </button>
+                      <button mat-menu-item disabled>
+                        Skills
+                      </button>
                 </mat-menu>
             </h2>
         </div>
@@ -252,7 +255,7 @@
                 <h5>Others</h5>
                 <table  width="100%" id="hother" class="stats">
                     <ng-container *ngFor="let h of char.char['winter']['horses']; index as i">
-                        <tr *ngIf="i>0">
+                        <tr *ngIf="i>0 && base.horsetypes[h]">
                             <th style="text-transform: capitalize">{{h}}</th>
                             <td><span class="gold">Move</span>  {{base.horsetypes[h]['mov']}}</td>
                             <td><span class="gold">Armor</span> {{base.horsetypes[h]['arm']}}</td>

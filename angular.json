@@ -15,7 +15,7 @@
           "options": {
             "outputPath": "dist/AngrySenechal2",
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "main": "src/main.ts", 
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "aot": true,
@@ -24,8 +24,8 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "src/jquery-ui/jquery-ui.css",
+              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "./node_modules/jsoneditor/dist/jsoneditor.min.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -89,7 +89,8 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
+              "./node_modules/jsoneditor/dist/jsoneditor.min.css",
               "src/styles.css"
             ],
             "scripts": []

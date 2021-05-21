@@ -7,7 +7,7 @@ import { Logger } from './logger.service';
 import { environment } from './../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, tap,timeout } from 'rxjs/operators';
 import { waitForAsync } from '@angular/core/testing';
 import { GameEvent } from './character-detail/character-detail.component';
 
@@ -191,6 +191,22 @@ export class CharacterService {
       catchError(this.handleError<Lord>(`getLord id=${name}`))
     );
   }
+
+  startLogin(l:LordBase): Promise<string> {
+    const url = `${environment.url}login`;
+    return this.http.post<string>(url,
+      new HttpParams()
+      .set('dbid', ''+l.id),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+        timeout(2000),
+        tap(_ => this.logger.log(`login first phase lord name=${l.id}`)),
+        catchError(this.handleError<string>(`getLord id=${l.id}`))
+    ).toPromise();
+  }
+
 
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
