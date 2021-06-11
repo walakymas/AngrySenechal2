@@ -10,7 +10,7 @@ import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
-
+import { environment } from './../../environments/environment';
 @Component({
   selector: 'app-character-detail',
   templateUrl: './character-detail.component.html',
@@ -257,6 +257,17 @@ export class CharacterDetailComponent implements OnInit {
         this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
       }
     });
+  }
+
+  pdf() {
+    let link = document.createElement('a');
+    link.setAttribute('type', 'hidden');
+    link.href = `${environment.url}pdf?id=${this.id }`;
+    link.target = "pdf"
+//    link.download = path;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 
   editEvent(e) {

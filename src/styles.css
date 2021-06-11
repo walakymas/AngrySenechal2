@@ -4,6 +4,10 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Unicase&display=swap');
 
+.ng-star-inserted .mat-dialog-content {
+  max-height: none;
+}
+
 .jsondialog .jsoneditor-outer {height:90vh}
 
 /*colors*/
@@ -284,4 +288,9 @@ html, body { height: 100%; }
 
 .mat-progress-spinner circle, .mat-spinner circle {
   stroke: var(--goldHighlight2);
+}
+
+.modifier .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
+  padding: 0 6px;
+  line-height: 36px;
 }

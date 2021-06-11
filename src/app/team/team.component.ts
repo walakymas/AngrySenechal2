@@ -10,6 +10,8 @@ import { LordDetail, LordData } from '../lord';
   styleUrls: ['./team.component.css']
 })
 export class TeamComponent implements OnInit {
+  fakeArray = new Array(21);
+  modifier = 0;
   team : LordData[];
   base: Base;
   traits: Trait[] = [];

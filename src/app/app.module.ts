@@ -24,6 +24,7 @@ import { MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { MatDialogModule} from '@angular/material/dialog';
 import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule} from '@angular/material/input';
+import { MatButtonToggleModule} from '@angular/material/button-toggle';
 import { NgJsonEditorModule } from 'ang-jsoneditor' 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { NgJsonEditorModule } from 'ang-jsoneditor'
     MatFormFieldModule,
     MatInputModule,
     NgJsonEditorModule,
+    MatButtonToggleModule
   ],
   entryComponents:[MatDialogModule],
   providers: [HttpClientModule],
