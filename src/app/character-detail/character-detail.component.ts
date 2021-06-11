@@ -270,6 +270,12 @@ export class CharacterDetailComponent implements OnInit {
     link.remove();
   }
 
+  bot(p:string) {
+    let p_ = p.replace(/ /g,'_');
+    let command = `${p_} <@!${ this.char.char['memberId']}>`;
+    this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+  }
+
   editEvent(e) {
     let ge: GameEvent;
     if (e) {

@@ -40,13 +40,13 @@
                 value="{{char.char['stats']['app']}}"
                 (valueChange)="modifyProp( 'stats.app', $event )"
             ></app-editable></li>
-            <li><span class="gold">Damage</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Damage')}}d6</strong></li>
-            <li><span class="gold">Healing Rate</span> <em> (STR+CON)/6=</em> <strong> {{getDetail('Healing Rate')}}</strong></li>
-            <li><span class="gold">Move Rate</span> <em> (STR+DEX)/6=</em> <strong> {{getDetail('Move Rate')}}</strong></li>
-            <li><span class="gold">Total Hitpoints</span> <em> (CON+SIZ)/6=</em> <strong> {{getDetail('Total Hitpoints')}}</strong></li>
-            <li><span class="gold">Unconscious</span> <em> (HP)/4=</em> <strong> {{getDetail('Unconscious')}}</strong></li>
-            <li><span class="gold">Major Wound</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Major Wound')}}</strong></li>
-            <li><span class="gold">Knockdown</span> <em> (STR+SIZ)/6=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
+            <li><span class="gold">Damage</span><em>(STR+SIZ)/6=</em> <strong> {{getDetail('Damage')}}d6</strong></li>
+            <li><span class="gold">Healing Rate</span><em>(STR+CON)/6=</em> <strong> {{getDetail('Healing Rate')}}</strong></li>
+            <li><span class="gold">Move Rate</span><em>(STR+DEX)/6=</em> <strong> {{getDetail('Move Rate')}}</strong></li>
+            <li><span class="gold">Total Hitpoints</span><em>(CON+SIZ)/6=</em> <strong> {{getDetail('Total Hitpoints')}}</strong></li>
+            <li><span class="gold">Unconscious</span><em>(HP)/4=</em> <strong> {{getDetail('Unconscious')}}</strong></li>
+            <li><span class="gold">Major Wound</span><em>(STR+SIZ)/6=</em> <strong> {{getDetail('Major Wound')}}</strong></li>
+            <li><span class="gold">Knockdown</span><em>(STR+SIZ)/6=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
         </ul>
 
     </div> <!-- 33.33% -->
@@ -91,6 +91,10 @@
         <div class="FontSizeBig">
             <span class="gold">GLORY:</span>
             <span id="glory"> {{details['glory']}}</span>
+        </div>
+        <div style="text-align: center;">
+            <button (click)="bot('d6')"><mat-icon>casino</mat-icon>D6</button>        
+            <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>        
         </div>
     </div>
     <div class="col-1">

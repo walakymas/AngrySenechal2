@@ -73,3 +73,16 @@ fieldset {
 .event {
     font-family: var(--mainFont);
 }
+
+#statistics li > span
+{
+    margin-right: 5px;
+}
+
+#skills li > span,
+#combat li > span,
+#passions li > span
+{
+    margin-right: 5px;
+    margin-left: 5px;
+}
