@@ -3,7 +3,12 @@
 <img width="100%" src="{{npc.char['url']}}" *ngIf="npc.char['url']"/>
 <table width="100%">
     <tr *ngFor="let m of npc.char['stats'] | keyvalue"><th style="text-transform:'uppercase'">{{m.key}}</th><td>{{m.value}}</td></tr>
-    <tr *ngFor="let m of npc.char['main'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+    <ng-container *ngFor="let m of npc.char['main'] | keyvalue ">
+        <tr  *ngIf="isEq(m.key, 'Born')">
+            <th>Age</th><td>{{npc.year - m.value*1}}</td> 
+        </tr>
+        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>   
+    </ng-container>
     <tr *ngFor="let m of npc.char['skills']['Other'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
     <tr *ngFor="let m of npc.char['skills']['Weapons'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
     <tr *ngFor="let m of npc.char['skills']['Combat'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>

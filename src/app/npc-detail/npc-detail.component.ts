@@ -19,6 +19,11 @@ export class NpcDetailComponent implements OnInit {
     this.service.getLord(this.dbid).subscribe( l => this.setNpc(l));
   }
 
+  public isEq(s1: string, s2:string):boolean{
+    let result = s1==s2; 
+    return result;
+  }
+
   setNpc(l: Lord) {
     this.npc = l;
   }

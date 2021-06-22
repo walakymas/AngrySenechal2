@@ -1,10 +1,11 @@
 <div id="teamdiv" *ngIf="team; else noTeam">
     <div class="row">
         <div class="col-1">
-            <mat-button-toggle-group #group="modifier" class="modifier" *ngFor="let a of fakeArray; let index = index"> 
-                <mat-button-toggle value="{{ index-10 }}">{{ index-10 }}</mat-button-toggle>
-            </mat-button-toggle-group>
-            {{modifier}}
+            <mat-button-toggle-group class="modifier" [(ngModel)]="modifier"> 
+                <ng-container *ngFor="let a of fakeArray; let index = index">
+                    <mat-button-toggle value="{{ index-10 }}">{{ index-10 }}</mat-button-toggle>
+                </ng-container>
+            </mat-button-toggle-group><br/>
 <table class="team">
     <tbody>
         <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>

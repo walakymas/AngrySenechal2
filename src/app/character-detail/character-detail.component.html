@@ -5,7 +5,7 @@
         <ul id='main'>
             <ng-container *ngFor="let m of char.char['main'] | keyvalue ">
                 <li  *ngIf="isEq(m.key, 'Born')">
-                    <span class="gold">Age</span> {{char.year - m.value}}
+                    <span class="gold">Age</span> {{char.year - m.value*1}}
                 </li>
                 <li *ngIf="!isEq(m.key, 'Glory')">
                     <span class="gold" >{{m.key}}</span> {{m.value}}
@@ -46,7 +46,7 @@
             <li><span class="gold">Total Hitpoints</span><em>(CON+SIZ)/6=</em> <strong> {{getDetail('Total Hitpoints')}}</strong></li>
             <li><span class="gold">Unconscious</span><em>(HP)/4=</em> <strong> {{getDetail('Unconscious')}}</strong></li>
             <li><span class="gold">Major Wound</span><em>(STR+SIZ)/6=</em> <strong> {{getDetail('Major Wound')}}</strong></li>
-            <li><span class="gold">Knockdown</span><em>(STR+SIZ)/6=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
+            <li><span class="gold">Knockdown</span><em>(SIZ)=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
         </ul>
 
     </div> <!-- 33.33% -->
@@ -279,7 +279,8 @@
                 </mat-expansion-panel-header>
                 <app-npc-detail *ngIf="m.value['dbid']" [dbid]="m.value['dbid']"></app-npc-detail>
                 <table *ngIf="!m.value['dbid']">
-                    <tr *ngFor="let s of m.value['show'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
+                    <tr *ngFor="let s of m.value['show'] | keyvalue">
+                        <th>{{s.key}}</th><td>{{s.value}}</td></tr>
                     <tr *ngFor="let s of m.value['skills'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
                 </table>
             </mat-expansion-panel>

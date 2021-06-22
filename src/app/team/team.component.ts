@@ -11,7 +11,7 @@ import { LordDetail, LordData } from '../lord';
 })
 export class TeamComponent implements OnInit {
   fakeArray = new Array(21);
-  modifier = 0;
+  modifier = 5  ;
   team : LordData[];
   base: Base;
   traits: Trait[] = [];
@@ -117,7 +117,7 @@ export class TeamComponent implements OnInit {
 
   bot(p:string, m:LordData) {
     let p_ = p.replace(/ /g,'_');
-    let command = m?`check ${p_} <@!${m['memberId']}>`:`team ${p_}`;
+    let command = m?`check ${p_} ${this.modifier} <@!${m['memberId']}>`:`team ${p_}`;
     this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
   }
 }
