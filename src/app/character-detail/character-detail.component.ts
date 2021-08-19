@@ -25,6 +25,7 @@ export class CharacterDetailComponent implements OnInit {
   details: {};
   weapon: {};
   base : Base;
+  virtues:string[] = [];
   main_horse = {};
   snackBarConfig: MatSnackBarConfig;
   constructor(
@@ -98,6 +99,12 @@ export class CharacterDetailComponent implements OnInit {
         }
       });
     }
+    if (l.char['main']['Culture'])
+    for (const [n, v] of Object.entries(this.base.virtues)) {
+      if (l.char['main']['Culture'].indexOf(n)>-1) {
+        this.virtues = this.base.virtues[n];
+      }
+    }
     this.details = {};
     console.log(''+g)
     this.details['glory'] = g;
@@ -150,6 +157,14 @@ export class CharacterDetailComponent implements OnInit {
       }
     });
     return events;
+  }
+
+  isChivalry(trait) {
+    return this.base.chivalry.includes(trait);
+  }
+
+  isVirtue(trait) {
+    return this.virtues.includes(trait);
   }
 
   getDetail(type : string)  {

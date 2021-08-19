@@ -1,6 +1,6 @@
 export interface Base {
     armors: [];
-    chivalry: [];
+    chivalry:string[];
     fallbacks: {};
     horsetypes: {};
     shields: {};

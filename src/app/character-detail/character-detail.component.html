@@ -144,7 +144,7 @@
                 <td><mat-checkbox [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td ><app-editable
                     value="{{char.char['traits'][t.short]}}"
                     (valueChange)="modifyProp( 'traits.'+t.short, $event )"
-                ></app-editable></td><td >{{t.first}}</td><td class="pagan">{{t.second}}</td><td ><app-editable
+                ></app-editable></td><td >{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon><mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon></td><td><mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}</td><td ><app-editable
                     value="{{20-char.char['traits'][t.short]}}"
                     (valueChange)="modifyProp( 'traits.'+ t.short, 20-$event )"
                 ></app-editable></td><td><mat-checkbox [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
@@ -209,7 +209,7 @@
                 <table width="100%" class="stats">
                     <thead>
                     <tr><th>Weapon</th><td>
-                        <mat-select [(value)]="char.char['combat']['weapon']">
+                        <mat-select [(value)]="char.char['combat']['weapon']" ngon>
                             <mat-option *ngFor="let m of base.weapons | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
                         </mat-select>
                     </td></tr>
@@ -278,9 +278,14 @@
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <app-npc-detail *ngIf="m.value['dbid']" [dbid]="m.value['dbid']"></app-npc-detail>
-                <table *ngIf="!m.value['dbid']">
-                    <tr *ngFor="let s of m.value['show'] | keyvalue">
-                        <th>{{s.key}}</th><td>{{s.value}}</td></tr>
+                <table *ngIf="!m.value['dbid']"  width="100%"> 
+                    <ng-container *ngFor="let m of m.value['show']  | keyvalue ">
+                        <tr  *ngIf="isEq(m.key, 'Born')">
+                            <th>Age</th><td>{{char.year - m.value*1}}</td> 
+                        </tr>
+                        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>   
+                    </ng-container>
+
                     <tr *ngFor="let s of m.value['skills'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
                 </table>
             </mat-expansion-panel>
