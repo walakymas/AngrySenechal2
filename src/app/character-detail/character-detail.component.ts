@@ -28,6 +28,7 @@ export class CharacterDetailComponent implements OnInit {
   virtues:string[] = [];
   main_horse = {};
   snackBarConfig: MatSnackBarConfig;
+  chivalry : number = 0;
   constructor(
     private route: ActivatedRoute,
     private service: CharacterService,
@@ -103,6 +104,16 @@ export class CharacterDetailComponent implements OnInit {
     for (const [n, v] of Object.entries(this.base.virtues)) {
       if (l.char['main']['Culture'].indexOf(n)>-1) {
         this.virtues = this.base.virtues[n];
+      }
+    }
+    this.chivalry = 0;
+    for(let tid in this.traits) {
+      let t : Trait = this.traits[tid];
+      if (this.isChivalry(t.first)) {
+        this.chivalry +=  this.char.char['traits'][t.short];
+      }
+      if (this.isChivalry(t.second)) {
+        this.chivalry +=  20 - this.char.char['traits'][t.short];
       }
     }
     this.details = {};
