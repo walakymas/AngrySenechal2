@@ -228,7 +228,13 @@
                     <tbody id="combatgear">
                         <tr><th>Skill</th><td>{{weapon['skill']}}</td></tr>
                         <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
-                        <tr><th>Damage reduction</th><td>{{base.armors[char.char['combat']['armor']]['red']}}
+                        <tr> 
+                            <td></td><td>
+                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>        
+                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>        
+                            </td>
+                        </tr>
+                                    <tr><th>Damage reduction</th><td>{{base.armors[char.char['combat']['armor']]['red']}}
                             + {{base.shields[char.char['combat']['shield']]['red']}} </td></tr>
                          <tr><th>Dex modifier</th><td>{{base.armors[char.char['combat']['armor']]['red']}}</td></tr>
                          <tr><th>Effective Dex</th><td>{{char.char['stats']['dex'] + base.armors[char.char['combat']['armor']]['red']}}</td></tr>
