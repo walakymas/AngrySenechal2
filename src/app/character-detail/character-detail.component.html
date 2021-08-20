@@ -210,17 +210,17 @@
                 <table width="100%" class="stats">
                     <thead>
                     <tr><th>Weapon</th><td>
-                        <mat-select [(value)]="char.char['combat']['weapon']" ngon>
+                        <mat-select [(value)]="char.char['combat']['weapon']" (selectionChange)="modifyCombat( 'weapon')">
                             <mat-option *ngFor="let m of base.weapons | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
                         </mat-select>
                     </td></tr>
                     <tr><th>Shield</th><td>
-                        <mat-select [(value)]="char.char['combat']['shield']">
+                        <mat-select [(value)]="char.char['combat']['shield']" (selectionChange)="modifyCombat( 'shield')">
                             <mat-option *ngFor="let m of base.shields | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
                         </mat-select>
                     </td></tr>
                     <tr><th>Armor</th><td>
-                        <mat-select [(value)]="char.char['combat']['armor']">
+                        <mat-select [(value)]="char.char['combat']['armor']" (selectionChange)="modifyCombat( 'armor')">
                             <mat-option *ngFor="let m of base.armors | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
                         </mat-select>
                     </td></tr>
@@ -234,10 +234,13 @@
                                 <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>        
                             </td>
                         </tr>
-                                    <tr><th>Damage reduction</th><td>{{base.armors[char.char['combat']['armor']]['red']}}
-                            + {{base.shields[char.char['combat']['shield']]['red']}} </td></tr>
-                         <tr><th>Dex modifier</th><td>{{base.armors[char.char['combat']['armor']]['red']}}</td></tr>
-                         <tr><th>Effective Dex</th><td>{{char.char['stats']['dex'] + base.armors[char.char['combat']['armor']]['red']}}</td></tr>
+                        <tr>
+                            <th>Damage reduction</th>
+                            <td>{{base.armors[char.char['combat']['armor']]['red']}} + {{base.shields[char.char['combat']['shield']]['red']}} 
+                            </td>
+                        </tr>
+                        <tr><th>Dex modifier</th><td>{{base.armors[char.char['combat']['armor']]['red']}}</td></tr>
+                        <tr><th>Effective Dex</th><td>{{char.char['stats']['dex'] - base.armors[char.char['combat']['armor']]['red']}}</td></tr>
                     </tbody>
                 </table>
             </mat-expansion-panel>

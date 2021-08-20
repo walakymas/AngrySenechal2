@@ -24,6 +24,7 @@ export class CharacterDetailComponent implements OnInit {
   char : Lord;
   details: {};
   weapon: {};
+  combat: {};
   base : Base;
   virtues:string[] = [];
   main_horse = {};
@@ -91,6 +92,9 @@ export class CharacterDetailComponent implements OnInit {
         }
     }
     this.weapon = weapon;
+    this.combat = {}
+    for (var i in this.char.char['combat'])
+      this.combat[i] = this.char.char['combat'][i];
     if (this.char.events) {
       this.char.events.forEach(e => {
         g += e['glory'];
@@ -214,9 +218,14 @@ export class CharacterDetailComponent implements OnInit {
     })
 	}
 
-  public modifyProp( prop: string, newName: string ) : void {
-    console.log(`${prop}:=${newName}`)
-    this.service.modifyProp(this.char.char['dbid'],prop, newName).then(c => {
+  public modifyCombat( prop: string ) : void {
+    console.log(`modifyCombat ${prop}:=${this.char.char['combat'][prop]} vs ${this.combat[prop]}`)
+    this.modifyProp('combat.'+prop,this.char.char['combat'][prop]);
+	}
+
+  public modifyProp( prop: string, newValue: string ) : void {
+    console.log(`${prop}:=${newValue}`)
+    this.service.modifyProp(this.char.char['dbid'],prop, newValue).then(c => {
       this.setLord(c);
       this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
     })
