@@ -104,10 +104,11 @@ export class CharacterDetailComponent implements OnInit {
         }
       });
     }
-    if (l.char['main']['Culture'])
-    for (const [n, v] of Object.entries(this.base.virtues)) {
-      if (l.char['main']['Culture'].indexOf(n)>-1) {
-        this.virtues = this.base.virtues[n];
+    if (l.char['main']['Culture']) {
+      for (const [n, v] of Object.entries(this.base.virtues)) {
+        if (l.char['main']['Culture'].indexOf(n)>-1) {
+          this.virtues = this.base.virtues[n];
+        }
       }
     }
     this.chivalry = 0;
@@ -160,6 +161,7 @@ export class CharacterDetailComponent implements OnInit {
   getTrait(name : string)  {
     return this.char.char['traits'][name.toLowerCase().substring(0,3)]
   }
+  
   shortTrait(name : string)  {
     name.toLowerCase().substring(0,3);
   }
@@ -337,8 +339,8 @@ export class CharacterDetailComponent implements OnInit {
 
   }
 }
-export class Trait {
 
+export class Trait {
   constructor (  public short: string,
     public first: string,
     public second: string) {}

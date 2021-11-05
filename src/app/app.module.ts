@@ -25,7 +25,9 @@ import { MatDialogModule} from '@angular/material/dialog';
 import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule} from '@angular/material/input';
 import { MatButtonToggleModule} from '@angular/material/button-toggle';
-import { NgJsonEditorModule } from 'ang-jsoneditor' 
+import { MatStepperModule} from '@angular/material/stepper';
+import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { ChargenComponent } from './chargen/chargen.component' 
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,6 +40,7 @@ import { NgJsonEditorModule } from 'ang-jsoneditor'
     DialogContentExampleDialog,
     CharacterMainDialog,
     CharacterJsonDialog,
+    ChargenComponent,
   ],
   imports: [
     BrowserModule,
@@ -59,7 +62,8 @@ import { NgJsonEditorModule } from 'ang-jsoneditor'
     MatFormFieldModule,
     MatInputModule,
     NgJsonEditorModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatStepperModule
   ],
   entryComponents:[MatDialogModule],
   providers: [HttpClientModule],
