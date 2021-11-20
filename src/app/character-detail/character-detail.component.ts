@@ -11,8 +11,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { environment } from './../../environments/environment';
-import { Subscription, timer } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-character-detail',
@@ -49,7 +48,7 @@ export class CharacterDetailComponent implements OnInit {
   ngOnInit(): void {
     console.log('CharacterDetailComponent ngOnInit')
     this.route.paramMap.subscribe(data => this.load(data));
-    this.subscription = timer(60000).subscribe(v => this.loadLord());
+    this.subscription = interval(60000).subscribe(v => this.loadLord());
   }
 
   ngOnDestroy() {
