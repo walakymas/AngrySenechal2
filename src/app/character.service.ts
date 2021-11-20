@@ -28,10 +28,10 @@ export class CharacterService {
     private http: HttpClient,
     private logger: Logger) {}
 
-  setMark(mark:string, mid:string, set:boolean): Promise<Lord>{
+  setMark(mark:string, id:string, set:boolean): Promise<Lord>{
     return this.http.post<Lord>(`${environment.url}mark`,
       new HttpParams()
-      .set('id', mid)
+      .set('id', id)
       .set('set', ''+set)
       .set('mark', mark).toString(),
       {

@@ -11,6 +11,9 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { environment } from './../../environments/environment';
+import { Subscription, timer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+
 @Component({
   selector: 'app-character-detail',
   templateUrl: './character-detail.component.html',
@@ -26,10 +29,10 @@ export class CharacterDetailComponent implements OnInit {
   weapon: {};
   combat: {};
   base : Base;
-  virtues:string[] = [];
   main_horse = {};
   snackBarConfig: MatSnackBarConfig;
   chivalry : number = 0;
+  subscription: Subscription;
   constructor(
     private route: ActivatedRoute,
     private service: CharacterService,
@@ -46,8 +49,13 @@ export class CharacterDetailComponent implements OnInit {
   ngOnInit(): void {
     console.log('CharacterDetailComponent ngOnInit')
     this.route.paramMap.subscribe(data => this.load(data));
+    this.subscription = timer(60000).subscribe(v => this.loadLord());
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
+  
   load(p:ParamMap) {
     const name = p.get('name');
     console.log('route:'+name)
@@ -104,12 +112,6 @@ export class CharacterDetailComponent implements OnInit {
         }
       });
     }
-    if (l.char['main']['Culture'])
-    for (const [n, v] of Object.entries(this.base.virtues)) {
-      if (l.char['main']['Culture'].indexOf(n)>-1) {
-        this.virtues = this.base.virtues[n];
-      }
-    }
     this.chivalry = 0;
     for(let tid in this.traits) {
       let t : Trait = this.traits[tid];
@@ -160,6 +162,7 @@ export class CharacterDetailComponent implements OnInit {
   getTrait(name : string)  {
     return this.char.char['traits'][name.toLowerCase().substring(0,3)]
   }
+  
   shortTrait(name : string)  {
     name.toLowerCase().substring(0,3);
   }
@@ -179,7 +182,7 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   isVirtue(trait) {
-    return this.virtues.includes(trait);
+    return this.char.virtues.includes(trait);
   }
 
   getDetail(type : string)  {
@@ -204,7 +207,7 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   mark(checked: boolean, name: string) {
-    this.service.setMark(name, this.char.char['memberId'], checked).then(c => {
+    this.service.setMark(name, this.char.char['dbid'], checked).then(c => {
       this.setLord(this.char);
     })
   }

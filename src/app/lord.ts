@@ -4,6 +4,7 @@ export interface Lord {
     marks: string[];
     events: [];
     char: {};
+    virtues: string[];
 }
 
 export interface LordBase {
