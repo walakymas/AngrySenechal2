@@ -133,7 +133,7 @@ export class CharacterService {
   event(l:Lord, event : GameEvent) : Promise<Lord>{
     return this.http.post<Lord>(`${environment.url}event`,
       new HttpParams()
-      .set('mid',  l.char['memberId'])
+      .set('dbid',  l.char['dbid'])
       .set('year', ''+event.year)
       .set('glory', ''+event.glory)
       .set('eid', ''+event.id)
