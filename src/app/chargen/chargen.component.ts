@@ -21,15 +21,21 @@ export class ChargenComponent implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
+  fourthFormGroup: FormGroup;
   base: Base = null;
   year: number = 485;
   period: string = "Uther"
   chivalry: number = 0;
   gender: string = "male";
+  name: string = null;
   traitMode: string = "base";  
   skillMode: string = "base";
   attribMode: string = "base";
   traitModifiers: {} = {};
+  traitModification: {} = {};
+  traitModificationSum : number= 0;
+  traitModificationMaxSum : number = 6;
+  traitFamous : string= null;
   char: {} = {
     "name": "Unknown",
     "traits": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
@@ -66,6 +72,23 @@ export class ChargenComponent implements OnInit {
     }
 
   };
+
+  'traitMods': {}= {
+    'f+': '<=Famoous',
+    '+5': '+5',
+    '+4': '+4',
+    '+3': '+3',
+    '+2': '+2',
+    '+1': '+1',
+    '0': '0',
+    '-1': '-1',
+    '-2': '-2',
+    '-3': '-3',
+    '-4': '-4',
+    '-5': '-5',
+    'f-': 'Famous=>'
+  }
+
   traits: Trait[] = []
   virtues: string[] = [];
 
@@ -80,9 +103,11 @@ export class ChargenComponent implements OnInit {
       this.base = t;
       this.traits = [];
       for (let t in this.base.traits) {
-        this.traits.push(new Trait(this.base.traits[t][0].substring(0, 3).toLowerCase(), this.base.traits[t][0], this.base.traits[t][1]));
-        this.traitModifiers[this.base.traits[t][0]] = this.base.traits[t][0].substring(0, 3).toLowerCase() + "+";
-        this.traitModifiers[this.base.traits[t][1]] = this.base.traits[t][0].substring(0, 3).toLowerCase() + "-";
+        let short = this.base.traits[t][0].substring(0, 3).toLowerCase();
+        this.traits.push(new Trait(short, this.base.traits[t][0], this.base.traits[t][1]));
+        this.traitModifiers[this.base.traits[t][0]] = short + "+";
+        this.traitModifiers[this.base.traits[t][1]] = short + "-";
+        this.traitModification[short] = '0';
       }
       this.virtues = t.virtues['British Christian'];
       this.updateTraits();
@@ -91,7 +116,6 @@ export class ChargenComponent implements OnInit {
       this.updatePeriod();
       this.updateAttr();
       this.updateSkills();
-      console.log('pre genName')
       this.genName();
       this.genLord();
       this.firstFormGroup.patchValue({
@@ -111,7 +135,14 @@ export class ChargenComponent implements OnInit {
     this.secondFormGroup = this._formBuilder.group({
     });
     this.thirdFormGroup = this._formBuilder.group({
+    });   
+    this.fourthFormGroup = this._formBuilder.group({
     });
+    this.firstFormGroup.get('name').valueChanges.subscribe(value=>{this.name = value; this.char['main']['Name']=(this.gender == "male"?"Sir ":"Lady ") + value;});
+    this.firstFormGroup.get('lord').valueChanges.subscribe(value=>this.char['main']['Lord']=value);
+    this.firstFormGroup.get('year').valueChanges.subscribe(value=>{this.char['main']['Year']=value, this.year = value});
+    this.firstFormGroup.get('born').valueChanges.subscribe(value=>this.char['main']['Born']=value);
+
   }
 
   genName() {
@@ -217,8 +248,7 @@ export class ChargenComponent implements OnInit {
   }
 
   changeTrait(event, mode) {
-    if (mode == 'method') {
-      if (this.traitMode == 'random') {
+    if (mode == 'method' && this.traitMode == 'random') {
         for (let i in this.char['traits']) {
           this.charBase['traits'][i] = this.random(3, 6);
         }
@@ -226,25 +256,49 @@ export class ChargenComponent implements OnInit {
           let mod = this.traitModifiers[this.virtues[i]];
           this.modTrait(this.charBase['traits'], mod);
         }
-      } else {
-        this.updateTraits();
-      }
     }
-    for (let i in this.char['traits']) {
-      this.charBase['traits'][i] = this.char['traits'][i];
+    if (this.traitMode == 'random') {
+      for (let i in this.char['traits']) {
+        this.char['traits'][i] = this.charBase['traits'][i];
+      }
+      this.traitModificationMaxSum = 9;
+    } else {
+      this.updateTraits();
+      this.traitModificationMaxSum = 6;
+    }
+
+    this.traitModificationSum = 0;
+    this.traitFamous = null;
+    console.log(JSON.stringify(this.traits));
+    for (let i in this.traits) {
+      let t = this.traits[i];
+      this.charBase['traits'][t.short] = this.char['traits'][t.short];
+      let v = this.traitModification[t.short];
+      if (v!='0') {
+        if (this.traitFamous==null && this.traitModification[t.short]=='f+') {
+          this.char['traits'][t.short]=16;
+          this.traitFamous = t.first;
+        }  else if (this.traitFamous==null && this.traitModification[t.short]=='f0') {
+          this.char['traits'][t.short]=16;
+          this.traitFamous = t.second;
+        }  else {
+          this.char['traits'][t.short]+= Number(v);
+          this.traitModificationSum += Math.abs(Number(v));
+        } 
+      } 
     }
     if (this.charBase['famous'] != 'none') {
       this.char['traits'][this.charBase['famous'].substring(0, 3)] = this.charBase['famous'].substring(3, 4) == '-' ? 4 : 16;
     }
     for (let i = 0; i < 6; i++) {
       if (this.charBase['individual'][i] != 'none') {
-        this.char['traits'][this.charBase['individual'][i].substring(0, 3)] += this.charBase['individual'][i].substring(3, 4) == '-' ? -1 : +1;
+        this.char['traits'][this.charBase['individualTraits'][i].substring(0, 3)] += this.charBase['individualTraits'][i].substring(3, 4) == '-' ? -1 : +1;
       }
     }
     if (this.traitMode == 'random') {
       for (let i = 6; i < 9; i++) {
         if (this.charBase['individual'][i] != 'none') {
-          this.char['traits'][this.charBase['individual'][i].substring(0, 3)] += this.charBase['individual'][i].substring(3, 4) == '-' ? -1 : +1;
+          this.char['traits'][this.charBase['individualTraits'][i].substring(0, 3)] += this.charBase['individualTraits'][i].substring(3, 4) == '-' ? -1 : +1;
         }
       }
     }
@@ -294,6 +348,7 @@ export class ChargenComponent implements OnInit {
   }
 
   updateGender() {
+    this.char['main']['Name'] = (this.gender=="male"?"Sir ": "Lady ") + this.name;
     this.updateSkills();
   }
 
@@ -319,6 +374,11 @@ export class ChargenComponent implements OnInit {
   }
 
   updateCulture() {
+    let culture: string = this.char['main']['Culture'];
+    let religion: string = this.char['main']['Religion'];
+    if (!this.base.newchar[culture].traits[religion]) {
+      this.char['main']['Religion'] = Object.keys(this.base.newchar[culture].traits)[0];
+    } 
     this.initPassions();
     this.updateSkills();
   }
@@ -349,6 +409,14 @@ export class ChargenComponent implements OnInit {
   attr(a, m) {
     this.charBase['stats'][a]+=m;
     this.updateAttr();
+  }
+
+  attrMod(k) {
+    if (this.getCulture()['attributes'][k]) {
+      return (this.getCulture()['attributes'][k]>0? '+':'')+this.getCulture()['attributes'][k];
+    } else {
+      return '';
+    }
   }
 
   updateAttr() {

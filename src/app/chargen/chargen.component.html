@@ -23,7 +23,7 @@
             <mat-form-field>
               <mat-label>Religion</mat-label>
               <mat-select [(value)]="char['main']['Religion']" (selectionChange)="changeReligion($event)">
-                <mat-option *ngFor="let culture of base.virtues | keyvalue" [value]="culture.key">{{culture.key}}
+                <mat-option *ngFor="let r of base.newchar[char['main']['Culture']].traits | keyvalue" [value]="r.key">{{r.key}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
@@ -60,7 +60,7 @@
             </button>
           </form>
         </mat-step>
-        <!--mat-step [stepControl]="secondFormGroup" errorMessage="Traits faileds">
+        <mat-step [stepControl]="secondFormGroup" errorMessage="Traits faileds">
           <ng-template matStepLabel>Traits</ng-template>
           <form [formGroup]="secondFormGroup">
             <mat-form-field>
@@ -70,78 +70,29 @@
                 <mat-option value="random">Random</mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field>
-              <mat-label>Famous</mat-label>
-              <mat-select [(value)]="charBase['famous']" (selectionChange)="changeTrait($event, 'famous')">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>individualTraits 1</mat-label>
-              <mat-select [(value)]="charBase['individualTraits'][0]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>individualTraits 2</mat-label>
-              <mat-select [(value)]="charBase['individualTraits'][1]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>individualTraits 3</mat-label>
-              <mat-select [(value)]="charBase['individualTraits'][2]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>individualTraits 4</mat-label>
-              <mat-select [(value)]="charBase['individualTraits'][3]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>individualTraits 5</mat-label>
-              <mat-select [(value)]="charBase['individualTraits'][4]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>individualTraits 6</mat-label>
-              <mat-select [(value)]="charBase['individualTraits'][5]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <div *ngIf="isRandom()">
-              <mat-form-field>
-                <mat-label>Discretionary 1</mat-label>
-                <mat-select [(value)]="charBase['individualTraits'][6]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                  <mat-option value="none">None</mat-option>
-                  <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Discretionary 2</mat-label>
-                <mat-select [(value)]="charBase['individualTraits'][7]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                  <mat-option value="none">None</mat-option>
-                  <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Discretionary 3</mat-label>
-                <mat-select [(value)]="charBase['individualTraits'][8]" (selectionChange)="changeTrait($event, 'individualTraits')">
-                  <mat-option value="none">None</mat-option>
-                  <mat-option *ngFor="let tm of traitModifiers | keyvalue" value="{{tm.value}}">{{tm.key}}</mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
+            <table class="traitmods">
+              <tbody *ngFor="let t of traits">
+                <tr>
+                  <td>{{char['traits'][t.short]}}</td>
+                  <td>{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon>
+                    <mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon>
+                  </td>
+                  <td class="select">
+                    <mat-select [(value)]="traitModification[t.short]" (selectionChange)="changeTrait($event, 'trait')">
+                      <ng-container *ngFor="let p of traitMods | keyvalue ">
+                        <mat-option value="{{p.key}}">{{p.value}}</mat-option>
+                      </ng-container>
+                    </mat-select>
+                  </td>
+                  <td>
+                    <mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}
+                  </td>
+                  <td>{{20-char['traits'][t.short]}}</td>
+                </tr>
+              </tbody>
+            </table>
+            Mods: {{traitModificationSum}}/ {{traitModificationMaxSum}}<br/>
+            Famous: {{traitFamous}}
           </form>
         </mat-step>
         <mat-step [stepControl]="thirdFormGroup" errorMessage="Attributes faileds">
@@ -156,11 +107,11 @@
             </mat-form-field>
             <div *ngIf="attribMode!='random'">
               <table>
-                <tr><th>SIZ</th><td><mat-icon (click)="attr('siz',-1)">remove</mat-icon></td><td>{{charBase.stats.siz}}</td><td><mat-icon (click)="attr('siz',1)">add</mat-icon></td></tr>
-                <tr><th>DEX</th><td><mat-icon (click)="attr('dex',-1)">remove</mat-icon></td><td>{{charBase.stats.dex}}</td><td><mat-icon (click)="attr('dex',1)">add</mat-icon></td></tr>
-                <tr><th>STR</th><td><mat-icon (click)="attr('str',-1)">remove</mat-icon></td><td>{{charBase.stats.str}}</td><td><mat-icon (click)="attr('str',1)">add</mat-icon></td></tr>
-                <tr><th>CON</th><td><mat-icon (click)="attr('con',-1)">remove</mat-icon></td><td>{{charBase.stats.con}}</td><td><mat-icon (click)="attr('con',1)">add</mat-icon></td></tr>
-                <tr><th>APP</th><td><mat-icon (click)="attr('app',-1)">remove</mat-icon></td><td>{{charBase.stats.app}}</td><td><mat-icon (click)="attr('app',1)">add</mat-icon></td></tr>
+                <tr><th>SIZ</th><td><mat-icon (click)="attr('siz',-1)">remove</mat-icon></td><td>{{charBase.stats.siz}}</td><td><mat-icon (click)="attr('siz',1)">add</mat-icon></td><td>{{attrMod('siz')}}</td></tr>
+                <tr><th>DEX</th><td><mat-icon (click)="attr('dex',-1)">remove</mat-icon></td><td>{{charBase.stats.dex}}</td><td><mat-icon (click)="attr('dex',1)">add</mat-icon></td><td>{{attrMod('dex')}}</td></tr>
+                <tr><th>STR</th><td><mat-icon (click)="attr('str',-1)">remove</mat-icon></td><td>{{charBase.stats.str}}</td><td><mat-icon (click)="attr('str',1)">add</mat-icon></td><td>{{attrMod('str')}}</td></tr>
+                <tr><th>CON</th><td><mat-icon (click)="attr('con',-1)">remove</mat-icon></td><td>{{charBase.stats.con}}</td><td><mat-icon (click)="attr('con',1)">add</mat-icon></td><td>{{attrMod('con')}}</td></tr>
+                <tr><th>APP</th><td><mat-icon (click)="attr('app',-1)">remove</mat-icon></td><td>{{charBase.stats.app}}</td><td><mat-icon (click)="attr('app',1)">add</mat-icon></td><td>{{attrMod('app')}}</td></tr>
                 <tr><td colspan="100%" align="center">{{charBase.stats.siz+charBase.stats.dex+charBase.stats.str+charBase.stats.con+charBase.stats.app}}/60</td></tr>
               </table>
             </div>
@@ -311,7 +262,7 @@
         </mat-step>
         <mat-step>
           <ng-template matStepLabel>Final</ng-template>
-        </mat-step-->
+        </mat-step>
       </mat-vertical-stepper>
     </div>
     <div class="col-2">
