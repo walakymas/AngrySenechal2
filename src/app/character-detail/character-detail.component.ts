@@ -32,6 +32,7 @@ export class CharacterDetailComponent implements OnInit {
   snackBarConfig: MatSnackBarConfig;
   chivalry : number = 0;
   subscription: Subscription;
+  virtues: {};
   constructor(
     private route: ActivatedRoute,
     private service: CharacterService,
@@ -111,6 +112,14 @@ export class CharacterDetailComponent implements OnInit {
         }
       });
     }
+    if (l.char['main']['Culture']) {
+      for (const [n, v] of Object.entries(this.base.virtues)) {
+        if (l.char['main']['Culture'].indexOf(n)>-1) {
+          this.virtues = this.base.virtues[n];
+        }
+      }
+    }
+
     this.chivalry = 0;
     for(let tid in this.traits) {
       let t : Trait = this.traits[tid];
@@ -339,8 +348,8 @@ export class CharacterDetailComponent implements OnInit {
 
   }
 }
-export class Trait {
 
+export class Trait {
   constructor (  public short: string,
     public first: string,
     public second: string) {}

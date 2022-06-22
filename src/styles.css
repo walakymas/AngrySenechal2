@@ -47,23 +47,29 @@ body {
   float: left;
   padding: 15px;
 }
+
 /* defining column widths */
 #teamdiv .col-1 {width: 50%;}
 #teamdiv .col-2 {width: 100%;}
+
+.dualrow > .col-1 {width: 50%;}
 
 [class*="col-"] {
   float: left;
   padding: 15px;
 }
+
 @media only screen and (max-width: 768px) {
   /* For mobile phones: */
   [class*="col-"] {
     width: 100%;
   }
   #teamdiv .col-1 {width: 100%;}
+  .dualrow > .col-1 {width: 1000%;}
 }
 
 .row {margin: 0% auto; max-width:1200px;}
+.row.wide {max-width:initial;}
 
 .row::after {
   content: "";
@@ -264,9 +270,6 @@ table.stats td {
 table.team {
     width: 100%;
 }
-
-.row {margin: 0% auto; max-width:1200px;}
-
 
 #teamdiv {
   width: 100%;

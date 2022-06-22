@@ -1,4 +1,4 @@
-export interface Base {
+export class Base {
     armors: [];
     chivalry:string[];
     fallbacks: {};
@@ -7,4 +7,7 @@ export interface Base {
     traits: {};
     virtues: {};
     weapons: {};
+    newchar: {};
+    default: {};
+    periods: [];
 }
