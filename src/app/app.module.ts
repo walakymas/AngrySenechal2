@@ -28,6 +28,8 @@ import { MatButtonToggleModule} from '@angular/material/button-toggle';
 import { MatStepperModule} from '@angular/material/stepper';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ChargenComponent } from './chargen/chargen.component' 
+import {MatSliderModule} from '@angular/material/slider';
+import {MatRadioModule} from '@angular/material/radio';
 @NgModule({
   declarations: [
     AppComponent,
@@ -63,7 +65,9 @@ import { ChargenComponent } from './chargen/chargen.component'
     MatInputModule,
     NgJsonEditorModule,
     MatButtonToggleModule,
-    MatStepperModule
+    MatStepperModule,
+    MatSliderModule,
+    MatRadioModule
   ],
   entryComponents:[MatDialogModule],
   providers: [HttpClientModule],

@@ -35,7 +35,7 @@ export class ChargenComponent implements OnInit {
   traitModification: {} = {};
   traitModificationSum : number= 0;
   traitModificationMaxSum : number = 6;
-  traitFamous : string= null;
+  traitFamous : string= 'ene';
   char: {} = {
     "name": "Unknown",
     "traits": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
@@ -107,7 +107,7 @@ export class ChargenComponent implements OnInit {
         this.traits.push(new Trait(short, this.base.traits[t][0], this.base.traits[t][1]));
         this.traitModifiers[this.base.traits[t][0]] = short + "+";
         this.traitModifiers[this.base.traits[t][1]] = short + "-";
-        this.traitModification[short] = '0';
+        this.traitModification[short] = 0;
       }
       this.virtues = t.virtues['British Christian'];
       this.updateTraits();
@@ -247,7 +247,32 @@ export class ChargenComponent implements OnInit {
     traits[mod.substring(0, 3)] += mod.substring(3, 1) == '-' ? -3 : 3;
   }
 
+  isSliderDisabled(s) {
+    return this.traitModificationSum>=this.traitModificationMaxSum && this.traitModification[s.substring(0,3)]==0;
+  }
+
+  sliderMax(s, first:boolean=true) {
+    let m = this.traitModificationMaxSum+Math.abs(this.traitModification[s])-this.traitModificationSum;
+    if (first) {
+      if( this.traitFamous == s+"+") {
+        m = Math.min(3,m);
+      } else {
+        m = Math.min(19- this.charBase['traits'][s] ,m);
+      }
+
+    } else {
+      if( this.traitFamous == s+"-") {
+        m = Math.min(3,m);
+      } else {
+        m = Math.min(this.charBase['traits'][s]-1 ,m);
+      }
+    }
+    console.log(s+":"+this.traitFamous+":"+m);
+    return m;
+  }
+
   changeTrait(event, mode) {
+    console.log('changeTrait mode:'+mode+":"+this.traitFamous+":"+this.traitFamous.charAt(3)+":")
     if (mode == 'method' && this.traitMode == 'random') {
         for (let i in this.char['traits']) {
           this.charBase['traits'][i] = this.random(3, 6);
@@ -267,25 +292,21 @@ export class ChargenComponent implements OnInit {
       this.traitModificationMaxSum = 6;
     }
 
+    if (mode=='traitFamous' && this.traitFamous!='none' ) {
+      this.traitModification[this.traitFamous.substring(0,3)]=0;
+    }
+
+    if (this.traitFamous!='none' ) {
+      this.char['traits'][this.traitFamous.substring(0,3)] = this.traitFamous.charAt(3)=='+'?16:4;
+    }
+
     this.traitModificationSum = 0;
-    this.traitFamous = null;
-    console.log(JSON.stringify(this.traits));
     for (let i in this.traits) {
       let t = this.traits[i];
       this.charBase['traits'][t.short] = this.char['traits'][t.short];
       let v = this.traitModification[t.short];
-      if (v!='0') {
-        if (this.traitFamous==null && this.traitModification[t.short]=='f+') {
-          this.char['traits'][t.short]=16;
-          this.traitFamous = t.first;
-        }  else if (this.traitFamous==null && this.traitModification[t.short]=='f0') {
-          this.char['traits'][t.short]=16;
-          this.traitFamous = t.second;
-        }  else {
-          this.char['traits'][t.short]+= Number(v);
-          this.traitModificationSum += Math.abs(Number(v));
-        } 
-      } 
+      this.char['traits'][t.short]+= Number(v);
+      this.traitModificationSum += Math.abs(Number(v));
     }
     if (this.charBase['famous'] != 'none') {
       this.char['traits'][this.charBase['famous'].substring(0, 3)] = this.charBase['famous'].substring(3, 4) == '-' ? 4 : 16;

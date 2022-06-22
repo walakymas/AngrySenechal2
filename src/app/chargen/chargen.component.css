@@ -12,3 +12,18 @@
     width: 40%;
     text-align: center;
 }
+
+.traitmods .mat-slider-horizontal {
+    height: 26px;
+}
+
+.traitmods .mat-radio-outer-circle,
+.traitmods .mat-radio-inner-circle {
+    height: 14px;
+    width: 14px;
+}
+
+.traitsummary {
+    text-align: center;
+    width: 100%;
+} 

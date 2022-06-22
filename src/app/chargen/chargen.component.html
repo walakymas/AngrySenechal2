@@ -70,29 +70,39 @@
                 <mat-option value="random">Random</mat-option>
               </mat-select>
             </mat-form-field>
+            <mat-radio-group [(ngModel)]="traitFamous"  [ngModelOptions]="{standalone: true}" (change)="changeTrait($event, 'traitFamous')">
             <table class="traitmods">
               <tbody *ngFor="let t of traits">
                 <tr>
-                  <td>{{char['traits'][t.short]}}</td>
-                  <td>{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon>
+                  <td>
+                    {{char['traits'][t.short]}}
+                  </td>
+                  <td>
+                    <mat-radio-button value="{{t.short}}+">
+                      {{t.first}}</mat-radio-button><mat-icon *ngIf="isChivalry(t.first)">security</mat-icon>
                     <mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon>
                   </td>
                   <td class="select">
-                    <mat-select [(value)]="traitModification[t.short]" (selectionChange)="changeTrait($event, 'trait')">
-                      <ng-container *ngFor="let p of traitMods | keyvalue ">
-                        <mat-option value="{{p.key}}">{{p.value}}</mat-option>
-                      </ng-container>
-                    </mat-select>
+                      {{season}}
+                    <mat-slider disabled="{{isSliderDisabled(t.short)}}" min="{{-sliderMax(t.short, false)}}" max="{{sliderMax(t.short)}}" step="1" thumbLabel invert [(value)]="traitModification[t.short]" (change)="changeTrait($event, 'trait')"></mat-slider>
                   </td>
                   <td>
-                    <mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}
+                    <mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>
+                    <mat-radio-button value="{{t.short}}-">
+                      {{t.second}}
+                    </mat-radio-button>
                   </td>
-                  <td>{{20-char['traits'][t.short]}}</td>
+                  <td>
+                      {{20-char['traits'][t.short]}}
+                  </td>
                 </tr>
               </tbody>
             </table>
-            Mods: {{traitModificationSum}}/ {{traitModificationMaxSum}}<br/>
-            Famous: {{traitFamous}}
+            <div class="traitsummary">
+              <mat-radio-button value="none">No famous trait</mat-radio-button><br/>
+                Mods: {{traitModificationSum}}/ {{traitModificationMaxSum}}<br/>
+            </div>
+            </mat-radio-group>
           </form>
         </mat-step>
         <mat-step [stepControl]="thirdFormGroup" errorMessage="Attributes faileds">
