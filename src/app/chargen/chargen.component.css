@@ -1,4 +1,5 @@
-.traits .mat-icon {
+.traits .mat-icon,
+.traitmods .mat-icon {
     height: 15px;
     width: 15px;
     font-size: 15px;
@@ -13,17 +14,19 @@
     text-align: center;
 }
 
-.traitmods .mat-slider-horizontal {
-    height: 26px;
-}
-
-.traitmods .mat-radio-outer-circle,
-.traitmods .mat-radio-inner-circle {
-    height: 14px;
-    width: 14px;
+.mat-slider-horizontal {
+    width: 100%;
 }
 
 .traitsummary {
     text-align: center;
     width: 100%;
 } 
+
+.mat-vertical-stepper,
+.mat-radio-button,
+.mat-stepper-vertical, 
+.mat-stepper-horizontal {
+    font-family: var(--mainFont);
+}
+
