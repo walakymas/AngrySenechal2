@@ -5,14 +5,50 @@
     font-size: 15px;
 }
 
-.traitmods {
+div.traitmods,
+div.traitmods > div {
     width: 100%;
 }
 
-.traitmods .select {
-    width: 40%;
+.traitmods > div > div {
+    float:left;
+    vertical-align: middle;
+    height: 100%;
+}
+.traitmods > div > div > span{
+    font-weight: bold;
+    color: var(--goldHighlight);
+}
+
+.traitmods > .info > div:nth-child(1) {
+    width: 45%;
+    text-align: left;
+}
+
+.traitmods > .info > div:nth-child(2) {
+    width: 10%;
     text-align: center;
 }
+
+.traitmods > .info > div:nth-child(3) {
+    width: 45%;
+    text-align: right;
+}
+.traitmods > .modification > div:nth-child(1) {
+    width: 10%;
+    text-align: left;
+}
+
+.traitmods > .modification > div:nth-child(2) {
+    width: 80%;
+    text-align: left;
+}
+
+.traitmods > .modification > div:nth-child(3) {
+    width: 10%;
+    text-align: right;
+}
+
 
 .mat-slider-horizontal {
     width: 100%;

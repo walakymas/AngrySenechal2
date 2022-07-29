@@ -15,6 +15,7 @@ export class TeamComponent implements OnInit {
   team : LordData[];
   base: Base;
   traits: Trait[] = [];
+  readonly: boolean = true; 
   constructor(private service: CharacterService,
     ) { }
 
@@ -116,9 +117,11 @@ export class TeamComponent implements OnInit {
   }
 
   bot(p:string, m:LordData) {
-    let p_ = p.replace(/ /g,'_');
-    let command = m?`check ${p_} ${this.modifier} <@!${m['memberId']}>`:`team ${p_}`;
-    this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+    if (!this.readonly) {
+      let p_ = p.replace(/ /g,'_');
+      let command = m?`check ${p_} ${this.modifier} <@!${m['memberId']}>`:`team ${p_}`;
+      this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+    }
   }
 }
 

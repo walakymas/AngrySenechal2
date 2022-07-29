@@ -2,8 +2,9 @@
   <div class="row wide">
     <div class="col-1">
       <mat-vertical-stepper linear #stepper (selectionChange)="onStepChange($event)">
-        <mat-step [stepControl]="firstFormGroup" errorMessage="Missing information.">
-          <form [formGroup]="firstFormGroup">
+        <!-- MAIN INFO -->
+        <mat-step [stepControl]="mainFormGroup" errorMessage="Missing information.">
+          <form [formGroup]="mainFormGroup">
             <ng-template matStepLabel>Base information</ng-template>
             <mat-form-field>
               <mat-label>Born</mat-label>
@@ -15,7 +16,7 @@
             </mat-form-field>
             <mat-form-field>
               <mat-label>Culture</mat-label>
-              <mat-select [(value)]="char['main']['Culture']"  (selectionChange)="updateCulture()">
+              <mat-select [(value)]="char['main']['Culture']"  (selectionChange)="updateCulture($event)">
                 <mat-option *ngFor="let culture of base.newchar | keyvalue" [value]="culture.key">{{culture.key}}
                 </mat-option>
               </mat-select>
@@ -60,9 +61,10 @@
             </button>
           </form>
         </mat-step>
-        <mat-step [stepControl]="secondFormGroup" errorMessage="Traits faileds">
+        <!-- TRAIT -->
+        <mat-step [stepControl]="traitFormGroup" errorMessage="Traits faileds">
           <ng-template matStepLabel>Traits</ng-template>
-          <form [formGroup]="secondFormGroup">
+          <form [formGroup]="traitFormGroup">
             <mat-form-field>
               <mat-label>Method</mat-label>
               <mat-select [(value)]="traitMode" (selectionChange)="changeTrait($event, 'method')">
@@ -71,41 +73,40 @@
               </mat-select>
             </mat-form-field>
             <mat-radio-group [(ngModel)]="traitFamous"  [ngModelOptions]="{standalone: true}" (change)="changeTrait($event, 'traitFamous')">
-            <table class="traitmods">
-              <tbody *ngFor="let t of traits">
-                <tr class="info" (click)="setTraitAct(t.short)">
-                  <td>
+            <div class="traitmods">
+              <ng-container *ngFor="let t of traits">
+                <div class="info" (click)="setTraitAct(t.short)">
+                  <div>
                     {{char['traits'][t.short]}}
-                  </td>
-                  <td>
-                    {{t.first}}
+                    <span>{{t.first}}
                     <mat-icon *ngIf="isChivalry(t.first)">security</mat-icon>
                     <mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon>
-                  </td>
-                  <td class="select" width="10%">
+                    </span>
+                  </div>
+                  <div>
                     {{traitModification[t.short]}}
-                  </td>
-                  <td>
-                    <mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>
-                    {{t.second}}
-                  </td>
-                  <td>
-                      {{20-char['traits'][t.short]}}
-                  </td>
-                </tr>
-                <tr class="modification" [hidden]="traitAct!=t.short">
-                  <td>
+                  </div>
+                  <div>
+                    <span>
+                      <mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>
+                      {{t.second}}
+                    </span>
+                    {{20-char['traits'][t.short]}}
+                  </div>
+                </div>
+                <div class="modification" [hidden]="traitAct!=t.short">
+                  <div>
                     <mat-radio-button value="{{t.short}}+"></mat-radio-button>
-                  </td>
-                  <td class="select" colspan="3">
+                  </div>
+                  <div class="select" colspan="3">
                     <mat-slider disabled="{{isSliderDisabled(t.short)}}" min="{{-sliderMax(t.short, false)}}" max="{{sliderMax(t.short)}}" step="1" thumbLabel invert [(value)]="traitModification[t.short]" (change)="changeTrait($event, 'trait')"></mat-slider>
-                  </td>
-                  <td>
+                  </div>
+                  <div>
                     <mat-radio-button value="{{t.short}}-"></mat-radio-button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
             <div class="traitsummary">
               <mat-radio-button value="none">No famous trait</mat-radio-button><br/>
                 Mods: {{traitModificationSum}}/ {{traitModificationMaxSum}}<br/>

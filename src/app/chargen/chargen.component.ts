@@ -20,8 +20,8 @@ import { NONE_TYPE } from '@angular/compiler';
 export class ChargenComponent implements OnInit {
   base: Base = null;
 
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
+  mainFormGroup: FormGroup;
+  traitFormGroup: FormGroup;
   thirdFormGroup: FormGroup;
   fourthFormGroup: FormGroup;
   year: number = 485;
@@ -61,6 +61,7 @@ export class ChargenComponent implements OnInit {
     },
     'charBase': {
       "traits": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
+      "traitPhase": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
       'famous': 'none',
       "stats": {
         "siz": 12, "dex": 12, "str": 12, "con": 12, "app": 12
@@ -105,15 +106,12 @@ export class ChargenComponent implements OnInit {
         this.traitModification[short] = 0;
       }
       this.virtues = t.virtues['British Christian'];
-      this.updateTraits();
-      this.updateChivalry();
-      this.initPassions();
-      this.updatePeriod();
+      this.initMainPhase();
+      this.updateMainPhase();
+
       this.updateAttr();
       this.updateSkills();
-      this.genName();
-      this.genLord();
-      this.firstFormGroup.patchValue({
+      this.mainFormGroup.patchValue({
         born: 464,
         year: 485
       });
@@ -121,77 +119,65 @@ export class ChargenComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.firstFormGroup = this._formBuilder.group({
+    this.mainFormGroup = this._formBuilder.group({
       name: new FormControl('name', Validators.required),
       lord: new FormControl('lord', Validators.required),
       year: new FormControl('year', [Validators.required, Validators.min(480), Validators.max(566)]),
       born: new FormControl('born', [Validators.required, Validators.min(460), Validators.max(566)])
     });
-    this.secondFormGroup = this._formBuilder.group({
+    this.traitFormGroup = this._formBuilder.group({
     });
     this.thirdFormGroup = this._formBuilder.group({
       sum: new FormControl({value: 60}, Validators.max(60))
     });   
     this.fourthFormGroup = this._formBuilder.group({
     });
-    this.firstFormGroup.get('name').valueChanges.subscribe(value=>{this.name = value; this.char['main']['Name']=(this.gender == "male"?"Sir ":"Lady ") + value;});
-    this.firstFormGroup.get('lord').valueChanges.subscribe(value=>this.char['main']['Lord']=value);
-    this.firstFormGroup.get('year').valueChanges.subscribe(value=>{this.char['main']['Year']=value, this.year = value});
-    this.firstFormGroup.get('born').valueChanges.subscribe(value=>this.char['main']['Born']=value);
+    this.mainFormGroup.get('name').valueChanges.subscribe(value=>{this.name = value; this.char['main']['Name']=(this.gender == "male"?"Sir ":"Lady ") + value;});
+    this.mainFormGroup.get('lord').valueChanges.subscribe(value=>this.char['main']['Lord']=value);
+    this.mainFormGroup.get('year').valueChanges.subscribe(value=>{this.char['main']['Year']=value, this.year = value});
+    this.mainFormGroup.get('born').valueChanges.subscribe(value=>this.char['main']['Born']=value);
   }
 
   public onStepChange(event: any): void {
     console.log(event.selectedIndex);
+    if (event.selectedIndex==1) {
+      this.updateMainPhase();
+    } else if (event.selectedIndex==2) {
+      this.updateTraitPhase();
+    } else if (event.selectedIndex==3) {
+      this.updateAttributesPhase();
+    } else if (event.selectedIndex==4) {
+      this.updateSkillPhase();
+    } 
   }
 
+  charBase: {} = this.char['charBase'];
 
 
+/* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+            SHARED
+  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 
-
-
-
-
-
-
-  charBase: {} = {
-    "traits": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
-    'famous': 'none',
-    "stats": {
-      "siz": 12, "dex": 12, "str": 12, "con": 12, "app": 12
-    },
-    'individualTraits': ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
-    'derived': {},
-    'skills': {},
-    'individual': {
-      'p15': 'none',
-      'p10': ['none','none','none'],
-      'spec': ['none','none','none','none'],
-      'skill': ['none','none','none','none','none','none','none','none','none','none']
+   parseDice(v) {
+    let patt = /(\d+)d(\d+)([+-]\d+)?/;
+    let s = String(v)
+    let match = s.match(patt);
+    if (match) {
+      let d = this.random(match[1], match[2])
     }
-
-  };
-
-
-  genName() {
-    let names: [] = this.base.newchar[this.char['main']['Culture']][this.gender]['names'];
-    this.firstFormGroup.patchValue({
-      name: names[Math.floor(Math.random() * names.length)]
-    });
+    return s;
   }
 
-  genLord() {
-    let names: [] = this.base.newchar[this.char['main']['Culture']]['male']['names'];
-    this.firstFormGroup.patchValue({
-      lord: 'Sir ' + names[Math.floor(Math.random() * names.length)]
-    });
+  dice(size) {
+    return Math.floor(Math.random() * size) + 1;
   }
 
-  isChivalry(trait) {
-    return this.base.chivalry.includes(trait);
-  }
-
-  isVirtue(trait) {
-    return this.virtues.includes(trait);
+  random(db, size) {
+    let result = 0;
+    for (let i = 0; i < db; i++) {
+      result += this.dice(size);
+    }
+    return result;
   }
 
   getCulture() {
@@ -206,18 +192,44 @@ export class ChargenComponent implements OnInit {
     return this.char['main']['Religion'];
   }
 
-  parseDice(v) {
-    let patt = /(\d+)d(\d+)([+-]\d+)?/;
-    let s = String(v)
-    let match = s.match(patt);
-    if (match) {
-      let d = this.random(match[1], match[2])
-    }
-    return s;
+  public isEq(s1: string, s2: string): boolean {
+    let result = s1 == s2;
+    return result;
   }
 
+  /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+              MAIN INFOS
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 
+  initMainPhase() {
+    this.updateTraits();
+    this.updateChivalry();
+    this.initPassions();
+    this.updatePeriod();
+    this.genName();
+    this.genLord();
+    
+    this.initTraitPhase();
+  }
 
+  updateMainPhase() {
+    
+    this.updateSkillPhase();
+  }
+
+  genName() {
+    let names: [] = this.getCulture()[this.gender]['names'];
+    this.mainFormGroup.patchValue({
+      name: names[Math.floor(Math.random() * names.length)]
+    });
+  }
+
+  genLord() {
+    let names: [] = this.getCulture()['male']['names'];
+    this.mainFormGroup.patchValue({
+      lord: 'Sir ' + names[Math.floor(Math.random() * names.length)]
+    });
+  }
 
   initPassions() {
     let passions = {};
@@ -242,10 +254,57 @@ export class ChargenComponent implements OnInit {
         this.virtues = this.base.virtues[n];
       }
     }
-    this.changeTrait(null, 'method');
+    this.updateTraitPhase();
+  }
+
+  updatePeriod() {
+    for (let i in this.base.periods) {
+      if (this.base.periods[i][1] > this.year) {
+        this.period = this.base.periods[Number(i) - 1][0];
+        this.char['main']['Period'] = this.period;
+        return;
+      }
+    }
+  }
+
+  updateGender() {
+    this.char['main']['Name'] = (this.gender=="male"?"Sir ": "Lady ") + this.name;
+    this.resetSkills();
+  }
+
+  updateCulture() {
+    let culture: string = this.char['main']['Culture'];
+    let religion: string = this.char['main']['Religion'];
+    if (!this.base.newchar[culture].traits[religion]) {
+      this.char['main']['Religion'] = Object.keys(this.base.newchar[culture].traits)[0];
+    } 
+    this.initPassions();
+    this.resetSkills();
   }
 
 
+
+  /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+              Traits
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+
+   initTraitPhase() {
+    this.updateTraits();
+    this.initAttributesPhase();
+  }
+
+  updateTraitPhase() {
+    this.updateChivalry();
+    this.updateAttributesPhase();
+  }
+
+  isChivalry(trait) {
+    return this.base.chivalry.includes(trait);
+  }
+
+  isVirtue(trait) {
+    return this.virtues.includes(trait);
+  }
 
   setTraitAct(s) {
     this.traitAct = s == this.traitAct ? null : s;
@@ -263,18 +322,6 @@ export class ChargenComponent implements OnInit {
       this.char['traits'][i] = tr[i];
       this.charBase['traits'][i] = tr[i];
     }
-  }
-
-  dice(size) {
-    return Math.floor(Math.random() * size) + 1;
-  }
-
-  random(db, size) {
-    let result = 0;
-    for (let i = 0; i < db; i++) {
-      result += this.dice(size);
-    }
-    return result;
   }
 
   modTrait(traits, mod) {
@@ -362,7 +409,6 @@ export class ChargenComponent implements OnInit {
         this.char['traits'][i]=19
       }
     }
-    this.updateChivalry();
   }
 
   updateChivalry() {
@@ -381,36 +427,39 @@ export class ChargenComponent implements OnInit {
     }
   }
 
-  public isEq(s1: string, s2: string): boolean {
-    let result = s1 == s2;
-    return result;
-  }
-
   isRandom() {
     return this.traitMode == 'random';
   }
 
-  updatePeriod() {
-    for (let i in this.base.periods) {
-      if (this.base.periods[i][1] > this.year) {
-        this.period = this.base.periods[Number(i) - 1][0];
-        this.char['main']['Period'] = this.period;
-        return;
-      }
-    }
+  /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+              Attributes
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+   initAttributesPhase() {
+    this.initSkillPhase();
   }
 
-  updateGender() {
-    this.char['main']['Name'] = (this.gender=="male"?"Sir ": "Lady ") + this.name;
-    this.resetSkills();
+
+   updateAttributesPhase() {
+    this.updateSkillPhase();
   }
 
+  /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+              Skill
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+   initSkillPhase() {
+
+  }
+
+
+   updateSkillPhase() {
+    
+  }
   resetSkills() {
     this.individual['skills']={};
     for(let i in this.char['skills']['Combat']) {this.individual['skills']['skills.Combat.'+i] = {name:i,value:this.char['skills']['Combat'][i]} }
     for(let i in this.char['skills']['Weapons']) {this.individual['skills']['skills.Weapons.'+i] = {name:i,value: this.char['skills']['Weapons'][i]} }
     for(let i in this.char['skills']['Other']) {this.individual['skills']['skills.Other.'+i] = {name:i,value:this.char['skills']['Other'][i]} }
-    this.updateSkills();
+    this.updateSkillPhase();
   }
 
   updateSkills() {
@@ -473,16 +522,6 @@ export class ChargenComponent implements OnInit {
       r += this.individual['disc'][s];
     }
     return r;
-  }
-
-  updateCulture() {
-    let culture: string = this.char['main']['Culture'];
-    let religion: string = this.char['main']['Religion'];
-    if (!this.base.newchar[culture].traits[religion]) {
-      this.char['main']['Religion'] = Object.keys(this.base.newchar[culture].traits)[0];
-    } 
-    this.initPassions();
-    this.resetSkills();
   }
 
   changeAttrib(method) {

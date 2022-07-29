@@ -6,6 +6,7 @@
                     <mat-button-toggle value="{{ index-10 }}">{{ index-10 }}</mat-button-toggle>
                 </ng-container>
             </mat-button-toggle-group><br/>
+            <mat-checkbox [(ngModel)]="readonly">Readonly</mat-checkbox>
 <table class="team">
     <tbody>
         <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
