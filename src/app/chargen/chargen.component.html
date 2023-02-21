@@ -16,14 +16,14 @@
             </mat-form-field>
             <mat-form-field>
               <mat-label>Culture</mat-label>
-              <mat-select [(value)]="char['main']['Culture']"  (selectionChange)="updateCulture($event)">
+              <mat-select [(value)]="char['main']['Culture']"  (selectionChange)="updateCulture()">
                 <mat-option *ngFor="let culture of base.newchar | keyvalue" [value]="culture.key">{{culture.key}}
                 </mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>Religion</mat-label>
-              <mat-select [(value)]="char['main']['Religion']" (selectionChange)="changeReligion($event)">
+              <mat-select [(value)]="char['main']['Religion']" (selectionChange)="changeReligion()">
                 <mat-option *ngFor="let r of base.newchar[char['main']['Culture']].traits | keyvalue" [value]="r.key">{{r.key}}
                 </mat-option>
               </mat-select>
@@ -67,12 +67,12 @@
           <form [formGroup]="traitFormGroup">
             <mat-form-field>
               <mat-label>Method</mat-label>
-              <mat-select [(value)]="traitMode" (selectionChange)="changeTrait($event, 'method')">
+              <mat-select [(value)]="traitMode" (selectionChange)="changeTraitMethod()">
                 <mat-option value="base">Base</mat-option>
                 <mat-option value="random">Random</mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-radio-group [(ngModel)]="traitFamous"  [ngModelOptions]="{standalone: true}" (change)="changeTrait($event, 'traitFamous')">
+            <mat-radio-group [(ngModel)]="charBase['famous']"  [ngModelOptions]="{standalone: true}" (change)="changeTraitFamous()">
             <div class="traitmods">
               <ng-container *ngFor="let t of traits">
                 <div class="info" (click)="setTraitAct(t.short)">
@@ -99,7 +99,7 @@
                     <mat-radio-button value="{{t.short}}+"></mat-radio-button>
                   </div>
                   <div class="select" colspan="3">
-                    <mat-slider disabled="{{isSliderDisabled(t.short)}}" min="{{-sliderMax(t.short, false)}}" max="{{sliderMax(t.short)}}" step="1" thumbLabel invert [(value)]="traitModification[t.short]" (change)="changeTrait($event, 'trait')"></mat-slider>
+                    <mat-slider disabled="{{isSliderDisabled(t.short)}}" min="{{-sliderMax(t.short, false)}}" max="{{sliderMax(t.short)}}" step="1" thumbLabel invert [(value)]="traitModification[t.short]" (change)="changeTrait()"></mat-slider>
                   </div>
                   <div>
                     <mat-radio-button value="{{t.short}}-"></mat-radio-button>
@@ -143,56 +143,56 @@
           <form [formGroup]="fourthFormGroup">
             <mat-form-field>
               <mat-label>P15 Skill</mat-label>
-              <mat-select [(value)]="charBase['individual']['p15']" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['p15']" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listP15() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>P10 Skill 1</mat-label>
-              <mat-select [(value)]="charBase['individual']['p10'][0]" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['p10'][0]" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listP10() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>P10 Skill 2</mat-label>
-              <mat-select [(value)]="charBase['individual']['p10'][1]" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['p10'][1]" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listP10() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>P10 Skill 3</mat-label>
-              <mat-select [(value)]="charBase['individual']['p10'][2]" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['p10'][2]" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listP10() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>Spec 1</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][0]" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['spec'][0]" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>Spec 2</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][1]" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['spec'][1]" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>Spec 3</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][2]" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['spec'][2]" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
             </mat-form-field>
             <mat-form-field>
               <mat-label>Spec 4</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][3]" (selectionChange)="updateSkills()">
+              <mat-select [(value)]="charBase['individual']['spec'][3]" (selectionChange)="updateSkillPhase()">
                 <mat-option value="none">None</mat-option>
                 <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
               </mat-select>
@@ -206,7 +206,7 @@
                       {{individual['disc'][s.key]}}
                     </td>
                     <td class="select">
-                        <mat-slider disabled="{{skillSliderMax(s.key)==0}}" min="0" max="{{skillSliderMax(s.key)}}" step="1" thumbLabel [(value)]="individual['disc'][s.key]" (change)="updateSkills()"></mat-slider>
+                        <mat-slider disabled="{{skillSliderMax(s.key)==0}}" min="0" max="{{skillSliderMax(s.key)}}" step="1" thumbLabel [(value)]="individual['disc'][s.key]" (change)="updateSkillPhase()"></mat-slider>
                   </td>
                 </tr>
             </table>
@@ -228,6 +228,7 @@
           <ng-template matStepLabel>Final</ng-template>
         </mat-step>
       </mat-vertical-stepper>
+      <pre>{{getChar()}}</pre>
     </div>
     <div class="col-2">
       <div class="row">

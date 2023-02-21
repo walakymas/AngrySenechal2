@@ -11,7 +11,7 @@ import { LordDetail, LordData } from '../lord';
 })
 export class TeamComponent implements OnInit {
   fakeArray = new Array(21);
-  modifier = 5  ;
+  modifier = 0;
   team : LordData[];
   base: Base;
   traits: Trait[] = [];

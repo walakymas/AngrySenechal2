@@ -39,9 +39,10 @@ export class ChargenComponent implements OnInit {
   traitModificationSum : number= 0;
   traitModificationMaxSum : number = 6;
   skillModificationSum : number= 0;
-  traitFamous : string= 'none';
-  char: {} = {
-    "name": "Unknown",
+  char: {} = {};
+  charBase: {} = {};
+  charInitial: {} = {
+      "name": "Unknown",
     "traits": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
     "main": {
       "Born": 464,
@@ -62,11 +63,11 @@ export class ChargenComponent implements OnInit {
     'charBase': {
       "traits": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
       "traitPhase": { "cha": 10, "ene": 10, "for": 10, "gen": 10, "hon": 10, "jus": 10, "mer": 10, "mod": 10, "pru": 10, "spi": 10, "tem": 10, "tru": 10, "val": 15 },
+      'traitModification': {},
       'famous': 'none',
       "stats": {
         "siz": 12, "dex": 12, "str": 12, "con": 12, "app": 12
       },
-      'individualTraits': ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'],
       'derived': {},
       'skills': {},
       'individual': {
@@ -98,19 +99,33 @@ export class ChargenComponent implements OnInit {
       console.log('base in team')
       this.base = t;
       this.traits = [];
+      let newchar = window.localStorage.getItem('newchar');
+      this.char = JSON.parse(newchar == null? JSON.stringify(this.charInitial) : newchar);
+      this.charBase = this.char['charBase'];
+      this.traitModification = this.charBase['traitModification'];
+      this.individual = this.charBase['individual'];
       for (let t in this.base.traits) {
         let short = this.base.traits[t][0].substring(0, 3).toLowerCase();
         this.traits.push(new Trait(short, this.base.traits[t][0], this.base.traits[t][1]));
         this.traitModifiers[this.base.traits[t][0]] = short + "+";
         this.traitModifiers[this.base.traits[t][1]] = short + "-";
-        this.traitModification[short] = 0;
+        if (newchar==null) {
+          this.traitModification[short] = 0;
+        }
       }
       this.virtues = t.virtues['British Christian'];
+      if (newchar==null) {
+        this.genName();
+        this.genLord();
+      } else {
+        this.mainFormGroup.patchValue({
+          name: this.char['main']['Name'],
+          lord: this.char['main']['Lord']
+        });
+      }
       this.initMainPhase();
       this.updateMainPhase();
 
-      this.updateAttr();
-      this.updateSkills();
       this.mainFormGroup.patchValue({
         born: 464,
         year: 485
@@ -132,14 +147,13 @@ export class ChargenComponent implements OnInit {
     });   
     this.fourthFormGroup = this._formBuilder.group({
     });
-    this.mainFormGroup.get('name').valueChanges.subscribe(value=>{this.name = value; this.char['main']['Name']=(this.gender == "male"?"Sir ":"Lady ") + value;});
-    this.mainFormGroup.get('lord').valueChanges.subscribe(value=>this.char['main']['Lord']=value);
-    this.mainFormGroup.get('year').valueChanges.subscribe(value=>{this.char['main']['Year']=value, this.year = value});
-    this.mainFormGroup.get('born').valueChanges.subscribe(value=>this.char['main']['Born']=value);
+    this.mainFormGroup.get('name').valueChanges.subscribe(value=>{this.name = value; this.char['main']['Name']= value; this.save(); });
+    this.mainFormGroup.get('lord').valueChanges.subscribe(value=>{this.char['main']['Lord']=value; this.save();});
+    this.mainFormGroup.get('year').valueChanges.subscribe(value=>{this.char['main']['Year']=value; this.year = value; this.save();});
+    this.mainFormGroup.get('born').valueChanges.subscribe(value=>{this.char['main']['Born']=value; this.save(); });
   }
 
   public onStepChange(event: any): void {
-    console.log(event.selectedIndex);
     if (event.selectedIndex==1) {
       this.updateMainPhase();
     } else if (event.selectedIndex==2) {
@@ -151,12 +165,15 @@ export class ChargenComponent implements OnInit {
     } 
   }
 
-  charBase: {} = this.char['charBase'];
 
 
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             SHARED
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+
+  getChar() {
+    return JSON.stringify(this.char, null, 2);
+  }
 
    parseDice(v) {
     let patt = /(\d+)d(\d+)([+-]\d+)?/;
@@ -197,30 +214,30 @@ export class ChargenComponent implements OnInit {
     return result;
   }
 
+  save() {
+    console.log('save');
+    window.localStorage.setItem('newchar',JSON.stringify(this.char));
+  }
+
   /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
               MAIN INFOS
    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 
   initMainPhase() {
-    this.updateTraits();
-    this.updateChivalry();
+    this.traitsByReligion();
     this.initPassions();
-    this.updatePeriod();
-    this.genName();
-    this.genLord();
-    
+    this.updatePeriod();  
     this.initTraitPhase();
   }
 
   updateMainPhase() {
-    
     this.updateSkillPhase();
   }
 
   genName() {
     let names: [] = this.getCulture()[this.gender]['names'];
     this.mainFormGroup.patchValue({
-      name: names[Math.floor(Math.random() * names.length)]
+      name: (this.gender == "male"?"Sir ":"Lady ") + names[Math.floor(Math.random() * names.length)]
     });
   }
 
@@ -248,7 +265,7 @@ export class ChargenComponent implements OnInit {
     this.char['passions'] = passions;
   }
 
-  changeReligion(event) {
+  changeReligion() {
     for (const [n, v] of Object.entries(this.base.virtues)) {
       if (this.char['main']['Religion'] == n) {
         this.virtues = this.base.virtues[n];
@@ -269,7 +286,8 @@ export class ChargenComponent implements OnInit {
 
   updateGender() {
     this.char['main']['Name'] = (this.gender=="male"?"Sir ": "Lady ") + this.name;
-    this.resetSkills();
+    this.initSkills();
+    this.updateSkillPhase();
   }
 
   updateCulture() {
@@ -277,24 +295,24 @@ export class ChargenComponent implements OnInit {
     let religion: string = this.char['main']['Religion'];
     if (!this.base.newchar[culture].traits[religion]) {
       this.char['main']['Religion'] = Object.keys(this.base.newchar[culture].traits)[0];
+      this.changeReligion();
     } 
     this.initPassions();
-    this.resetSkills();
+    this.initSkills();
+    this.updateSkillPhase();
   }
-
-
 
   /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
               Traits
    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
 
-   initTraitPhase() {
-    this.updateTraits();
+  initTraitPhase() {
     this.initAttributesPhase();
   }
 
   updateTraitPhase() {
-    this.updateChivalry();
+    console.log('updateTraitPhase')
+    this.changeTrait();
     this.updateAttributesPhase();
   }
 
@@ -310,7 +328,7 @@ export class ChargenComponent implements OnInit {
     this.traitAct = s == this.traitAct ? null : s;
   }
 
-  updateTraits() {
+  traitsByReligion() {
     let tr: {} = {};
 
     if (this.char['main']['Religion'] in this.getCulture()['traits']) {
@@ -321,6 +339,7 @@ export class ChargenComponent implements OnInit {
     for (let i in tr) {
       this.char['traits'][i] = tr[i];
       this.charBase['traits'][i] = tr[i];
+      this.charBase['traitPhase'][i] = tr[i];
     }
   }
 
@@ -335,14 +354,14 @@ export class ChargenComponent implements OnInit {
   sliderMax(s, first:boolean=true) {
     let m = this.traitModificationMaxSum+Math.abs(this.traitModification[s])-this.traitModificationSum;
     if (first) {
-      if( this.traitFamous == s+"+") {
+      if( this.charBase['famous'] == s+"+") {
         m = Math.min(3,m);
       } else {
         m = Math.min(19- this.charBase['traits'][s] ,m);
       }
 
     } else {
-      if( this.traitFamous == s+"-") {
+      if( this.charBase['famous'] == s+"-") {
         m = Math.min(3,m);
       } else {
         m = Math.min(this.charBase['traits'][s]-1 ,m);
@@ -351,8 +370,8 @@ export class ChargenComponent implements OnInit {
     return m;
   }
 
-  changeTrait(event, mode) {
-    if (mode == 'method' && this.traitMode == 'random') {
+  changeTraitMethod() {
+    if (this.traitMode == 'random') {
         for (let i in this.char['traits']) {
           this.charBase['traits'][i] = this.random(3, 6);
         }
@@ -361,54 +380,42 @@ export class ChargenComponent implements OnInit {
           this.modTrait(this.charBase['traits'], mod);
         }
     }
+    this.changeTrait();
+  }
+
+  changeTraitFamous() {
+    if (this.charBase['famous']!='none' ) {
+      this.traitModification[this.charBase['famous'].substring(0,3)]=0;
+    }
+    this.changeTrait();
+  }
+
+  changeTrait(mode=null) {
     if (this.traitMode == 'random') {
       for (let i in this.char['traits']) {
         this.char['traits'][i] = this.charBase['traits'][i];
       }
       this.traitModificationMaxSum = 9;
     } else {
-      this.updateTraits();
+      this.traitsByReligion();
       this.traitModificationMaxSum = 6;
     }
 
-    if (mode=='traitFamous' && this.traitFamous!='none' ) {
-      this.traitModification[this.traitFamous.substring(0,3)]=0;
-    }
+    let traits = this.charBase['traitPhase']; 
 
-    if (this.traitFamous!='none' ) {
-      this.char['traits'][this.traitFamous.substring(0,3)] = this.traitFamous.charAt(3)=='+'?16:4;
-    }
 
     this.traitModificationSum = 0;
     for (let i in this.traits) {
       let t = this.traits[i];
-      this.charBase['traits'][t.short] = this.char['traits'][t.short];
       let v = this.traitModification[t.short];
-      this.char['traits'][t.short]+= Number(v);
+      traits[t.short]+= Number(v);
       this.traitModificationSum += Math.abs(Number(v));
     }
     if (this.charBase['famous'] != 'none') {
-      this.char['traits'][this.charBase['famous'].substring(0, 3)] = this.charBase['famous'].substring(3, 4) == '-' ? 4 : 16;
+      traits[this.charBase['famous'].substring(0, 3)] = this.charBase['famous'].substring(3, 4) == '-' ? 4 : 16;
     }
-    for (let i = 0; i < 6; i++) {
-      if (this.charBase['individual'][i] != 'none') {
-        this.char['traits'][this.charBase['individualTraits'][i].substring(0, 3)] += this.charBase['individualTraits'][i].substring(3, 4) == '-' ? -1 : +1;
-      }
-    }
-    if (this.traitMode == 'random') {
-      for (let i = 6; i < 9; i++) {
-        if (this.charBase['individual'][i] != 'none') {
-          this.char['traits'][this.charBase['individualTraits'][i].substring(0, 3)] += this.charBase['individualTraits'][i].substring(3, 4) == '-' ? -1 : +1;
-        }
-      }
-    }
-    for (let i in this.char['traits']) {
-      if (this.char['traits'][i]<1) {
-        this.char['traits'][i]=1
-      } else if (this.char['traits'][i]>19) {
-        this.char['traits'][i]=19
-      }
-    }
+    this.updateChivalry();
+    this.save();
   }
 
   updateChivalry() {
@@ -440,88 +447,27 @@ export class ChargenComponent implements OnInit {
 
 
    updateAttributesPhase() {
+    this.updateAttr();
     this.updateSkillPhase();
   }
 
-  /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-              Skill
-   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
-   initSkillPhase() {
-
-  }
-
-
-   updateSkillPhase() {
-    
-  }
-  resetSkills() {
-    this.individual['skills']={};
-    for(let i in this.char['skills']['Combat']) {this.individual['skills']['skills.Combat.'+i] = {name:i,value:this.char['skills']['Combat'][i]} }
-    for(let i in this.char['skills']['Weapons']) {this.individual['skills']['skills.Weapons.'+i] = {name:i,value: this.char['skills']['Weapons'][i]} }
-    for(let i in this.char['skills']['Other']) {this.individual['skills']['skills.Other.'+i] = {name:i,value:this.char['skills']['Other'][i]} }
-    this.updateSkillPhase();
-  }
-
-  updateSkills() {
-    this.changeTrait(null, 'skill');
-    let skills = JSON.parse(JSON.stringify(this.getCulture()[this.gender]['skills']))
-    this.char['skills'] = skills
-    if (this.charBase['individual']['p15']!='none') {
-      let sp = this.charBase['individual']['p15'].split('.');
-      this.char['skills'][sp[1]][sp[2]]=15;    
+  updateAttr() {
+    let attrSum = 0; 
+    for(let i in this.charBase['stats']) {
+      this.char['stats'][i]=this.charBase['stats'][i];
+      attrSum += this.charBase['stats'][i];
     }
-    for(let i = 0; i<3; i++) {
-      if (this.charBase['individual']['p10'][i]!='none') {
-        let sp = this.charBase['individual']['p10'][i].split('.');
-        this.char['skills'][sp[1]][sp[2]]=10;    
-      }
+    this.thirdFormGroup.get('sum').setValue(attrSum);
+    for(let i in this.getCulture()['attributes']) {
+      this.char['stats'][i]+=this.getCulture()['attributes'][i]
     }
-    for(let i = 0; i<4; i++) {
-      if (this.charBase['individual']['spec'][i]!='none') {
-        let sp = this.charBase['individual']['spec'][i].split('.');
-        if (sp[0]=='skill') {
-          this.char['skills'][sp[1]][sp[2]] = this.char['skills'][sp[1]][sp[2]] + 5;
-          if (this.char['skills'][sp[1]][sp[2]] >15) {
-            this.char['skills'][sp[1]][sp[2]] = 15;
-          }
-        } else if (sp[0]=='passion'){
-          if (this.char['passions'][sp[1]] >20) {
-            this.char['passions'][sp[1]] = 20;
-          }
-        } else {
-          if (sp[1].substring(3)=='+') {
-            this.char['traits'][sp[1].substring(0,3)] += 1;
-            if (this.char['traits'][sp[1].substring(0,3)] >19) {
-              this.char['traits'][sp[1].substring(0,3)] = 19;
-            }
-          } else {
-            this.char['traits'][sp[1].substring(0,3)] -= 1;
-            if (this.char['traits'][sp[1].substring(0,3)] <1) {
-              this.char['traits'][sp[1].substring(0,3)] = 1;
-            }
-          }
-        }
-      }
-    }
-    this.skillModificationSum = 0;
-    for(let i in this.individual['disc']) {
-      if (this.individual['disc'][i]>0 ) {
-        let sp = i.split('.');
-        if (this.char['skills']['Other'][i]) {
-          this.char['skills']['Other'][i] += this.individual['disc'][i];    
-          this.skillModificationSum += this.individual['disc'][i];
-        }
-      }
-    }
-
-  }
-
-  skillSliderMax(s) {
-    let r = 10-this.skillModificationSum;
-    if (this.individual['disc'][s]) {
-      r += this.individual['disc'][s];
-    }
-    return r;
+    this.charBase['derived']['Damage']= Math.round((this.char['stats']['str']*1+this.char['stats']['siz']*1)/6)+"d6";
+    this.charBase['derived']['Healing Rate']= Math.round((this.char['stats']['str']*1+this.char['stats']['con']*1)/10);
+    this.charBase['derived']['Move Rate'] = Math.round((this.char['stats']['dex']*1+this.char['stats']['siz']*1)/10);
+    this.charBase['derived']['Total Hitpoints'] = Math.round((this.char['stats']['siz']*1+this.char['stats']['con']*1));
+    this.charBase['derived']['Unconscious'] = Math.round((this.char['stats']['con']*1+this.char['stats']['siz']*1)/4);
+    this.charBase['derived']['Major Wound'] = this.char['stats']['con'];
+    this.charBase['derived']['Knockdown'] = this.char['stats']['siz'];
   }
 
   changeAttrib(method) {
@@ -548,7 +494,6 @@ export class ChargenComponent implements OnInit {
   }
 
   attr(a, m) {
-
     this.charBase['stats'][a]+=m;
     this.updateAttr();
   }
@@ -561,23 +506,89 @@ export class ChargenComponent implements OnInit {
     }
   }
 
-  updateAttr() {
-    let attrSum = 0; 
-    for(let i in this.charBase['stats']) {
-      this.char['stats'][i]=this.charBase['stats'][i];
-      attrSum += this.charBase['stats'][i];
+  /* ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+              Skill
+   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */ 
+  initSkillPhase() {
+
+  }
+
+  updateSkillPhase() {
+    this.updateSkills();
+    this.updateChivalry();    
+    this.save();
+  }
+
+  initSkills() {
+    this.individual['skills']={};
+    for(let i in this.char['skills']['Combat'])  {this.individual['skills']['skills.Combat.'+i]  = {name:i,value:this.char['skills']['Combat'][i]} }
+    for(let i in this.char['skills']['Weapons']) {this.individual['skills']['skills.Weapons.'+i] = {name:i,value:this.char['skills']['Weapons'][i]} }
+    for(let i in this.char['skills']['Other'])   {this.individual['skills']['skills.Other.'+i]   = {name:i,value:this.char['skills']['Other'][i]} }
+    this.updateSkillPhase();
+  }
+
+  updateSkills() {
+    this.changeTrait();
+    let skills = JSON.parse(JSON.stringify(this.getCulture()[this.gender]['skills']))
+    this.char['skills'] = skills
+    this.char['traits'] = JSON.parse(JSON.stringify(this.charBase['traitPhase']));
+
+    if (this.charBase['individual']['p15']!='none') {
+      let sp = this.charBase['individual']['p15'].split('.');
+      this.char['skills'][sp[1]][sp[2]]=15;    
     }
-    this.thirdFormGroup.get('sum').setValue(attrSum);
-    for(let i in this.getCulture()['attributes']) {
-      this.char['stats'][i]+=this.getCulture()['attributes'][i]
+    for(let i = 0; i<3; i++) {
+      if (this.charBase['individual']['p10'][i]!='none') {
+        let sp = this.charBase['individual']['p10'][i].split('.');
+        this.char['skills'][sp[1]][sp[2]]=10;    
+      }
     }
-    this.charBase['derived']['Damage']= Math.round((this.char['stats']['str']*1+this.char['stats']['siz']*1)/6)+"d6";
-    this.charBase['derived']['Healing Rate']= Math.round((this.char['stats']['str']*1+this.char['stats']['con']*1)/10);
-    this.charBase['derived']['Move Rate'] = Math.round((this.char['stats']['dex']*1+this.char['stats']['siz']*1)/10);
-    this.charBase['derived']['Total Hitpoints'] = Math.round((this.char['stats']['siz']*1+this.char['stats']['con']*1));
-    this.charBase['derived']['Unconscious'] = Math.round((this.char['stats']['con']*1+this.char['stats']['siz']*1)/4);
-    this.charBase['derived']['Major Wound'] = this.char['stats']['con'];
-    this.charBase['derived']['Knockdown'] = this.char['stats']['siz'];
+    for(let i = 0; i<4; i++) {
+      if (this.charBase['individual']['spec'][i]!='none') {
+        let sp = this.charBase['individual']['spec'][i].split('.');
+        if (sp[0]=='skill') {
+          this.char['skills'][sp[1]][sp[2]] = this.char['skills'][sp[1]][sp[2]] + 5;
+          if (this.char['skills'][sp[1]][sp[2]] >15) {
+            this.char['skills'][sp[1]][sp[2]] = 15;
+          }
+        } else if (sp[0]=='passion'){
+          if (this.char['passions'][sp[1]] >20) {
+            this.char['passions'][sp[1]] = 20;
+          }
+        } else {
+          if (sp[1].substring(3)=='+') {
+            this.char['traits'][sp[1].substring(0,3)] += 1;
+          } else {
+            this.char['traits'][sp[1].substring(0,3)] -= 1;
+          }
+        }
+      }
+    }
+    this.skillModificationSum = 0;
+    for(let i in this.individual['disc']) {
+      if (this.individual['disc'][i]>0 ) {
+        let sp = i.split('.');
+        if (this.char['skills']['Other'][i]) {
+          this.char['skills']['Other'][i] += this.individual['disc'][i];    
+          this.skillModificationSum += this.individual['disc'][i];
+        }
+      }
+    }
+    for (let i in this.char['traits']) {
+      if (this.char['traits'][i]<1) {
+        this.char['traits'][i]=1
+      } else if (this.char['traits'][i]>19) {
+        this.char['traits'][i]=19
+      }
+    }
+  }
+
+  skillSliderMax(s) {
+    let r = 10-this.skillModificationSum;
+    if (this.individual['disc'][s]) {
+      r += this.individual['disc'][s];
+    }
+    return r;
   }
 
   listP15() {
@@ -594,6 +605,7 @@ export class ChargenComponent implements OnInit {
     }
     return result;
   }
+
   listP10() {
     let result = {};
     if (this.gender=='male') {
@@ -606,11 +618,13 @@ export class ChargenComponent implements OnInit {
     }
     return result;
   }
+
   listSkill() {
     let result = {};
     for(let i in this.char['skills']['Other']) {result[i]='skill.Other.'+i }
     return result;
   }
+
   listSpecial() {
     let result = {};
     for(let i in this.traits) {let t = this.traits[i]; result['T: '+t.first]='trait.'+t.short+"+"; result['T: '+t.second]='trait.'+t.short+"-";}
@@ -620,4 +634,5 @@ export class ChargenComponent implements OnInit {
     for(let i in this.char['skills']['Other']) {result['S: '+i]='skill.Other.'+i }
     return result;
   }
+
 }
