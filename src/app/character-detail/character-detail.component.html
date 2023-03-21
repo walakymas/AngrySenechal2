@@ -160,7 +160,7 @@
             <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" 
                 (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
                 value="{{char.char['skills']['Other'][m.key]}}"
-                (valueChange)="saveProjectName( char.char['skills']['Other'], m.key, $event )"
+                (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
             ></app-editable></li>
         </ul>
     </div>
