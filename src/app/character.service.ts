@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, OnInit,Inject } from '@angular/core';
 
 import { Lord, LordBase, LordData} from './lord';
 import { CharacterMain} from './character-detail/character-detail.component';
@@ -10,15 +10,15 @@ import { Observable, of } from 'rxjs';
 import { catchError, map, tap,timeout } from 'rxjs/operators';
 import { waitForAsync } from '@angular/core/testing';
 import { GameEvent } from './character-detail/character-detail.component';
-
-
-
+import { Router } from '@angular/router';
+import { WINDOW } from './windows';
 @Injectable({ providedIn: 'root' })
 export class CharacterService {
   private characters: {} = {};
 
   private characterUrl = 'json';  // URL to web api
   private base : Promise<Base>;
+  private url = environment.url;
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -26,10 +26,15 @@ export class CharacterService {
 
   constructor(
     private http: HttpClient,
-    private logger: Logger) {}
+    private logger: Logger
+    ,@Inject(WINDOW) private window: Window
+    ) {
+      this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8080/";
+      console.log('uri:'+this.window.location.protocol+"://"+this.window.location.hostname+":8080/");
+    }
 
   setMark(mark:string, id:string, set:boolean): Promise<Lord>{
-    return this.http.post<Lord>(`${environment.url}mark`,
+    return this.http.post<Lord>(this.url+`mark`,
       new HttpParams()
       .set('id', id)
       .set('set', ''+set)
@@ -45,16 +50,16 @@ export class CharacterService {
 
   getBase(): Promise<Base>{
     if (!this.base) {
-      this.base = this.http.get<Base>(`${environment.url}base`).pipe(
+      this.base = this.http.get<Base>(this.url+`base`).pipe(
         tap(_ => this.logger.log(`fetched base `)),
         catchError(this.handleError<Base>(`getBase`))
       ).toPromise()
     }
     return this.base;
   }
-  
+
   modifyProp(dbid:number, prop:string, value:string) : Promise<Lord>{
-    return this.http.post<Lord>(`${environment.url}modify`,
+    return this.http.post<Lord>(this.url+`modify`,
       new HttpParams()
       .set('id',  ''+dbid)
       .set(prop,value).toString(),
@@ -68,7 +73,7 @@ export class CharacterService {
   }
 
   modify(l:Lord) : Promise<Lord>{
-    return this.http.post<Lord>(`${environment.url}modify`,
+    return this.http.post<Lord>(this.url+`modify`,
       new HttpParams()
       .set('id',  l.char['dbid'])
       .set('json', JSON.stringify( l.char)).toString(),
@@ -82,7 +87,7 @@ export class CharacterService {
   }
 
   modifyChar(char) : Promise<Lord>{
-    return this.http.post<Lord>(`${environment.url}modify`,
+    return this.http.post<Lord>(this.url+`modify`,
       new HttpParams()
       .set('id',  char['dbid'])
       .set('json', JSON.stringify( char)).toString(),
@@ -96,7 +101,7 @@ export class CharacterService {
   }
 
   newChar(main: CharacterMain) : Promise<Lord>{
-    return this.http.post<Lord>(`${environment.url}newchar`,
+    return this.http.post<Lord>(this.url+`newchar`,
       new HttpParams()
       .set('json', JSON.stringify(main))
       .toString(),
@@ -110,7 +115,7 @@ export class CharacterService {
   }
 
   main(l:Lord, m: CharacterMain) : Promise<Lord>{
-    return this.http.post<Lord>(`${environment.url}modify`,
+    return this.http.post<Lord>(this.url+`modify`,
       new HttpParams()
       .set('id',  l.char['dbid'])
       .set('name', m.name)
@@ -131,7 +136,7 @@ export class CharacterService {
 
 
   event(l:Lord, event : GameEvent) : Promise<Lord>{
-    return this.http.post<Lord>(`${environment.url}event`,
+    return this.http.post<Lord>(this.url+`event`,
       new HttpParams()
       .set('dbid',  l.char['dbid'])
       .set('year', ''+event.year)
@@ -149,7 +154,7 @@ export class CharacterService {
   }
 
   getLord(id: number): Observable<Lord> {
-    const url = `${environment.url}${this.characterUrl}?id=${id}`;
+    const url = this.url+`${this.characterUrl}?id=${id}`;
     return this.http.get<Lord>(url).pipe(
       tap(_ => this.logger.log(`fetched lord id=${id}`)),
       catchError(this.handleError<Lord>(`getLord id=${id}`))
@@ -157,13 +162,13 @@ export class CharacterService {
   }
 
   getList(): Observable<LordBase[]> {
-    return this.http.get<LordBase[]>(`${environment.url}list`).pipe(
+    return this.http.get<LordBase[]>(this.url+`list`).pipe(
       tap(_ => this.logger.log(`fetched lord list`)),
       catchError(this.handleError<LordBase[]>(`getList`))
     );
   }
 
-  bot(command : string): Observable<String> {  
+  bot(command : string): Observable<String> {
     return this.http.post<String>(environment.hook,
       new HttpParams()
       .set('username', 'CaptainHook')
@@ -178,14 +183,14 @@ export class CharacterService {
   }
 
   getTeam(): Observable<LordData[]> {
-    return this.http.get<LordData[]>(`${environment.url}players`).pipe(
+    return this.http.get<LordData[]>(this.url+`players`).pipe(
       tap(_ => this.logger.log(`fetched lord list`)),
       catchError(this.handleError<LordData[]>(`getTeam`))
     );
   }
 
   getLordByName(name: string): Observable<Lord> {
-    const url = `${environment.url}${this.characterUrl}?ch=${name}`;
+    const url = this.url+`${this.characterUrl}?ch=${name}`;
     return this.http.get<Lord>(url).pipe(
       tap(_ => this.logger.log(`fetched lord name=${name}`)),
       catchError(this.handleError<Lord>(`getLord id=${name}`))
@@ -193,7 +198,7 @@ export class CharacterService {
   }
 
   startLogin(l:LordBase): Promise<string> {
-    const url = `${environment.url}login`;
+    const url = this.url+`login`;
     return this.http.post<string>(url,
       new HttpParams()
       .set('dbid', ''+l.id),

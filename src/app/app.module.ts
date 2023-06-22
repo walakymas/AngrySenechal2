@@ -27,9 +27,10 @@ import { MatInputModule} from '@angular/material/input';
 import { MatButtonToggleModule} from '@angular/material/button-toggle';
 import { MatStepperModule} from '@angular/material/stepper';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
-import { ChargenComponent } from './chargen/chargen.component' 
+import { ChargenComponent } from './chargen/chargen.component'
 import {MatSliderModule} from '@angular/material/slider';
 import {MatRadioModule} from '@angular/material/radio';
+import { WINDOW, WINDOW_PROVIDERS } from './windows';
 @NgModule({
   declarations: [
     AppComponent,
@@ -70,7 +71,7 @@ import {MatRadioModule} from '@angular/material/radio';
     MatRadioModule
   ],
   entryComponents:[MatDialogModule],
-  providers: [HttpClientModule],
+  providers: [HttpClientModule,WINDOW_PROVIDERS],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
