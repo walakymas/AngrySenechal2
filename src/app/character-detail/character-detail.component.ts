@@ -5,9 +5,9 @@ import { Location } from '@angular/common';
 import { CharacterService } from './../character.service';
 import { Logger } from '../logger.service';
 import { Base } from '../base';
-import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+import { MatDialog, MatDialogRef} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { environment } from './../../environments/environment';
@@ -306,9 +306,11 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   pdf() {
+    console.log('pdf():'+this.service.getUrl());
+
     let link = document.createElement('a');
     link.setAttribute('type', 'hidden');
-    link.href = `${environment.url}pdf?id=${this.id }`;
+    link.href = `${this.service.getUrl()}pdf?id=${this.id }`;
     link.target = "pdf"
 //    link.download = path;
     document.body.appendChild(link);

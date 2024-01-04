@@ -29,9 +29,14 @@ export class CharacterService {
     private logger: Logger
     ,@Inject(WINDOW) private window: Window
     ) {
-      this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8080/";
-      console.log('uri:'+this.window.location.protocol+"://"+this.window.location.hostname+":8080/");
+      this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8881/senechal/";
+      console.log('uri:'+this.url);
     }
+
+  getUrl() {
+    console.log('geturi:'+this.url);
+    return this.url;
+  }
 
   setMark(mark:string, id:string, set:boolean): Promise<Lord>{
     return this.http.post<Lord>(this.url+`mark`,
