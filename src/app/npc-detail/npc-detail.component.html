@@ -1,4 +1,5 @@
 <div *ngIf="npc; else noChar" >
+  <ng-container *ngIf="npc.char['main']['Deceased'] "> <b>Deceased {{npc.char['main']['Deceased']}} </b></ng-container>
 <p *ngIf="npc.char['description']">{{npc.char['description']}}</p>
 <img width="100%" src="{{npc.char['url']}}" *ngIf="npc.char['url']"/>
 <br/>
