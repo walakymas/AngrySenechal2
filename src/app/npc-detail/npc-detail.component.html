@@ -1,13 +1,16 @@
 <div *ngIf="npc; else noChar" >
+  <ng-container *ngIf="npc.char['main']['Deceased'] "> <b>Deceased {{npc.char['main']['Deceased']}} </b></ng-container>
 <p *ngIf="npc.char['description']">{{npc.char['description']}}</p>
 <img width="100%" src="{{npc.char['url']}}" *ngIf="npc.char['url']"/>
+<br/>
+<a routerLink="/character/{{npc.char['name']}}">Link</a><br/>
 <table width="100%">
     <tr *ngFor="let m of npc.char['stats'] | keyvalue"><th style="text-transform:'uppercase'">{{m.key}}</th><td>{{m.value}}</td></tr>
     <ng-container *ngFor="let m of npc.char['main'] | keyvalue ">
         <tr  *ngIf="isEq(m.key, 'Born')">
-            <th>Age</th><td>{{npc.year - m.value*1}}</td> 
+            <th>Age</th><td>{{npc.year - m.value*1}}</td>
         </tr>
-        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>   
+        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
     </ng-container>
     <tr *ngFor="let m of npc.char['skills']['Other'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
     <tr *ngFor="let m of npc.char['skills']['Weapons'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>

@@ -20,12 +20,16 @@ export class NpcDetailComponent implements OnInit {
   }
 
   public isEq(s1: string, s2:string):boolean{
-    let result = s1==s2; 
+    let result = s1==s2;
     return result;
   }
 
   setNpc(l: Lord) {
     this.npc = l;
+  }
+
+  isDeceased() {
+    return 'Deceased' in this.npc.char['main'];
   }
 
 }
