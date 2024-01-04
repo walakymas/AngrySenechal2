@@ -29,7 +29,7 @@ export class CharacterService {
     private logger: Logger
     ,@Inject(WINDOW) private window: Window
     ) {
-      this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8881/senechal/";
+      this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8080/";
       console.log('uri:'+this.url);
     }
 
