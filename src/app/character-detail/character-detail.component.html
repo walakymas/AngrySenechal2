@@ -192,7 +192,7 @@
             <mat-expansion-panel  *ngFor="let y of details['years']" hideToggle>
               <mat-expansion-panel-header>
                 <mat-panel-title>
-                   {{y}}
+                   Year: {{y}} - Glory: {{getGlory(y)}}
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)" class="event"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span style="white-space: pre-line;">{{e['description']}}</span></div>
