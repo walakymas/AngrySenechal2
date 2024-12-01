@@ -8,10 +8,14 @@ import { environment } from './../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap,timeout } from 'rxjs/operators';
-import { waitForAsync } from '@angular/core/testing';
 import { GameEvent } from './character-detail/character-detail.component';
-import { Router } from '@angular/router';
 import { WINDOW } from './windows';
+
+export class Token {
+  token: string;
+  id: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CharacterService {
   private characters: {} = {};
@@ -29,8 +33,13 @@ export class CharacterService {
     private logger: Logger
     ,@Inject(WINDOW) private window: Window
     ) {
-      this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8080/";
-      console.log('uri:'+this.url);
+      console.log('protocol:'+this.window.location.protocol);
+      if (this.window.location.protocol=='https') {
+        this.url = "https://"+this.window.location.hostname+"/backend/";
+      } else {
+        this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8080/";
+      }
+      console.log('uriii:'+this.url);
     }
 
   getUrl() {
@@ -67,6 +76,7 @@ export class CharacterService {
     return this.http.post<Lord>(this.url+`modify`,
       new HttpParams()
       .set('id',  ''+dbid)
+      .set('token',  this.getToken())
       .set(prop,value).toString(),
       {
         headers: new HttpHeaders()
@@ -81,6 +91,7 @@ export class CharacterService {
     return this.http.post<Lord>(this.url+`modify`,
       new HttpParams()
       .set('id',  l.char['dbid'])
+      .set('token',  this.getToken())
       .set('json', JSON.stringify( l.char)).toString(),
       {
         headers: new HttpHeaders()
@@ -95,6 +106,7 @@ export class CharacterService {
     return this.http.post<Lord>(this.url+`modify`,
       new HttpParams()
       .set('id',  char['dbid'])
+      .set('token',  this.getToken())
       .set('json', JSON.stringify( char)).toString(),
       {
         headers: new HttpHeaders()
@@ -202,18 +214,18 @@ export class CharacterService {
     );
   }
 
-  startLogin(l:LordBase): Promise<string> {
-    const url = this.url+`login`;
-    return this.http.post<string>(url,
+  startLogin(l:LordBase): Promise<Token> {
+    const url = this.url+`token`;
+    return this.http.post<Token>(url,
       new HttpParams()
-      .set('dbid', ''+l.id),
+      .set('cid', ''+l.id),
       {
         headers: new HttpHeaders()
           .set('Content-Type', 'application/x-www-form-urlencoded')
       }).pipe(
         timeout(2000),
         tap(_ => this.logger.log(`login first phase lord name=${l.id}`)),
-        catchError(this.handleError<string>(`getLord id=${l.id}`))
+        catchError(this.handleError<Token>(`token id=${l.id}`))
     ).toPromise();
   }
 
@@ -230,5 +242,9 @@ export class CharacterService {
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
+  }
+
+  getToken() {
+    return this.window.localStorage.getItem('token');
   }
 }

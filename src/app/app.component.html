@@ -3,8 +3,8 @@
     <mat-icon>more_vert</mat-icon>
   </button>
   <mat-menu #mainMenu="matMenu">
-    <button mat-menu-item [matMenuTriggerFor]="login"><mat-icon>login</mat-icon>Login</button>
-    <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
+    <button mat-menu-item *ngIf="!hasToken()" [matMenuTriggerFor]="login"><mat-icon>login</mat-icon>Login</button>
+    <button mat-menu-item *ngIf="hasToken()" (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
   </mat-menu>
   <mat-menu #login="matMenu">
     <ng-container *ngFor="let c of list" >
@@ -13,7 +13,7 @@
   </mat-menu>
   <button mat-button (click)="newChar()">
     <mat-icon>person_add</mat-icon>
-  </button> 
+  </button>
   <button mat-button routerLink="team">
     <mat-icon>groups</mat-icon>
     Team
@@ -32,7 +32,7 @@
   </mat-menu>
   <button mat-button [matMenuTriggerFor]="all"><mat-icon>switch_account</mat-icon>All</button>
   <mat-menu #all="matMenu">
-    
+
     <button mat-menu-item [matMenuTriggerFor]="Lords"><mat-icon>male</mat-icon>Lords</button>
     <button mat-menu-item [matMenuTriggerFor]="Ladies"><mat-icon>female</mat-icon>Ladies</button>
     <button mat-menu-item [matMenuTriggerFor]="Other"><mat-icon>transgender</mat-icon>Other</button>

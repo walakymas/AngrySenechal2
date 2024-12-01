@@ -62,13 +62,13 @@
                         Main info
                       </button>
                       <button mat-menu-item (click)="jsonDialog()">
-                        Json 
+                        Json
                       </button>
                       <button mat-menu-item (click)="pdf()">
-                        Pdf 
+                        Pdf
                       </button>
                       <button mat-menu-item disabled>
-                        Horses 
+                        Horses
                       </button>
                       <button mat-menu-item disabled>
                         Army
@@ -93,8 +93,8 @@
             <span id="glory"> {{details['glory']}}</span>
         </div>
         <div style="text-align: center;">
-            <button (click)="bot('d6')"><mat-icon>casino</mat-icon>D6</button>        
-            <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>        
+            <button (click)="bot('d6')"><mat-icon>casino</mat-icon>D6</button>
+            <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
         </div>
     </div>
     <div class="col-1">
@@ -102,7 +102,7 @@
     </div>
     <div class="col-1">
         <div class="FontSizeBig">
-            <span class="gold">HP:</span> 
+            <span class="gold">HP:</span>
             <span *ngIf="details['hp']==details['ahp']; else wounded"> {{details['hp']}}</span>
             <ng-template #wounded>
                 <span matTooltip="{{details['wounds']}}"> {{details['ahp']}}/{{details['hp']}}</span>
@@ -113,25 +113,22 @@
                 <legend>Health</legend>
                 <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
                     <mat-icon>remove</mat-icon>
-                </button>                     
+                </button>
                 <button  mat-mini-fab color="accent" title="Heal" (click)="heal('heal')">
                     <mat-icon>add</mat-icon>
-                </button>  
-                <input id="healthmod" type="number" matInput [(ngModel)]="healthmod"/>                    
-                
+                </button>
+                <input id="healthmod" type="number" matInput [(ngModel)]="healthmod"/>
                 <br/>
-                
-                
-                <button  mat-mini-fab color="accent" title="Wealky Healing" (click)="heal('sunday')">
+                <button  mat-mini-fab color="accent" title="Weakly Healing" (click)="heal('sunday')">
                     <mat-icon>healing</mat-icon>
-                </button>                     
+                </button>
                 <button  mat-mini-fab color="accent" title="Complette (Winter)" (click)="heal('full')">
                     <mat-icon>favorite</mat-icon>
-                </button>                    
+                </button>
 
                 <label for="chineed">Chirurgery</label>
                 <mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>
-                   
+
             </fieldset>
         </div>
     </div>
@@ -148,7 +145,7 @@
                     value="{{20-char.char['traits'][t.short]}}"
                     (valueChange)="modifyProp( 'traits.'+ t.short, 20-$event )"
                 ></app-editable></td><td><mat-checkbox [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
-            </tr> 
+            </tr>
             <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t.short)}}%"></div><div  style="width:{{100-5*getTrait(t.short)}}%" class="ratioRed"></div></div></td><td></td></tr>
             </tbody>
             <tr><td colspan="100%" align="center"> Chivalry: {{chivalry}}/80</td></tr>
@@ -157,7 +154,7 @@
     <div class="col-1">
         <h2 class="skillhead">Skills</h2>
         <ul id="skills">
-            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" 
+            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)"
                 (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
                 value="{{char.char['skills']['Other'][m.key]}}"
                 (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
@@ -228,15 +225,15 @@
                     <tbody id="combatgear">
                         <tr><th>Skill</th><td>{{weapon['skill']}}</td></tr>
                         <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
-                        <tr> 
+                        <tr>
                             <td></td><td>
-                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>        
-                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>        
+                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
+                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
                             </td>
                         </tr>
                         <tr>
                             <th>Damage reduction</th>
-                            <td>{{base.armors[char.char['combat']['armor']]['red']}} + {{base.shields[char.char['combat']['shield']]['red']}} 
+                            <td>{{base.armors[char.char['combat']['armor']]['red']}} + {{base.shields[char.char['combat']['shield']]['red']}}
                             </td>
                         </tr>
                         <tr><th>Dex modifier</th><td>{{base.armors[char.char['combat']['armor']]['red']}}</td></tr>
@@ -288,12 +285,12 @@
                   </mat-panel-title>
                 </mat-expansion-panel-header>
                 <app-npc-detail *ngIf="m.value['dbid']" [dbid]="m.value['dbid']"></app-npc-detail>
-                <table *ngIf="!m.value['dbid']"  width="100%"> 
+                <table *ngIf="!m.value['dbid']"  width="100%">
                     <ng-container *ngFor="let m of m.value['show']  | keyvalue ">
                         <tr  *ngIf="isEq(m.key, 'Born')">
-                            <th>Age</th><td>{{char.year - m.value*1}}</td> 
+                            <th>Age</th><td>{{char.year - m.value*1}}</td>
                         </tr>
-                        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>   
+                        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
                     </ng-container>
 
                     <tr *ngFor="let s of m.value['skills'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
@@ -313,8 +310,8 @@
 <ng-template #noChar>
     <style>
         .wrapper {
-            display: flex; 
-            justify-content: center; 
+            display: flex;
+            justify-content: center;
             align-items: center;
             height: calc(100vh - 20px);
         }

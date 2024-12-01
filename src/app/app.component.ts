@@ -21,14 +21,16 @@ export class AppComponent implements OnInit {
 
     private router: Router,
     private arouter: ActivatedRoute,
-    private service: CharacterService, 
+    private service: CharacterService,
     private logger: Logger,
     private message: MessageService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
-    ) 
+    )
   {
     this.snackBarConfig.duration = 2000;
+    this.token = window.localStorage.getItem('token')
+    this.logger.log('token:'+this.token)
   }
 
   ngOnInit(): void {
@@ -71,7 +73,7 @@ export class AppComponent implements OnInit {
         this.service.newChar(result).then(c => {
           this.router.navigate(['character/'+result['name']])
           this.snackBar.open('Lord created','Ok',this.snackBarConfig);
-        })        
+        })
       } else {
         this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
       }
@@ -80,19 +82,27 @@ export class AppComponent implements OnInit {
 
   loginBase(l) {
     this.message.add(`login as ${l.name}`)
-    this.service.startLogin(l).then(token => 
+    this.service.startLogin(l).then(token =>
       {
-        window.localStorage.setItem('token',token);
-        this.token = token;
+        window.localStorage.setItem('token',token.token);
+        this.token = token.token;
+        var command = 'token '+ token.id
+        this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
       })
   }
 
   logout() {
     this.message.add("logout")
+    window.localStorage.removeItem('token');
+    this.token = null;
   }
 
   navigateTo(value){
     console.log(value);
     this.router.navigate(['/character',value]);
+  }
+
+  hasToken() {
+    return window.localStorage.getItem('token')!=null;
   }
 }
