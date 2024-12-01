@@ -193,6 +193,16 @@ export class CharacterDetailComponent implements OnInit {
     return this.char.virtues.includes(trait);
   }
 
+  getGlory(year)  {
+    var result = 0;
+    this.char.events.forEach(e => {
+      if (year <=  e['year']*1) {
+        result += e['glory']*1;
+      }
+    });
+    return result;
+  }
+
   getDetail(type : string)  {
     if (this.char) {
       if (type === 'Damage') 
