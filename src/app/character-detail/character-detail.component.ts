@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { Lord } from './../lord';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
-import { CharacterService } from './../character.service';
+import { CharacterService, CheckAll } from './../character.service';
 import { Logger } from '../logger.service';
 import { Base } from '../base';
 import { MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
@@ -20,9 +20,12 @@ import { Subscription, interval } from 'rxjs';
 })
 export class CharacterDetailComponent implements OnInit {
 //  id : number = 32;
-  id : number = 63;
+  id : number = 32;
   traits: Trait[] = []
+  checks: CheckAll[] = []
   healthmod: number = 0;
+  actualCheck: number = 1;
+  lastCheck: number = -1;
   char : Lord;
   details: {};
   weapon: {};
@@ -32,6 +35,7 @@ export class CharacterDetailComponent implements OnInit {
   snackBarConfig: MatSnackBarConfig;
   chivalry : number = 0;
   subscription: Subscription;
+  checksubscription: Subscription;
   virtues: {};
   constructor(
     private route: ActivatedRoute,
@@ -40,7 +44,7 @@ export class CharacterDetailComponent implements OnInit {
     private logger: Logger,
     private snackBar: MatSnackBar,
     public dialog: MatDialog
-    ) { 
+    ) {
       this.snackBarConfig = new MatSnackBarConfig();
       this.snackBarConfig.duration = 2000;
     }
@@ -50,18 +54,20 @@ export class CharacterDetailComponent implements OnInit {
     console.log('CharacterDetailComponent ngOnInit')
     this.route.paramMap.subscribe(data => this.load(data));
     this.subscription = interval(60000).subscribe(v => this.loadLord());
+    this.checksubscription = interval(5000).subscribe(v =>   this.service.getCheckList().subscribe( l => this.setChecks(l)));
+    this.loadLord()
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-  
+
   load(p:ParamMap) {
     const name = p.get('name');
     console.log('route:'+name)
     let id = +name;
 
-    this.service.getBase().then( t => 
+    this.service.getBase().then( t =>
       {
         console.log('base in team')
         this.base = t;
@@ -84,6 +90,45 @@ export class CharacterDetailComponent implements OnInit {
     this.service.getLord(this.id).subscribe( l => this.setLord(l));
   }
 
+  playDiceSound(){
+    let audio = new Audio();
+    audio.src = "../../assets/audio/dice-95077.mp3";
+    audio.load();
+    audio.play();
+  }
+  setChecks(l: CheckAll[]) {
+    if (l[0].id !=this.lastCheck) {
+      console.log('setCheck')
+      if (this.lastCheck!=-1) {
+        this.playDiceSound();
+      }
+      this.checks = l;
+      this.lastCheck = l[0].id;
+    }
+  }
+
+  check(p:string){
+    let res = this.checks[this.actualCheck-1][p]
+    if ("command"==p){
+      res = res.replace(/<@!\d{5,}>/,'')
+      console.log(res)
+    }
+    return res;
+  }
+  checkIcon(c){
+    let res = this.checks[this.actualCheck-1].result[c]['success']
+    if ("Critical"==res){
+      res = "crown"
+    } else if  ("Fail"==res) {
+      res=  "thumb_down"
+    } else if  ("Success"==res) {
+      res=  "thumb_up"
+    } else if  ("Fumble"==res) {
+      res=  "thunderstorm"
+    }
+    console.log(res)
+    return res;
+  }
   setLord(l: Lord) {
     this.id = l.char['dbid']*1;
     this.char =  l;
@@ -170,7 +215,7 @@ export class CharacterDetailComponent implements OnInit {
   getTrait(name : string)  {
     return this.char.char['traits'][name.toLowerCase().substring(0,3)]
   }
-  
+
   shortTrait(name : string)  {
     name.toLowerCase().substring(0,3);
   }
@@ -195,22 +240,22 @@ export class CharacterDetailComponent implements OnInit {
 
   getDetail(type : string)  {
     if (this.char) {
-      if (type === 'Damage') 
+      if (type === 'Damage')
           return Math.round((this.char.char['stats']['str']*1+this.char.char['stats']['siz']*1)/6);
-      else if (type === 'Healing Rate') 
+      else if (type === 'Healing Rate')
           return Math.round((this.char.char['stats']['str']*1+this.char.char['stats']['con']*1)/10);
-      else if (type === 'Move Rate') 
+      else if (type === 'Move Rate')
           return Math.round((this.char.char['stats']['dex']*1+this.char.char['stats']['siz']*1)/10);
-      else if (type === 'Total Hitpoints') 
+      else if (type === 'Total Hitpoints')
           return Math.round((this.char.char['stats']['siz']*1+this.char.char['stats']['con']*1));
-      else if (type === 'Unconscious') 
+      else if (type === 'Unconscious')
           return Math.round((this.char.char['stats']['con']*1+this.char.char['stats']['siz']*1)/4);
-      else if (type === 'Major Wound') 
+      else if (type === 'Major Wound')
           return this.char.char['stats']['con'];
-      else if (type === 'Knockdown') 
+      else if (type === 'Knockdown')
           return this.char.char['stats']['siz'];
       return '?';
-    } else 
+    } else
       return '-NA-';
   }
 
@@ -243,7 +288,7 @@ export class CharacterDetailComponent implements OnInit {
 	}
 
   public isEq(s1: string, s2:string):boolean{
-    let result = s1==s2; 
+    let result = s1==s2;
     return result;
   }
 
@@ -273,7 +318,7 @@ export class CharacterDetailComponent implements OnInit {
         this.service.modifyChar(result).then(c => {
           this.setLord(c);
           this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
-        })        
+        })
       }
 
     });
@@ -298,7 +343,7 @@ export class CharacterDetailComponent implements OnInit {
         this.service.main(this.char, result).then(c => {
           this.setLord(c);
           this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
-        })        
+        })
       } else {
         this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
       }
@@ -325,10 +370,13 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   editEvent(e) {
+    if (!this.hasUser()) {
+      return;
+    }
     let ge: GameEvent;
     if (e) {
       ge = new GameEvent(e['id'],e['glory'],e['year'],e['description'])
-    } 
+    }
 
     const dialogRef = this.dialog.open(DialogContentExampleDialog, {
       width: '500px',
@@ -342,12 +390,15 @@ export class CharacterDetailComponent implements OnInit {
         this.service.event(this.char, result).then(c => {
           this.setLord(c);
           this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
-        })        
+        })
       } else {
         this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
       }
     });
+  }
 
+  hasUser() {
+    return window.localStorage.getItem('userName')!=null;
   }
 }
 
@@ -358,7 +409,7 @@ export class Trait {
 }
 
 export class CharacterMain {
-  constructor (  
+  constructor (
     public name: string,
     public shortName: string,
     public role: string,
@@ -418,7 +469,7 @@ export class GameEvent {
     public description: string = '') {}
 }
 
-@Component({ 
+@Component({
   selector: 'dialog-content-example-dialog',
   template: `
   <div mat-dialog-content>
@@ -453,7 +504,7 @@ export class DialogContentExampleDialog {
     }
 }
 
-@Component({ 
+@Component({
   selector: 'character-json-dialog',
   template: `
   <div mat-dialog-content>
@@ -480,7 +531,7 @@ export class CharacterJsonDialog {
       this.lord = data.lord;
       this.editorOptions = new JsonEditorOptions()
       this.editorOptions.modes = ['code', 'tree'];
-      this.editorOptions.mode = 'code'; 
+      this.editorOptions.mode = 'code';
     }
     ngOnInit(): void {
       this.fg = this.formBuilder.group({

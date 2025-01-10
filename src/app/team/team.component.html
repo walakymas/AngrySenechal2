@@ -1,7 +1,7 @@
 <div id="teamdiv" *ngIf="team; else noTeam">
     <div class="row">
         <div class="col-1">
-            <mat-button-toggle-group class="modifier" [(ngModel)]="modifier"> 
+            <mat-button-toggle-group class="modifier" [(ngModel)]="modifier">
                 <ng-container *ngFor="let a of fakeArray; let index = index">
                     <mat-button-toggle value="{{ index-10 }}">{{ index-10 }}</mat-button-toggle>
                 </ng-container>
@@ -30,6 +30,7 @@
         <tr id="unc"><th>Unconscious</th><td *ngFor="let m of team">{{m.detail.unc}}</td></tr>
         <tr id="mw"><th>Major Wound</th><td *ngFor="let m of team">{{m.detail.mw}}</td></tr>
         <tr id="kno"><th>Knockdown</th><td *ngFor="let m of team">{{m.detail.kno}}</td></tr>
+        <tr id="glo"><th>Glory</th><td *ngFor="let m of team">{{m['Glory']}}</td></tr>
     </tbody>
     <tbody id="traits">
         <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
@@ -67,8 +68,8 @@
 <ng-template #noTeam>
     <style>
         .wrapper {
-            display: flex; 
-            justify-content: center; 
+            display: flex;
+            justify-content: center;
             align-items: center;
             height: calc(100vh - 20px);
         }

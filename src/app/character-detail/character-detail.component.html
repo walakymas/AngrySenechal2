@@ -18,25 +18,28 @@
         <ul id="statistics">
             <li><span class="gold">SIZ</span>
             <app-editable
+            [enabled]="hasUser()"
                 value="{{char.char['stats']['siz']}}"
                 (valueChange)="modifyProp( 'stats.siz', $event )"
             ></app-editable></li>
             <li><span class="gold">DEX</span><app-editable
+              [enabled]="hasUser()"
                 value="{{char.char['stats']['dex']}}"
                 (valueChange)="modifyProp('stats.dex', $event )"
             ></app-editable></li>
             <li><span class="gold">STR</span>
             <app-editable
+            [enabled]="hasUser()"
                 value="{{char.char['stats']['str']}}"
                 (valueChange)="modifyProp( 'stats.str', $event )"
             ></app-editable></li>
             <li><span class="gold">CON</span>
-            <app-editable
+            <app-editable   [enabled]="hasUser()"
                 value="{{char.char['stats']['con']}}"
                 (valueChange)="modifyProp( 'stats.con', $event )"
             ></app-editable></li>
             <li><span class="gold">APP</span>
-            <app-editable
+            <app-editable   [enabled]="hasUser()"
                 value="{{char.char['stats']['app']}}"
                 (valueChange)="modifyProp( 'stats.app', $event )"
             ></app-editable></li>
@@ -58,10 +61,10 @@
                     <mat-icon>more_vert</mat-icon>
                 </button>
                 <mat-menu #character="matMenu">
-                      <button mat-menu-item (click)="editMain(char)">
+                      <button mat-menu-item *ngIf="hasUser()" (click)="editMain(char)">
                         Main info
                       </button>
-                      <button mat-menu-item (click)="jsonDialog()">
+                      <button mat-menu-item *ngIf="hasUser()" (click)="jsonDialog()">
                         Json
                       </button>
                       <button mat-menu-item (click)="pdf()">
@@ -95,6 +98,28 @@
         <div style="text-align: center;">
             <button (click)="bot('d6')"><mat-icon>casino</mat-icon>D6</button>
             <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
+        </div>
+        <div style="text-align: center;" class="check"  *ngIf="checks.length>0">
+          <div *ngIf="checks[actualCheck-1]">
+            <span>{{checks[actualCheck-1].name}}</span>  {{check('command')}}
+            <div *ngIf="checks[actualCheck-1].result['action']=='dice'">
+              {{check('count')}}D{{check('result')['c1']['size']}}={{checks[actualCheck-1].result['c1']['sum']}}
+              ( {{checks[actualCheck-1].result['c1']['dices']}})
+            </div>
+            <div *ngIf="check('result')['action']=='check'">
+              {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
+              Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
+            </div>
+            <div *ngIf="checks[actualCheck-1].result['action']=='trait'">
+              {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
+              Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
+              <div *ngIf="checks[actualCheck-1].result['c2']">
+                {{check('result')['c2']['name']}}({{check('result')['c2']['base']}})
+                Result: {{check('result')['c2']['success']}} ({{check('result')['c2']['ro']}})<mat-icon>{{checkIcon('c2')}}</mat-icon>
+                  </div>
+              </div>
+          </div>
+          <mat-slider min="1" max="{{checks.length}}" step="1" thumbLabel  [(value)]="actualCheck" ></mat-slider>
         </div>
     </div>
     <div class="col-1">
@@ -138,13 +163,16 @@
         <h2 id="traithead">Personality Traits</h2>
         <table class="traits">
             <tbody *ngFor="let t of traits"><tr>
-                <td><mat-checkbox [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td ><app-editable
+                <td><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td
+                ><ng-container *ngIf="hasUser()"> <app-editable [enabled]="hasUser()"
                     value="{{char.char['traits'][t.short]}}"
                     (valueChange)="modifyProp( 'traits.'+t.short, $event )"
-                ></app-editable></td><td >{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon><mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon></td><td><mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}</td><td ><app-editable
+                ></app-editable></ng-container><ng-container *ngIf="!hasUser()"> {{char.char['traits'][t.short]}}</ng-container></td><td >{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon><mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon></td
+                  ><td><mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}</td><td
+                  ><app-editable  [enabled]="hasUser()"
                     value="{{20-char.char['traits'][t.short]}}"
                     (valueChange)="modifyProp( 'traits.'+ t.short, 20-$event )"
-                ></app-editable></td><td><mat-checkbox [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
+                ></app-editable></td><td><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
             </tr>
             <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t.short)}}%"></div><div  style="width:{{100-5*getTrait(t.short)}}%" class="ratioRed"></div></div></td><td></td></tr>
             </tbody>
@@ -154,8 +182,9 @@
     <div class="col-1">
         <h2 class="skillhead">Skills</h2>
         <ul id="skills">
-            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)"
+            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)"
                 (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+                [enabled]="hasUser()"
                 value="{{char.char['skills']['Other'][m.key]}}"
                 (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
             ></app-editable></li>
@@ -164,19 +193,22 @@
     <div class="col-1">
         <h2 class="skillhead">Combat Skills</h2>
         <ul id="combat">
-            <li *ngFor="let m of char.char['skills']['Weapons'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+            <li *ngFor="let m of char.char['skills']['Weapons'] | keyvalue"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+              [enabled]="hasUser()"
                 value="{{char.char['skills']['Weapons'][m.key]}}"
                 (valueChange)="saveProjectName( char.char['skills']['Weapons'], m.key, $event )"
             ></app-editable></li>
-            <li *ngFor="let m of char.char['skills']['Combat'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
-                value="{{char.char['skills']['Combat'][m.key]}}"
+            <li *ngFor="let m of char.char['skills']['Combat'] | keyvalue"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+              [enabled]="hasUser()"
+              value="{{char.char['skills']['Combat'][m.key]}}"
                 (valueChange)="saveProjectName( char.char['skills']['Combat'], m.key, $event )"
             ></app-editable></li>
         </ul>
         <h2 id="passionhead">Passions</h2>
         <ul id="passions">
-            <li *ngFor="let m of char.char['passions'] | keyvalue"><mat-checkbox [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
-                value="{{char.char['passions'][m.key]}}"
+            <li *ngFor="let m of char.char['passions'] | keyvalue"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+              [enabled]="hasUser()"
+              value="{{char.char['passions'][m.key]}}"
                 (valueChange)="saveProjectName( char.char['passions'], m.key, $event )"
             ></app-editable></li>
         </ul>

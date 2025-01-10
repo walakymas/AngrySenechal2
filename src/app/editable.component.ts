@@ -7,12 +7,12 @@ import { EventEmitter } from "@angular/core";
 
 @Component({
 	selector: "app-editable",
-	inputs: [ "value" ],
+	inputs: [ "value", "enabled" ],
 	outputs: [ "valueChangeEvents: valueChange" ],
 	styleUrls: [ "./editable.component.css" ],
 	template:
 	`
-		<span *ngIf="isEditing" class="editor">
+		<span *ngIf="isEditing && enabled" class="editor">
 			<input
 				type="number"
 				name="value"
@@ -23,13 +23,14 @@ import { EventEmitter } from "@angular/core";
 				(keydown.Escape)="cancel()"
 			/>
 		</span>
-		<span *ngIf="( ! isEditing )" (click)="edit()">
+		<span *ngIf="( ! (isEditing  && enabled) )" (click)="edit()">
 			{{ value }}
 		</span>
 	`
 })
 export class EditableComponent {
 
+	public enabled!: boolean;
 	public isEditing: boolean;
 	public pendingValue: number;
 	public value!: number;

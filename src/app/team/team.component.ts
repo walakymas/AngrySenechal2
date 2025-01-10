@@ -15,12 +15,12 @@ export class TeamComponent implements OnInit {
   team : LordData[];
   base: Base;
   traits: Trait[] = [];
-  readonly: boolean = true; 
+  readonly: boolean = true;
   constructor(private service: CharacterService,
     ) { }
 
   ngOnInit(): void {
-    this.service.getBase().then( t => 
+    this.service.getBase().then( t =>
       {
         console.log('base in team')
         this.base = t;
@@ -31,7 +31,7 @@ export class TeamComponent implements OnInit {
     );
     this.service.getTeam().subscribe( t => this.setTeam(t));
   }
-  
+
   setTeam(t: LordData[])  {
     this.team = t;
     for (let ti in t) {
@@ -66,30 +66,30 @@ export class TeamComponent implements OnInit {
       }
     }
   }
-  
+
   detail(m: LordData, type : string)  {
-      if (type === 'Damage') 
+      if (type === 'Damage')
           return Math.round((m['stats']['str']*1+m['stats']['siz']*1)/6);
-      else if (type === 'Healing Rate') 
+      else if (type === 'Healing Rate')
           return Math.round((m['stats']['str']*1+m['stats']['con']*1)/10);
-      else if (type === 'Move Rate') 
+      else if (type === 'Move Rate')
           return Math.round((m['stats']['dex']*1+m['stats']['siz']*1)/10);
-      else if (type === 'Max HP') 
+      else if (type === 'Max HP')
           return Math.round((m['stats']['siz']*1+m['stats']['con']*1));
-      else if (type === 'Unconscious') 
+      else if (type === 'Unconscious')
           return Math.round((m['stats']['con']*1+m['stats']['siz']*1)/4);
-      else if (type === 'Major Wound') 
+      else if (type === 'Major Wound')
           return m['stats']['con'];
-      else if (type === 'Knockdown') 
+      else if (type === 'Knockdown')
           return m['stats']['siz'];
-      else if (type === 'Chirurgery') 
+      else if (type === 'Chirurgery')
           return m['health']['chirurgery'];
       else if (type==='Actual HP') {
           let hp = Math.round((m['stats']['siz']*1+m['stats']['con']*1));
           if (m['health'] && m['health']['changes'])
             for(let ii in  m['health']['changes']) {
               hp += m['health']['changes'][ii];
-            } 
+            }
           return hp;
       }
       return '?';
@@ -117,7 +117,7 @@ export class TeamComponent implements OnInit {
   }
 
   bot(p:string, m:LordData) {
-    if (!this.readonly) {
+    if (!this.readonly && window.localStorage.getItem('userName')!=null) {
       let p_ = p.replace(/ /g,'_');
       let command = m?`check ${p_} ${this.modifier} <@!${m['memberId']}>`:`team ${p_}`;
       this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));

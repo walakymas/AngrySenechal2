@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CharacterService } from './character.service';
+import { CharacterService, User } from './character.service';
 import { MessageService } from './message.service';
 import { Logger } from './logger.service';
 import { Lord, LordBase } from './lord';
@@ -7,6 +7,7 @@ import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 import { CharacterMain, CharacterMainDialog } from './character-detail/character-detail.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { Subscription, interval, timer } from 'rxjs';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,6 +18,8 @@ export class AppComponent implements OnInit {
   lastChar:string;
   token:string;
   snackBarConfig = new MatSnackBarConfig();
+  subscription: Subscription;
+  user: User;
   constructor (
 
     private router: Router,
@@ -35,6 +38,27 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.getList().subscribe( l => this.list = l)
+    this.service.getUser().then( u => this.setUser(u))
+    this.subscription = interval(5000).subscribe(v =>
+      {if ( window.localStorage.getItem('userId') ==null &&
+            window.localStorage.getItem('token') !=null
+      ) {
+        this.service.getUser().then( u => this.setUser(u));
+      }}
+    );
+  }
+
+  setUser(u: User) {
+    this.user = u;
+    if(u.result=='fail') {
+      window.localStorage.removeItem('user')
+      window.localStorage.removeItem('userId')
+      window.localStorage.removeItem('userName')
+    } else {
+      window.localStorage.setItem('user', JSON.stringify(u))
+      window.localStorage.setItem('userId', ''+u.id)
+      window.localStorage.setItem('userName', u.name)
+    }
   }
 
   isPc(c: LordBase) : boolean {
@@ -75,7 +99,7 @@ export class AppComponent implements OnInit {
           this.snackBar.open('Lord created','Ok',this.snackBarConfig);
         })
       } else {
-        this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
+        this.snackBar.open('Dialog Cancelled','Ok',this.snackBarConfig);
       }
     });
   }
@@ -94,7 +118,11 @@ export class AppComponent implements OnInit {
   logout() {
     this.message.add("logout")
     window.localStorage.removeItem('token');
+    window.localStorage.removeItem('userId')
+    window.localStorage.removeItem('user')
+    window.localStorage.removeItem('userName')
     this.token = null;
+    this.user = null;
   }
 
   navigateTo(value){

@@ -28,9 +28,14 @@ import { MatButtonToggleModule} from '@angular/material/button-toggle';
 import { MatStepperModule} from '@angular/material/stepper';
 import { NgJsonEditorModule } from 'ang-jsoneditor';
 import { ChargenComponent } from './chargen/chargen.component'
-import {MatSliderModule} from '@angular/material/slider';
-import {MatRadioModule} from '@angular/material/radio';
+import { MatSliderModule} from '@angular/material/slider';
+import { MatRadioModule} from '@angular/material/radio';
+import { MatTabsModule} from '@angular/material/tabs';
+import { MatTableModule} from '@angular/material/table';
 import { WINDOW, WINDOW_PROVIDERS } from './windows';
+import { AdminComponent, CharEditDialog, PlayerEditDialog } from './admin/admin.component';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
 @NgModule({
   declarations: [
     AppComponent,
@@ -44,6 +49,9 @@ import { WINDOW, WINDOW_PROVIDERS } from './windows';
     CharacterMainDialog,
     CharacterJsonDialog,
     ChargenComponent,
+    AdminComponent,
+    PlayerEditDialog,
+    CharEditDialog
   ],
   imports: [
     BrowserModule,
@@ -68,7 +76,11 @@ import { WINDOW, WINDOW_PROVIDERS } from './windows';
     MatButtonToggleModule,
     MatStepperModule,
     MatSliderModule,
-    MatRadioModule
+    MatRadioModule,
+    MatTabsModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule
   ],
   entryComponents:[MatDialogModule],
   providers: [HttpClientModule,WINDOW_PROVIDERS],

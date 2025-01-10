@@ -11,9 +11,48 @@ import { catchError, map, tap,timeout } from 'rxjs/operators';
 import { GameEvent } from './character-detail/character-detail.component';
 import { WINDOW } from './windows';
 
+export class User {
+  name: string;
+  id: number;
+  did: number;
+  expires: string;
+  result: string;
+  rights: number;
+}
+
 export class Token {
   token: string;
   id: number;
+}
+export class TokenAll {
+  token: string;
+  id: number;
+  created:string;
+  modified:string;
+  expires:string
+  cid:number
+  tokenstate:number
+}
+
+export class CheckAll {
+  id:number;
+  created: string;
+  modified:string;
+  character:number;
+  command:string;
+  result;
+  name: string;
+}
+
+export class Player {
+  cid: number;
+  created:string;
+  modified:string;
+  playerstate: number;
+  playerrights:number   ;
+  did:number;
+  name: string;
+  character: number ;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -34,8 +73,9 @@ export class CharacterService {
     ,@Inject(WINDOW) private window: Window
     ) {
       console.log('protocol:'+this.window.location.protocol);
-      if (this.window.location.protocol=='https') {
-        this.url = "https://"+this.window.location.hostname+"/backend/";
+      if (this.window.location.protocol=='https'
+        || this.window.location.hostname.indexOf('senechaldev.duckdns.org') >=0) {
+        this.url = this.window.location.protocol+"//"+this.window.location.hostname+"/backend/";
       } else {
         this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8080/";
       }
@@ -170,6 +210,21 @@ export class CharacterService {
     ).toPromise();
   }
 
+  getUser() : Promise<User>{
+    return this.http.post<User>(this.url+`user`,
+      new HttpParams()
+      .set('token',  this.getToken())
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`getUser `)),
+      catchError(this.handleError<User>(`getUser error`))
+    ).toPromise();
+  }
+
+
   getLord(id: number): Observable<Lord> {
     const url = this.url+`${this.characterUrl}?id=${id}`;
     return this.http.get<Lord>(url).pipe(
@@ -189,6 +244,7 @@ export class CharacterService {
     return this.http.post<String>(environment.hook,
       new HttpParams()
       .set('username', 'CaptainHook')
+      .set('avatar_url','https://senechalweb.duckdns.org/attachments/hook.png')
       .set('content',environment.prefix+command).toString(),
       {
         headers: new HttpHeaders()
@@ -247,4 +303,67 @@ export class CharacterService {
   getToken() {
     return this.window.localStorage.getItem('token');
   }
+
+
+  getPlayerList(): Observable<Player[]> {
+    return this.http.get<Player[]>(this.url+`adminList?table=player`).pipe(
+      tap(_ => this.logger.log(`fetched player list`)),
+      catchError(this.handleError<Player[]>(`getPlayerList`))
+    );
+  }
+
+  getTokenList(): Observable<TokenAll[]> {
+    return this.http.get<TokenAll[]>(this.url+`adminList?table=tokens`).pipe(
+      tap(_ => this.logger.log(`fetched player list`)),
+      catchError(this.handleError<TokenAll[]>(`getPlayerList`))
+    );
+  }
+
+  getCheckList(): Observable<CheckAll[]> {
+    return this.http.get<CheckAll[]>(this.url+`adminList?table=checks`).pipe(
+      tap(_ => this.logger.log(`fetched player list`)),
+      catchError(this.handleError<CheckAll[]>(`getPlayerList`))
+    );
+  }
+
+  updatePlayer(p:Player): Promise<Player> {
+    const url = this.url+`updatePlayer`;
+    console.log('updatePlayer:'+p.did)
+    return this.http.post<Player>(url,
+      new HttpParams()
+      .set('cid', ''+p.cid)
+      .set('name', ''+p.name)
+      .set('fake', 'fake')
+      .set('did', p.did)
+      .set('character', ''+p.character),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+        timeout(2000),
+        tap(_ => this.logger.log(`login first phase lord name=${p.cid}`)),
+        catchError(this.handleError<Player>(`token id=${p.cid}`))
+    ).toPromise();
+  }
+
+  updateChar(p:LordBase): Promise<Lord> {
+    return this.http.post<Lord>(this.url+`modify`,
+      new HttpParams()
+      .set('id',  ''+p.id)
+      .set('token',  this.getToken())
+      .set('name', ''+p.name)
+      .set('memberid', ''+p.memberid)
+      .set('player', ''+p.player)
+      .set('role', ''+p.role)
+      .set('type', ''+p.type),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set mark `)),
+      catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
+
+
 }

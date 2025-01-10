@@ -13,6 +13,9 @@ export interface LordBase {
     name: string;
     type: string;
     role: string;
+    player: number;
+    url: string;
+    memberid: number;
 }
 
 export class LordDetail {
