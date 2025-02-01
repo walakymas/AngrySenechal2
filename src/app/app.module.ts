@@ -36,6 +36,7 @@ import { WINDOW, WINDOW_PROVIDERS } from './windows';
 import { AdminComponent, CharEditDialog, PlayerEditDialog } from './admin/admin.component';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { FeastComponent } from './feast/feast.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,7 +52,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     ChargenComponent,
     AdminComponent,
     PlayerEditDialog,
-    CharEditDialog
+    CharEditDialog,
+    FeastComponent
   ],
   imports: [
     BrowserModule,

@@ -5,11 +5,13 @@ import { CharacterDetailComponent } from './character-detail/character-detail.co
 import { ChargenComponent } from './chargen/chargen.component';
 import { TeamComponent } from './team/team.component';
 import { AdminComponent } from './admin/admin.component';
+import { FeastComponent } from './feast/feast.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/character/Perin', pathMatch: 'full' },
   { path: 'character/:name', component: CharacterDetailComponent },
   { path: 'team', component: TeamComponent },
+  { path: 'feast', component: FeastComponent },
   { path: 'chargen', component: ChargenComponent },
   { path: 'admin', component: AdminComponent }
 ];

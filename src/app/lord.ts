@@ -52,3 +52,27 @@ export class LordData {
     passions: {};
     detail: LordDetail;
 }
+export class Deck {
+  pos:number;
+  deck: [];
+}
+export class FeastRound {
+  action: string;
+  card: string;
+
+}
+export class FeastGuest {
+  id:number;
+  name:string;
+  glory:number;
+  seat:number;
+  activeCard:[];
+  hand:number[];
+  history:FeastRound[];
+}
+export class Feast {
+  name:string;
+  round:number;
+  guests:FeastGuest;
+  deck:Deck;
+}
