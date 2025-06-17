@@ -73,12 +73,7 @@ export class CharacterService {
     ,@Inject(WINDOW) private window: Window
     ) {
       console.log('protocol:'+this.window.location.protocol);
-      if (this.window.location.protocol=='https'
-        || this.window.location.hostname.indexOf('senechaldev.duckdns.org') >=0) {
-        this.url = this.window.location.protocol+"//"+this.window.location.hostname+"/backend/";
-      } else {
-        this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8080/";
-      }
+      this.url = this.window.location.protocol+"//"+this.window.location.hostname+"/backend/";
       console.log('uriii:'+this.url);
     }
 

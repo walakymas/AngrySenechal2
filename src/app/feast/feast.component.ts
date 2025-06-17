@@ -18,7 +18,6 @@ export class FeastComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private service: CharacterService,
-    private location: Location,
     private logger: Logger,
     private snackBar: MatSnackBar,
     public dialog: MatDialog

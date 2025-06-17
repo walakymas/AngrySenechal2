@@ -33,6 +33,7 @@ export class TeamComponent implements OnInit {
   }
 
   setTeam(t: LordData[])  {
+    t.sort((a, b) => a['Glory'] < b['Glory'] ? 1 : a['Glory'] > b['Glory'] ? -1 : 0);
     this.team = t;
     for (let ti in t) {
       const m = t[ti];
