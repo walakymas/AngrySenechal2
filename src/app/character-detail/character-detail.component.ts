@@ -9,7 +9,7 @@ import { MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
-import { UntypedFormGroup, UntypedFormControl, UntypedFormBuilder } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { environment } from './../../environments/environment';
 import { Subscription, interval } from 'rxjs';
 
@@ -531,11 +531,11 @@ export class CharacterJsonDialog {
   editorOptions : JsonEditorOptions;
   lord: Lord;
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
-  public fg: UntypedFormGroup;
-  jsonEditorForm = new UntypedFormControl();
+  public fg: FormGroup;
+  jsonEditorForm = new FormControl();
   char:any;
   constructor(
-    private formBuilder: UntypedFormBuilder,
+    private formBuilder: FormBuilder,
     private dialogRef: MatDialogRef<DialogContentExampleDialog>,
     @Inject(MAT_DIALOG_DATA) public data: {lord: Lord}) {
       this.lord = data.lord;

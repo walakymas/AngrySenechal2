@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { ActivatedRoute } from '@angular/router';
 import { CharacterService } from '../character.service';
@@ -18,10 +18,10 @@ import { Trait } from '../character-detail/character-detail.component';
 export class ChargenComponent implements OnInit {
   base: Base = null;
 
-  mainFormGroup: UntypedFormGroup;
-  traitFormGroup: UntypedFormGroup;
-  thirdFormGroup: UntypedFormGroup;
-  fourthFormGroup: UntypedFormGroup;
+  mainFormGroup: FormGroup;
+  traitFormGroup: FormGroup;
+  thirdFormGroup: FormGroup;
+  fourthFormGroup: FormGroup;
   year: number = 485;
   period: string = "Uther"
   chivalry: number = 0;
@@ -88,7 +88,7 @@ export class ChargenComponent implements OnInit {
 
 
   constructor(
-    private _formBuilder: UntypedFormBuilder,
+    private _formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private service: CharacterService,
     private logger: Logger
@@ -133,15 +133,15 @@ export class ChargenComponent implements OnInit {
 
   ngOnInit() {
     this.mainFormGroup = this._formBuilder.group({
-      name: new UntypedFormControl('name', Validators.required),
-      lord: new UntypedFormControl('lord', Validators.required),
-      year: new UntypedFormControl('year', [Validators.required, Validators.min(480), Validators.max(566)]),
-      born: new UntypedFormControl('born', [Validators.required, Validators.min(460), Validators.max(566)])
+      name: new FormControl('name', Validators.required),
+      lord: new FormControl('lord', Validators.required),
+      year: new FormControl('year', [Validators.required, Validators.min(480), Validators.max(566)]),
+      born: new FormControl('born', [Validators.required, Validators.min(460), Validators.max(566)])
     });
     this.traitFormGroup = this._formBuilder.group({
     });
     this.thirdFormGroup = this._formBuilder.group({
-      sum: new UntypedFormControl({value: 60}, Validators.max(60))
+      sum: new FormControl({value: 60}, Validators.max(60))
     });
     this.fourthFormGroup = this._formBuilder.group({
     });
