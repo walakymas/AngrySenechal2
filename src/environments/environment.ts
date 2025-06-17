@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-//  url: "http://senechalweb.duckdns.org:8000/",
-  url: "http://senechalweb.duckdns.org:8080/",
+  url: "http://senechalweb.duckdns.org:8000/",
+//  url: "http://senechalweb.duckdns.org:8080/",
 //  url: "http://senechalweb.duckdns.org:8881/senechal/",
   prefix: '!',
   hook: 'https://discord.com/api/webhooks/1326979645756936323/6SV5KEZ8jWyisUeArkfO6jqiYk15SYV5Aa2pDA97AAPYrPWlgdB3mcmq0VdGeQ6Lm6Bt'
