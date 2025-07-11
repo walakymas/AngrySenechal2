@@ -111,7 +111,6 @@ export class CharacterDetailComponent implements OnInit {
     let res = this.checks[this.actualCheck-1][p]
     if ("command"==p){
       res = res.replace(/<@!\d{5,}>/,'')
-      console.log(res)
     }
     return res;
   }
@@ -408,7 +407,8 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   hasUser() {
-    return window.localStorage.getItem('userName')!=null;
+    return true;
+    //return window.localStorage.getItem('userName')!=null;
   }
 }
 
