@@ -19,7 +19,6 @@ import { Subscription, interval } from 'rxjs';
   styleUrls: ['./character-detail.component.css']
 })
 export class CharacterDetailComponent implements OnInit {
-//  id : number = 32;
   id : number = 32;
   traits: Trait[] = []
   checks: CheckAll[] = []
@@ -408,7 +407,7 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   hasUser() {
-    return window.localStorage.getItem('userName')!=null;
+    return this.base['loginNeeded'] != 'true' || window.localStorage.getItem('userName')!=null;
   }
 }
 

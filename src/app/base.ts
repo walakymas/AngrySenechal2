@@ -10,4 +10,5 @@ export class Base {
     newchar: {};
     default: {};
     periods: [];
+    loginNeeded: 'false';
 }
