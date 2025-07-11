@@ -110,7 +110,6 @@ export class CharacterDetailComponent implements OnInit {
     let res = this.checks[this.actualCheck-1][p]
     if ("command"==p){
       res = res.replace(/<@!\d{5,}>/,'')
-      console.log(res)
     }
     return res;
   }

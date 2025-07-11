@@ -238,7 +238,7 @@ export class CharacterService {
   bot(command : string): Observable<String> {
     return this.http.post<String>(environment.hook,
       new HttpParams()
-      .set('username', 'CaptainHook')
+      .set('username', 'Captain Hook')
       .set('avatar_url','https://senechalweb.duckdns.org/attachments/hook.png')
       .set('content',environment.prefix+command).toString(),
       {
