@@ -4,12 +4,8 @@
 
 export const environment = {
   production: false,
-//  url: "http://senechalweb.duckdns.org:8000/",
-  url: "http://senechalweb.duckdns.org:8080/",
-//  url: "http://senechalweb.duckdns.org:8881/senechal/",
-  prefix: '.',
-//  hook: 'https://discord.com/api/webhooks/1101536032278728977/DGjrTxgrmSdkq8SQcM56Tal_Ra6gipofCG1ik0wqZoF-FOwAT-i_vGYpoEIOHqf_8g5A'
-  hook: 'https://discordapp.com/api/webhooks/1312466628809724004/zKMr2Zfo6qlB-r5ifsRNjwIS21_LBywhRpnnMBlHxB5FYImzym8f7zIiDOmEnUkIwzy2'
+  url: "http://senechalweb.duckdns.org:8000/",
+  prefix: '!',
 };
 
 /*
