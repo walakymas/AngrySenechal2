@@ -61,18 +61,49 @@ export class FeastRound {
   card: string;
 
 }
+export class GuestRound {
+  cards: number[];
+}
+export class GuestRoundMap {
+  [key: number]: GuestRound;
+}
 export class FeastGuest {
   id:number;
   name:string;
   glory:number;
   seat:number;
-  activeCard:[];
+  activeCard:number[];
   hand:number[];
+  rounds:GuestRoundMap;
   history:FeastRound[];
 }
-export class Feast {
+
+export class FeastGuestMap {
+  [key: number]: FeastGuest;
+}
+export class FeastData {
   name:string;
   round:number;
-  guests:FeastGuest;
+  rounds:number;
+  participiants: FeastGuestMap;
   deck:Deck;
+  state:string;
 }
+export class Feast {
+  data:FeastData;
+  description:string;
+  title:string;
+  id:number;
+  pos:number;
+}
+
+export class Card {
+  name:string;
+  check:{};
+  keep:{};
+  tags:string[];
+}
+export class FeastConfig {
+  [key: string]: Card;
+}
+

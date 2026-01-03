@@ -1,0 +1,17 @@
+div.seating {
+    display: flex;
+}
+div.seating  > div {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* For vertical center as well */
+  
+}
+
+div.seating > div > img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* Ensures the image fits within the div without distortion */
+}

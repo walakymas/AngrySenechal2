@@ -1,0 +1,7 @@
+<div class="seating">
+<ng-container *ngFor="let m of participiants | keyvalue ">
+    <ng-container *ngIf="m.value.position === filter" class="guest">
+        <div><img [src]="getBase(m.key).url" title="{{getBase(m.key).name}} Glory:{{m.value.glory}}" onerror="this.src = 'https://raw.githubusercontent.com/walakymas/AngrySenechal2/refs/heads/spring/src/assets/question.png'"/></div>
+    </ng-container>
+</ng-container>
+</div>

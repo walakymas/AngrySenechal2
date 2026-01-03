@@ -1,4 +1,138 @@
-<div >
-Feast
+<div class="feast" *ngIf="feast.data && feastConfig else preinit">
+    <div class="row">
+        <div class="col-1">
+    <h2>Feast {{feast.title}}</h2>
+<table>
+    <tr>
+        <th>State</th>
+        <td>{{feast.data.state}}</td>
+        <th>Round</th>
+        <td>{{feast.data.round}}/{{feast.data.rounds}}</td>
+        <th *ngIf="feast.data.state === 'init'">
+            <mat-select (selectionChange)="setRounds($event.value)" placeholder="Select size of feast">
+                <mat-option value="2">Small</mat-option>
+                <mat-option value="3">Medium</mat-option>
+                <mat-option value="4">Large</mat-option>
+                <mat-option value="5">Royal</mat-option>
+            </mat-select>
+        </th>
+        <td><button *ngIf="feast.data.round <= feast.data.rounds " (click)="nextState()">Next</button></td>
+    </tr>
+</table>
+<div *ngIf="feast.data.state === 'init'">
+    <h2>Seating</h2>
+    <table>
+        <tr><td>
+    <mat-select (selectionChange)="selectGuest($event.value)" placeholder="Select a guest">
+        <ng-container *ngIf="!list || list.length === 0">
+            <mat-option disabled>No guests available</mat-option>
+        </ng-container>
+        <ng-container *ngIf="list && list.length > 0">
+            <mat-option value="0">Select a guest</mat-option>
+            <ng-container *ngFor="let r of list" [value]="r.id">
+                <mat-option *ngIf="r.type === 'pc' && ! feast.data.participiants[r.id] " [value]="r.id">{{r.name}}</mat-option>
+            </ng-container>
+        </ng-container>
+    </mat-select>
+    </td><td>
+    <mat-select (selectionChange)="selectSeat($event.value)" placeholder="Select a seat">
+        <mat-option value="above">Above</mat-option>
+        <mat-option value="near">Near</mat-option>
+        <mat-option value="below">Below</mat-option>
+        <mat-option value="floor">Floor</mat-option>
+    </mat-select>
+    </td><td><button (click)="seatGuest()" [(disabled)]="notseatable">Seat</button></td></tr>
+    </table>
 </div>
+<h2>Guests</h2>
+<table class="gueststable">
+    <tr>
+        <th>Name</th>
+        <th>Glory</th>
+        <th>Geniality</th>
+        <th>Position</th>
+        <th>Action</th>
+    </tr>
+    <tr *ngFor="let m of feast.data.participiants | keyvalue ">
+        <th>{{getBase(m.key).name}}</th>
+        <td>{{m.value.glory}}</td>
+        <td>{{m.value.geniality || 0}}</td>
+        <td>{{m.value.position}}</td>
+        <td>{{getAction(m.key)}}</td>
+    </tr>
+</table>
+<div class="guests">
+    <table>
+        <tr>
+            <th>Position</th>
+            <th>Guests</th>
+        </tr>
+        <tr>
+            <th>Above</th><td class="seating"><feast-seating [filter]="'above'" [participiants]="feast.data.participiants"></feast-seating></td>
+        </tr>
+        <tr>
+            <th>Near</th><td class="seating"><feast-seating [filter]="'near'" [participiants]="feast.data.participiants"></feast-seating></td>
+        </tr>
+        <tr>
+            <th>Below</th><td class="seating"><feast-seating [filter]="'below'" [participiants]="feast.data.participiants"></feast-seating></td>
+        </tr>
+        <tr>
+            <th>Floor</th><td class="seating"><feast-seating [filter]="'floor'" [participiants]="feast.data.participiants"></feast-seating></td>
+        </tr>  
+    </table>
+</div>
+</div>
+<div class="col-2">
+        <mat-accordion>
+            <mat-expansion-panel  *ngFor="let m of feast.data.participiants | keyvalue " hideToggle>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                   {{getBase(m.key).name}} Glory:{{m.value.glory}} at {{m.value.position}} Action: {{getAction(m.key)}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+                    <div *ngIf="feast.data.round >= 1 && (m.value.rounds[feast.data.round] == undefined || m.value.rounds[feast.data.round].action == undefined)">
+                        <mat-select (selectionChange)="setAction($event.value, m.key)" placeholder="Select action">
+                            <mat-option value="card" *ngIf="m.value.position != 'above'">Draw Card</mat-option>
+                            <mat-option value="indulge">Indulge</mat-option>
+                            <mat-option value="flirt">Flirt</mat-option>
+                            <mat-option value="game">Game</mat-option>
+                        </mat-select>
+                    </div>
+                    <ng-container *ngIf="m.value.rounds[feast.data.round]">
+                        Action: {{m.value.rounds[feast.data.round].action}}
 
+                        <div *ngIf="m.value.rounds[feast.data.round].cards" class="cards">
+                            <div *ngFor="let t of m.value.rounds[feast.data.round].cards"  [class.inactive]="isInactive(t, m.value.rounds[feast.data.round].cards, m.value.significant)" class="card">
+                                <img src="https://raw.githubusercontent.com/walakymas/lakoma/refs/heads/main/images/{{t}}.jpg"/><br/>
+                            </div>
+                        </div>
+                        <div *ngIf="m.value.rounds[feast.data.round].acctiveCards != undefined" class="cards">
+                            <img *ngFor="let t of m.value.rounds[feast.data.round].acctiveCards" src="https://raw.githubusercontent.com/walakymas/lakoma/refs/heads/main/images/{{t}}.jpg" class="card"/><br/>
+                        </div>
+                    </ng-container>
+                    <div>Tags: 
+                        <ng-container *ngIf="m.value.tags.length > 0">
+                            <span *ngFor="let t of m.value.tags">{{t}},</span>
+                        </ng-container>
+                        <span *ngIf="m.value.tags.length === 0">None</span>
+                    </div>
+            </mat-expansion-panel>
+        </mat-accordion>
+</div></div>
+</div>
+<ng-template #preinit>
+    <style>
+        .wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: calc(100vh - 20px);
+        }
+        .inner {
+            padding: 12px;
+        }
+    </style>
+    <div class="wrapper">
+        <mat-spinner class="inner"></mat-spinner>
+    </div>
+</ng-template>

@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
-import { CharacterService, Player, TokenAll } from '../character.service';
+import { C2C, CharacterService, Player, TokenAll } from '../character.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { LordBase } from '../lord';
@@ -23,11 +23,21 @@ export class AdminComponent implements OnInit, AfterViewInit {
   dsTokens: MatTableDataSource<TokenAll> = new MatTableDataSource([]);
   chars: LordBase[];
   dsChars: MatTableDataSource<LordBase> = new MatTableDataSource([]);
+  c2cs: C2C[];
+  dsC2Cs: MatTableDataSource<C2C> = new MatTableDataSource([]);
   displayedColumns: string[] = ['id','name','character','right','did'];
   dcChars: string[] = ['id','name','role','type', 'plyr'];
   dcTokens: string[] = ['id','expires','cid','state'];
+  dcC2Cs: string[] = ['id','c0','c1','connection','comment'];
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort) playerSort: MatSort;
+  @ViewChild(MatSort) c2csort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatPaginator) c2cpaginator: MatPaginator;
+  c0: string = '32';
+  c1: string = '84';
+  connection: string = 'Children';
+  comment: string;
 
   constructor(
     private service: CharacterService,
@@ -39,15 +49,18 @@ export class AdminComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.dsPlayers.sort = this.sort;
+    this.dsPlayers.sort = this.playerSort;
     this.dsChars.sort = this.sort;
     this.dsChars.paginator = this.paginator;
+    this.dsC2Cs.paginator = this.c2cpaginator;
+    this.dsC2Cs.sort = this.c2csort;
   }
 
   ngOnInit(): void {
     this.service.getPlayerList().subscribe( l => {this.setPlayerList(l); this.dsPlayers.data=l;});
     this.service.getTokenList().subscribe( l => {this.setTokenList(l); this.dsTokens.data=l});
     this.service.getList().subscribe( l => {this.setCharList(l); this.dsChars.data=l; });
+    this.service.getC2CList().subscribe( l => {this.setC2CList(l); this.dsC2Cs.data=l; });
   }
 
   setPlayerList(l: Player[]): void {
@@ -60,6 +73,10 @@ export class AdminComponent implements OnInit, AfterViewInit {
 
   setCharList(l: LordBase[]): void {
     this.chars = l;
+  }
+
+  setC2CList(l: C2C[]): void {
+    this.c2cs = l;
   }
 
   getCharName(id): string {
@@ -117,6 +134,16 @@ export class AdminComponent implements OnInit, AfterViewInit {
         })
       }
     });
+  }
+
+  addConnection() {
+    console.log('pre addC2C:'+this.c0+':'+this.c1+':'+this.connection+':'+this.comment+':')
+
+    this.service.addC2C(''+this.c0, ''+this.c1, this.connection, this.comment).then(c => {
+      this.snackBar.open('Connection added','Ok',this.snackBarConfig);
+      this.c2cs = c;
+      this.dsC2Cs.data = c;
+    })
   }
 }
 

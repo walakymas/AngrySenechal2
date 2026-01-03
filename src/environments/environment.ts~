@@ -7,8 +7,15 @@ export const environment = {
 //  url: "http://senechalweb.duckdns.org:8000/",
   url: "http://senechalweb.duckdns.org:8080/",
 //  url: "http://senechalweb.duckdns.org:8881/senechal/",
+<<<<<<< HEAD
+  prefix: '.',
+//  hook: 'https://discord.com/api/webhooks/1101536032278728977/DGjrTxgrmSdkq8SQcM56Tal_Ra6gipofCG1ik0wqZoF-FOwAT-i_vGYpoEIOHqf_8g5A'
+  hook: 'https://discordapp.com/api/webhooks/1312466628809724004/zKMr2Zfo6qlB-r5ifsRNjwIS21_LBywhRpnnMBlHxB5FYImzym8f7zIiDOmEnUkIwzy2'
+=======
   prefix: '!',
-  hook: 'https://discord.com/api/webhooks/931592114595323934/xKVarpSCk48qtjpN2_JHI-h---gBDW9c6rVR8m1zmvRRZOUP86-TBWvDBIY5xgeETIEk'
+  hook: 'https://discord.com/api/webhooks/1326979645756936323/6SV5KEZ8jWyisUeArkfO6jqiYk15SYV5Aa2pDA97AAPYrPWlgdB3mcmq0VdGeQ6Lm6Bt'
+//  hook: 'https://discord.com/api/webhooks/931592114595323934/xKVarpSCk48qtjpN2_JHI-h---gBDW9c6rVR8m1zmvRRZOUP86-TBWvDBIY5xgeETIEk'
+>>>>>>> 2604370 (merges)
 };
 
 /*

@@ -1,0 +1,25 @@
+# Alap image a Node.js-hez, amely szükséges az Angular alkalmazás buildeléséhez
+FROM node:16 AS build-stage
+
+# Munkakönyvtár beállítása
+WORKDIR /app
+
+# Package fájlok másolása és a függőségek telepítése
+COPY package*.json ./
+CMD ["/bin/sh"]
+#RUN npm install
+
+# Angular alkalmazás kódjának másolása
+COPY . .
+
+# Angular alkalmazás buildelése
+RUN npm run build --prod
+
+# Szolgálás NGINX segítségével
+FROM nginx:alpine AS production-stage
+COPY --from=build-stage /app/dist/<dist-folder-name> /usr/share/nginx/html
+
+# Az Angular alkalmazás a 80-as porton lesz elérhető
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

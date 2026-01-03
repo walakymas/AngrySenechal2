@@ -8,7 +8,7 @@ import { AdminComponent } from './admin/admin.component';
 import { FeastComponent } from './feast/feast.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/character/Perin', pathMatch: 'full' },
+  { path: '', redirectTo: '/character/', pathMatch: 'full' },
   { path: 'character/:name', component: CharacterDetailComponent },
   { path: 'team', component: TeamComponent },
   { path: 'feast', component: FeastComponent },

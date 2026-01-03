@@ -37,7 +37,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.service.getList().subscribe( l => this.list = l)
+    this.service.getList().subscribe( l => {
+      this.list = l;
+      window.localStorage.setItem('list', JSON.stringify(l));      
+    })
     this.service.getUser().then( u => this.setUser(u))
     this.subscription = interval(5000).subscribe(v =>
       {if ( window.localStorage.getItem('userId') ==null &&

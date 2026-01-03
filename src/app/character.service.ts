@@ -1,6 +1,5 @@
 import { Injectable, OnInit,Inject } from '@angular/core';
-
-import { Lord, LordBase, LordData} from './lord';
+import { Feast, FeastConfig, Lord, LordBase, LordData} from './lord';
 import { CharacterMain} from './character-detail/character-detail.component';
 import { Base } from './base';
 import { Logger } from './logger.service';
@@ -55,6 +54,17 @@ export class Player {
   character: number ;
 }
 
+export class C2C {
+  cid: number;
+  created:string;
+  modified:string;
+  c0: number;
+  c1: number;
+  connection:string;
+  comment:string;
+  char: LordData;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CharacterService {
   private characters: {} = {};
@@ -73,8 +83,12 @@ export class CharacterService {
     ,@Inject(WINDOW) private window: Window
     ) {
       console.log('protocol:'+this.window.location.protocol);
-      this.url = this.window.location.protocol+"//"+this.window.location.hostname+"/backend/";
-      console.log('uriii:'+this.url);
+      if ("localhost"==this.window.location.hostname ) {
+        this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8000/";
+      } else {
+        this.url = this.window.location.protocol+"//"+this.window.location.hostname+"/backend/";
+      }
+      console.log('urIIII:'+this.url);
     }
 
   getUrl() {
@@ -228,9 +242,30 @@ export class CharacterService {
     );
   }
 
-  getList(): Observable<LordBase[]> {
+  getFeast() : Observable<Feast> {
+    return this.http.get<Feast>(this.url+'feast').pipe(
+      tap(_ => this.logger.log(`fetched feast`)),
+      catchError(this.handleError<Feast>(`getFeast `))
+    );
+  }
+
+  getFeastConfig() : Observable<FeastConfig> {
+    return this.http.get<FeastConfig>(this.url+'feastConfig').pipe(
+      tap(_ => this.logger.log(`fetched feastConfig`)),
+      catchError(this.handleError<FeastConfig>(`getFeast `))
+    );
+  }
+
+  getList(forced: boolean=false): Observable<LordBase[]> {
+    if (!forced && this.characters && Object.keys(this.characters).length > 0) {
+      return of(Object.values(this.characters) as LordBase[]);
+    }
+    this.logger.log('getList');
     return this.http.get<LordBase[]>(this.url+`list`).pipe(
-      tap(_ => this.logger.log(`fetched lord list`)),
+      tap(_ => {
+        this.characters = _;
+        this.logger.log(`fetched lord list`+ JSON.stringify(_));
+      }),
       catchError(this.handleError<LordBase[]>(`getList`))
     );
   }
@@ -314,8 +349,15 @@ export class CharacterService {
     );
   }
 
+  getC2CList(): Observable<C2C[]> {
+    return this.http.get<C2C[]>(this.url+`adminList?table=c2c`).pipe(
+      tap(_ => this.logger.log(`fetched c2c list`)),
+      catchError(this.handleError<C2C[]>(`getC2CList`))
+    );
+  }
+
   getCheckList(): Observable<CheckAll[]> {
-    return this.http.get<CheckAll[]>(this.url+`adminList?table=checks`).pipe(
+    return this.http.get<CheckAll[]>(this.url+`checks`).pipe(
       tap(_ => this.logger.log(`fetched player list`)),
       catchError(this.handleError<CheckAll[]>(`getPlayerList`))
     );
@@ -359,6 +401,93 @@ export class CharacterService {
       catchError(this.handleError<Lord>(`setMark`))
     ).toPromise();
   }
+seatGuest(cid: number, seat: string): Observable<Feast> {
+    return this.http.post<Feast>(this.url+`feast`,
+      new HttpParams()
+      .set('action', 'seat')
+      .set('cid', ''+cid)
+      .set('seat', seat)
+      .set('token', this.getToken())
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`seated guest cid=${cid} at ${seat}`)),
+      catchError(this.handleError<Feast>(`seatGuest`))
+    );
+  }
+  setRounds(rounds: number): Observable<Feast> {
+    return this.http.post<Feast>(this.url+`feast`,
+      new HttpParams()
+      .set('action', 'setrounds')
+      .set('rounds', ''+rounds)
+      .set('token', this.getToken())
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set rounds to ${rounds}`)),
+      catchError(this.handleError<Feast>(`setRounds`))
+    );
+  }
+  setAction(action: string, pid: number): Observable<Feast> {
+    return this.http.post<Feast>(this.url+`feast`,
+      new HttpParams()
+      .set('action', 'roundAction')
+      .set('roundAction', action)
+      .set('pid', ''+pid)
+      .set('token', this.getToken())
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`set action to ${action} for ${pid}`)),
+      catchError(this.handleError<Feast>(`setAction`))
+    );
+  }
 
+  nextState() {
+    return this.http.post<Feast>(this.url+`feast`,
+      new HttpParams()
+      .set('action', 'nextState')
+      .set('token', this.getToken())
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`nextState set`)),
+      catchError(this.handleError<Feast>(`nextState`))
+    );
+  }
+
+  addC2C(c0: string, c1: string, connection: string, comment: string): Promise<C2C[]> {
+    console.log('pre addC2C:'+c0+':'+c1+':'+connection+':'+comment+':');
+    return this.http.post<C2C[]>(this.url+`addC2C`,
+      new HttpParams()
+      .set('c0', ''+c0)
+      .set('c1', ''+c1)
+      .set('connection', ''+connection)
+      .set('comment', ''+comment)
+      .set('token', this.getToken())
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`addC2C ${c0} ${c1} ${connection} ${comment}`)),
+      catchError(this.handleError<C2C[]>(`addC2C`))
+    ).toPromise();
+  }
+
+  getConnections(id: number) {
+    return this.http.get<C2C[]>(this.url+`connections?cid=${id}`).pipe(
+      tap(_ => this.logger.log(`fetched connection list`)),
+      catchError(this.handleError<C2C[]>(`getConnections`))
+    );
+  }
 
 }

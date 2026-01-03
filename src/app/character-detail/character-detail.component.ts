@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { Lord } from './../lord';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
-import { CharacterService, CheckAll } from './../character.service';
+import { C2C, CharacterService, CheckAll } from './../character.service';
 import { Logger } from '../logger.service';
 import { Base } from '../base';
 import { MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
@@ -10,7 +10,6 @@ import { MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
-import { environment } from './../../environments/environment';
 import { Subscription, interval } from 'rxjs';
 
 @Component({
@@ -19,7 +18,7 @@ import { Subscription, interval } from 'rxjs';
   styleUrls: ['./character-detail.component.css']
 })
 export class CharacterDetailComponent implements OnInit {
-  id : number = 32;
+  id : number = NaN;
   traits: Trait[] = []
   checks: CheckAll[] = []
   healthmod: number = 0;
@@ -36,6 +35,7 @@ export class CharacterDetailComponent implements OnInit {
   subscription: Subscription;
   checksubscription: Subscription;
   virtues: {};
+  connections: C2C[] = [];
   constructor(
     private route: ActivatedRoute,
     private service: CharacterService,
@@ -59,12 +59,13 @@ export class CharacterDetailComponent implements OnInit {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    this.checksubscription.unsubscribe();
   }
 
   load(p:ParamMap) {
     const name = p.get('name');
-    console.log('route:'+name)
     let id = +name;
+    console.log('route:'+name+', id:'+id)
 
     this.service.getBase().then( t =>
       {
@@ -77,16 +78,37 @@ export class CharacterDetailComponent implements OnInit {
       }
     );
     if (id > 0) {
-      this.service.getLord(id).subscribe( l => this.setLord(l));
+      this.service.getLord(id).subscribe( l => {
+        this.setLord(l);
+        this.service.getConnections(this.id).subscribe( l => this.setConnections(l));
+      });
     } else {
-      this.service.getLordByName(name).subscribe( l => this.setLord(l));
+      this.service.getLordByName(name).subscribe( l => {
+        this.setLord(l)
+        this.service.getConnections(this.id).subscribe( l => this.setConnections(l));
+      });
     }
   }
 
+  setConnections(l: C2C[]) {
+    l.sort((a, b) => {
+      if (a.char.name < b.char.name) {
+        return -1;
+      }
+      if (a.char.name > b.char.name) {
+        return 1;
+      }
+      return 0; // If names are the same
+    });
+
+    this.connections = l;
+  }
 
   loadLord(): void {
     console.log('loadLord')
-    this.service.getLord(this.id).subscribe( l => this.setLord(l));
+    if (!isNaN(this.id)) {
+      this.service.getLord(this.id).subscribe( l => this.setLord(l));
+    }
   }
 
   playDiceSound(){
@@ -128,6 +150,10 @@ export class CharacterDetailComponent implements OnInit {
     return res;
   }
   setLord(l: Lord) {
+    if (this.char!=null && this.char.modified == l.modified ) {
+      return;
+    }
+
     this.id = l.char['dbid']*1;
     this.char =  l;
     let g :number  = 0

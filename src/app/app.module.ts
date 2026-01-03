@@ -37,6 +37,8 @@ import { AdminComponent, CharEditDialog, PlayerEditDialog } from './admin/admin.
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { FeastComponent } from './feast/feast.component';
+import { FeastSeatingComponent } from './feast-seating/feast-seating.component';
+import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
 @NgModule({
     declarations: [
         AppComponent,
@@ -53,7 +55,9 @@ import { FeastComponent } from './feast/feast.component';
         AdminComponent,
         PlayerEditDialog,
         CharEditDialog,
-        FeastComponent
+        FeastComponent,
+        FeastSeatingComponent,
+        NpcDetail2Component
     ],
     imports: [
         BrowserModule,

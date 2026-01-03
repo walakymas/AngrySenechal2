@@ -141,7 +141,7 @@ export class ChargenComponent implements OnInit {
     this.traitFormGroup = this._formBuilder.group({
     });
     this.thirdFormGroup = this._formBuilder.group({
-      sum: new FormControl({value: 60}, Validators.max(60))
+      sum: new FormControl({value: 60, disabled: false}, Validators.max(60)) 
     });
     this.fourthFormGroup = this._formBuilder.group({
     });
@@ -170,7 +170,7 @@ export class ChargenComponent implements OnInit {
   ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
   getChar() {
-    return JSON.stringify(this.char, null, 2);
+    return JSON.stringify(this.char, null, 4);
   }
 
    parseDice(v) {

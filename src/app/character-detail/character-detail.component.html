@@ -215,7 +215,79 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-2">
+<mat-tab-group>
+    <mat-tab label="Connections">
+        <mat-accordion>
+            <ng-container *ngFor="let c of connections ">
+                <mat-expansion-panel  *ngIf="!isEq(c.connection, 'Children')"  hideToggle>
+                    <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>)
+                        <ng-container *ngIf="c.char.main['Born']">
+                            Age: {{char.year - c.char.main['Born']}}
+                        </ng-container>
+                    </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-npc-detail2 [char]="c.char"></app-npc-detail2>
+                </mat-expansion-panel>
+            </ng-container>
+        </mat-accordion>
+    </mat-tab>
+    <mat-tab label="Children">
+        <mat-accordion>
+            <ng-container *ngFor="let c of connections ">
+                <mat-expansion-panel  *ngIf="isEq(c.connection, 'Children')"  hideToggle>
+                    <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>)
+                        <ng-container *ngIf="c.char.main['Born']">
+                            Age: {{char.year - c.char.main['Born']}}
+                        </ng-container>
+                    </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-npc-detail2 [char]="c.char"></app-npc-detail2>
+                </mat-expansion-panel>
+            </ng-container>
+        </mat-accordion>
+    </mat-tab>
+    <mat-tab label="Connections Old">
+        <mat-accordion>
+            <ng-container *ngFor="let m of char.char['npcs'] | keyvalue ">
+                <mat-expansion-panel  *ngIf="m.value['dbid']"  hideToggle>
+                    <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{m.key}} ({{m.value['connection']}})
+                    </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <app-npc-detail [dbid]="m.value['dbid']"></app-npc-detail>
+                </mat-expansion-panel>
+            </ng-container>
+        </mat-accordion>
+    </mat-tab>
+    <mat-tab label="Connections Json">
+        <mat-accordion>
+            <ng-container *ngFor="let m of char.char['npcs'] | keyvalue ">
+                <mat-expansion-panel  *ngIf="!m.value['dbid']"  hideToggle>
+                    <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{m.key}} ({{m.value['connection']}})
+                    </mat-panel-title>
+                    </mat-expansion-panel-header>
+                    <table  width="100%">
+                        <ng-container *ngFor="let m of m.value['show']  | keyvalue ">
+                            <tr  *ngIf="isEq(m.key, 'Born')">
+                                <th>Age</th><td>{{char.year - m.value*1}}</td>
+                            </tr>
+                            <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+                        </ng-container>
+
+                        <tr *ngFor="let s of m.value['skills'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
+                    </table>
+                </mat-expansion-panel>
+            </ng-container>
+        </mat-accordion>
+    </mat-tab>
+    <mat-tab label="Events">
         <h2 id="eventshead" (click)="editEvent(e)">Events</h2>
         <mat-accordion>
             <mat-expansion-panel  *ngFor="let y of details['years']" hideToggle>
@@ -227,8 +299,8 @@
               <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)" class="event"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span style="white-space: pre-line;">{{e['description']}}</span></div>
             </mat-expansion-panel>
         </mat-accordion>
-    </div>
-    <div class="col-1">
+    </mat-tab>
+    <mat-tab label="Gears & Horses">
         <mat-accordion>
             <mat-expansion-panel hideToggle>
                 <mat-expansion-panel-header>
@@ -310,32 +382,15 @@
                     </ng-container>
                 </table>
             </mat-expansion-panel>
-            <mat-expansion-panel  *ngFor="let m of char.char['npcs'] | keyvalue " hideToggle>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    {{m.key}} ({{m.value['connection']}})
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-                <app-npc-detail *ngIf="m.value['dbid']" [dbid]="m.value['dbid']"></app-npc-detail>
-                <table *ngIf="!m.value['dbid']"  width="100%">
-                    <ng-container *ngFor="let m of m.value['show']  | keyvalue ">
-                        <tr  *ngIf="isEq(m.key, 'Born')">
-                            <th>Age</th><td>{{char.year - m.value*1}}</td>
-                        </tr>
-                        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-                    </ng-container>
-
-                    <tr *ngFor="let s of m.value['skills'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
-                </table>
-            </mat-expansion-panel>
         </mat-accordion>
-    </div>
-</div>
-<div class="row" id="descriptions">
-    <h2>Description</h2>
-    <span class="contrastedText">{{char.char['description']}}</span>
-    <br/>
-    <span class="contrastedText">{{char.char['longdescription']}}</span>
+    </mat-tab>
+    <mat-tab label="Description">
+        <h2>Description</h2>
+        <span class="contrastedText">{{char.char['description']}}</span>
+        <br/>
+        <span class="contrastedText">{{char.char['longdescription']}}</span>
+    </mat-tab>
+</mat-tab-group>
 </div>
 
 </div>

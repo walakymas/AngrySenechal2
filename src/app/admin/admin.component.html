@@ -1,4 +1,68 @@
 <mat-tab-group animationDuration="2000ms">
+  <mat-tab label="Connections">
+    <table mat-table matSort [dataSource]="dsC2Cs" class="adminTable">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+        <td mat-cell *matCellDef="let c2c"> {{c2c.id}} </td>
+      </ng-container>
+      <ng-container matColumnDef="c0">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Character 1 </th>
+        <td mat-cell *matCellDef="let c2c"> {{getCharName(c2c.c0)}} </td>
+      </ng-container>
+      <ng-container matColumnDef="c1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Character 2 </th>
+        <td mat-cell *matCellDef="let c2c"> {{getCharName(c2c.c1)}} </td>
+      </ng-container>
+      <ng-container matColumnDef="connection">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>  Connection </th>
+        <td mat-cell *matCellDef="let c2c"> {{c2c.connection}} </td>
+      </ng-container>
+      <ng-container matColumnDef="comment">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>  Comment </th>
+        <td mat-cell *matCellDef="let c2c"> {{c2c.comment}} </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="dcC2Cs"></tr>
+      <tr mat-row *matRowDef="let row; columns: dcC2Cs;"
+      ></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+      showFirstLastButtons
+      aria-label="Select page of periodic elements">
+    </mat-paginator>
+    <table>
+      <tr><th>Character 1</th><td>
+          <mat-select [(value)]="c0" >
+              <mat-option *ngFor="let c of chars | keyvalue" value="{{c.value.id}}" >{{c.value.id}}-{{c.value.name}}</mat-option>
+          </mat-select>
+
+      </td></tr>
+      <tr><th>Character 2</th><td>
+          <mat-select [(value)]="c1">
+              <mat-option *ngFor="let c of chars | keyvalue" value="{{c.value.id}}" >{{c.value.id}}-{{c.value.name}}</mat-option>
+          </mat-select>
+
+      </td></tr>
+      <tr><th>Connection</th><td>
+          <mat-select [(value)]="connection">
+              <mat-option value="Wife" >Wife</mat-option>
+              <mat-option value="Follower" >Follower</mat-option>
+              <mat-option value="Children" >Children</mat-option>
+              <mat-option value="Husband" >Husband</mat-option>
+              <mat-option value="Squire" >Squire</mat-option>
+              <mat-option value="Relative" >Relative</mat-option>
+              <mat-option value="Other" >Other</mat-option>
+
+          </mat-select>
+
+      </td></tr>
+      <tr><th>Comment</th><td>
+        <input [(ngModel)]="comment" type="text" placeholder="Comment"/>
+      </td></tr>
+      <tr><th></th><td>
+        <button mat-button (click)="addConnection()">Add connection</button>
+      </td></tr>
+    </table>
+  </mat-tab>
   <mat-tab label="Player list">
     <table mat-table matSort [dataSource]="dsPlayers" class="adminTable">
       <ng-container matColumnDef="id">
@@ -82,9 +146,6 @@
       (click)="clickChar(row)"
       ></tr>
     </table>
-
-  </mat-tab>
-  <mat-tab label="Connections">
 
   </mat-tab>
 </mat-tab-group>
