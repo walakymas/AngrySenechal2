@@ -19,7 +19,7 @@ import { Subscription, interval } from 'rxjs';
   styleUrls: ['./character-detail.component.css']
 })
 export class CharacterDetailComponent implements OnInit {
-  id : number = 32;
+  id : number = NaN;
   traits: Trait[] = []
   checks: CheckAll[] = []
   healthmod: number = 0;
