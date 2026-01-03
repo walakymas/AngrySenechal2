@@ -432,7 +432,7 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   hasUser() {
-    return this.base['loginNeeded'] != 'true' || window.localStorage.getItem('userName')!=null;
+    return true; //this.base['loginNeeded'] != 'true' || window.localStorage.getItem('userName')!=null;
   }
 }
 

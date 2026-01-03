@@ -4,6 +4,7 @@
 
 export const environment = {
   production: false,
+<<<<<<< HEAD
 //  url: "http://senechalweb.duckdns.org:8000/",
   url: "http://senechalweb.duckdns.org:8080/",
 //  url: "http://senechalweb.duckdns.org:8881/senechal/",
@@ -16,6 +17,10 @@ export const environment = {
   hook: 'https://discord.com/api/webhooks/1326979645756936323/6SV5KEZ8jWyisUeArkfO6jqiYk15SYV5Aa2pDA97AAPYrPWlgdB3mcmq0VdGeQ6Lm6Bt'
 //  hook: 'https://discord.com/api/webhooks/931592114595323934/xKVarpSCk48qtjpN2_JHI-h---gBDW9c6rVR8m1zmvRRZOUP86-TBWvDBIY5xgeETIEk'
 >>>>>>> 2604370 (merges)
+=======
+  url: "http://senechalweb.duckdns.org:8000/",
+  prefix: '!',
+>>>>>>> 30d803ae2cc4b12a5077c358884e9b06c8f88481
 };
 
 /*
