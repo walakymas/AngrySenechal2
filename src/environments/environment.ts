@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   url: "http://senechalweb.duckdns.org:8000/",
+  hook: "",
   prefix: '!',
 };
 
