@@ -464,7 +464,7 @@ seatGuest(cid: number, seat: string): Observable<Feast> {
     );
   }
 
-  addC2C(c0: string, c1: string, connection: string, comment: string): Promise<C2C[]> {
+  addC2C(c0: string, c1: string, connection: string, comment: string, withchars: boolean = false): Promise<C2C[]> {
     console.log('pre addC2C:'+c0+':'+c1+':'+connection+':'+comment+':');
     return this.http.post<C2C[]>(this.url+`addC2C`,
       new HttpParams()
@@ -472,6 +472,7 @@ seatGuest(cid: number, seat: string): Observable<Feast> {
       .set('c1', ''+c1)
       .set('connection', ''+connection)
       .set('comment', ''+comment)
+      .set('withchars', ''+withchars)
       .set('token', this.getToken())
       .toString(),
       {
@@ -484,6 +485,7 @@ seatGuest(cid: number, seat: string): Observable<Feast> {
   }
 
   getConnections(id: number) {
+    console.log('getConnections:'+id);
     return this.http.get<C2C[]>(this.url+`connections?cid=${id}`).pipe(
       tap(_ => this.logger.log(`fetched connection list`)),
       catchError(this.handleError<C2C[]>(`getConnections`))

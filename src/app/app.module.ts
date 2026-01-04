@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CharactersComponent } from './characters/characters.component';
-import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog } from './character-detail/character-detail.component';
+import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog } from './character-detail/character-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule} from '@angular/material/icon';
@@ -57,7 +57,8 @@ import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
         CharEditDialog,
         FeastComponent,
         FeastSeatingComponent,
-        NpcDetail2Component
+        NpcDetail2Component,
+        CharacterConnectionDialog
     ],
     imports: [
         BrowserModule,

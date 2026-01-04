@@ -35,7 +35,7 @@ export class AdminComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatPaginator) c2cpaginator: MatPaginator;
   c0: string = '32';
-  c1: string = '84';
+  c1: string = '';
   connection: string = 'Children';
   comment: string;
 
@@ -137,8 +137,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
   }
 
   addConnection() {
-    console.log('pre addC2C:'+this.c0+':'+this.c1+':'+this.connection+':'+this.comment+':')
-
     this.service.addC2C(''+this.c0, ''+this.c1, this.connection, this.comment).then(c => {
       this.snackBar.open('Connection added','Ok',this.snackBarConfig);
       this.c2cs = c;

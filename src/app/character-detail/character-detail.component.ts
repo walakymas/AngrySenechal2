@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { Lord } from './../lord';
+import { Lord, LordBase } from './../lord';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
 import { C2C, CharacterService, CheckAll } from './../character.service';
@@ -7,6 +7,7 @@ import { Logger } from '../logger.service';
 import { Base } from '../base';
 import { MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef} from '@angular/material/dialog';
+import { MatSelect } from '@angular/material/select';
 import { MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
@@ -36,6 +37,8 @@ export class CharacterDetailComponent implements OnInit {
   checksubscription: Subscription;
   virtues: {};
   connections: C2C[] = [];
+  chars: LordBase[];
+  
   constructor(
     private route: ActivatedRoute,
     private service: CharacterService,
@@ -48,14 +51,24 @@ export class CharacterDetailComponent implements OnInit {
       this.snackBarConfig.duration = 2000;
     }
 
+  getService(): CharacterService {
+    return this.service;
+  }
 
   ngOnInit(): void {
     console.log('CharacterDetailComponent ngOnInit')
     this.route.paramMap.subscribe(data => this.load(data));
     this.subscription = interval(60000).subscribe(v => this.loadLord());
     this.checksubscription = interval(5000).subscribe(v =>   this.service.getCheckList().subscribe( l => this.setChecks(l)));
+    this.service.getList().subscribe( l => {this.setCharList(l); });
+
     this.loadLord()
   }
+
+  setCharList(l: LordBase[]): void {
+    this.chars = l;
+  }
+
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
@@ -79,13 +92,13 @@ export class CharacterDetailComponent implements OnInit {
     );
     if (id > 0) {
       this.service.getLord(id).subscribe( l => {
+        this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
         this.setLord(l);
-        this.service.getConnections(this.id).subscribe( l => this.setConnections(l));
       });
     } else {
       this.service.getLordByName(name).subscribe( l => {
+        this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
         this.setLord(l)
-        this.service.getConnections(this.id).subscribe( l => this.setConnections(l));
       });
     }
   }
@@ -146,7 +159,6 @@ export class CharacterDetailComponent implements OnInit {
     } else if  ("Fumble"==res) {
       res=  "thunderstorm"
     }
-    console.log(res)
     return res;
   }
   setLord(l: Lord) {
@@ -223,9 +235,13 @@ export class CharacterDetailComponent implements OnInit {
         this.details['chi'] = this.char.char['health']['chirurgery']
       }
     }
-    this.main_horse = this.base.horsetypes[this.char.char['winter']['horses'][0]]
-    this.main_horse['hea'] = Math.round((this.main_horse['str']*1+this.main_horse['con']*1)/10);
-    this.main_horse['unc'] = Math.round((this.main_horse['siz']*1+this.main_horse['con']*1)/4);
+    try {
+      this.main_horse = this.base.horsetypes[this.char.char['winter']['horses'][0]]
+      this.main_horse['hea'] = Math.round((this.main_horse['str']*1+this.main_horse['con']*1)/10);
+      this.main_horse['unc'] = Math.round((this.main_horse['siz']*1+this.main_horse['con']*1)/4);
+    } catch (error) {
+      
+    }
   }
 
   getMarkClass(name : string)  {
@@ -357,6 +373,42 @@ export class CharacterDetailComponent implements OnInit {
 
     });
   }
+
+  connectionsDialog() {
+    const dialogRef = this.dialog.open(CharacterConnectionDialog, {
+//      minWidth: '100vw',
+//      minHeight: '100vh',
+
+      data: {parent: this}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.service.modifyChar(result).then(c => {
+          this.setLord(c);
+          this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
+        })
+      }
+
+    });
+  }
+
+  connected(j) {
+    console.log('connected:'+j.value['dbid']+'>>>>>'+JSON.stringify(j));
+
+    const id : string = ''+j.value['dbid'];
+
+    this.connections.forEach(c => {
+      console.log('connected:'+id+', c0:'+c.c0+', c1:'+c.c1+',');
+      if (''+c.c0 == id || ''+c.c1 == id) {
+        console.log('connected:'+id+', c0:'+c.c0+', c1:'+c.c1+', connected');
+
+        return true;
+      }
+    })
+    return false;
+  }
+
 
   editMain(l : Lord) {
     let main : CharacterMain;
@@ -572,5 +624,88 @@ export class CharacterJsonDialog {
         jsonEditorForm: [this.data.lord.char]
       });
       this.fg.controls.jsonEditorForm.valueChanges.subscribe( v => this.char = v )
+    }
+}
+
+@Component({
+  selector: 'character-connection-dialog',
+  template: `
+  <div mat-dialog-content>
+    <table>
+      <tr><th>Character 1</th><td> {{lord.char['name']}}</td></tr>
+      <tr><th>Character 2</th><td>
+          <mat-select [(value)]="c1" (selectionChange)="changed(c1)">
+            <ng-container *ngFor="let c of chars | keyvalue">
+                <mat-option *ngIf="enabled(c.value.id)" value="{{c.value.id}}" >{{c.value.id}}-{{c.value.name}}</mat-option>
+            </ng-container>
+          </mat-select>
+
+      </td></tr>
+      <tr><th>Connection</th><td>
+          <mat-select [(value)]="connection">
+              <mat-option value="Wife" >Wife</mat-option>
+              <mat-option value="Follower" >Follower</mat-option>
+              <mat-option value="Children" >Children</mat-option>
+              <mat-option value="Husband" >Husband</mat-option>
+              <mat-option value="Squire" >Squire</mat-option>
+              <mat-option value="Relative" >Relative</mat-option>
+              <mat-option value="Other" >Other</mat-option>
+
+          </mat-select>
+
+      </td></tr>
+      <tr><th>Comment</th><td>
+        <input [(ngModel)]="comment" type="text" placeholder="Comment"/>
+      </td></tr>
+      <tr><th></th><td>
+      </td></tr>
+    </table>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="char" (click)="addConnection()" [disabled]="!c1 || !connection">Add connection</button>
+  </div> `})
+export class CharacterConnectionDialog {
+  connections: C2C[];
+  c1: string = '';
+  connection: string = 'Children';
+  comment: string;
+  char:any;
+  lord: Lord;
+  chars: LordBase[];
+  service: CharacterService;
+  parent: CharacterDetailComponent;
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: {parent: CharacterDetailComponent}) {
+
+      this.parent = data.parent;
+      this.chars = this.parent.chars;
+      this.lord = this.parent.char;
+      this.connections = this.parent.connections;
+      this.service = this.parent.getService();
+
+      console.log('chars in CharacterDetailComponent:'+ this.chars.length);
+
+    }
+    ngOnInit(): void {
+    }
+    addConnection() {
+      this.service.addC2C(''+this.parent.id, ''+this.c1, this.connection, this.comment, true).then(c => {this.parent.setConnections(c)})
+
+    }
+    enabled(id: string): boolean {
+      if( ''+this.parent.id == id) return false;
+      return true;
+    }
+
+    changed(id: string): void {
+      console.log('changed:'+id+":"+JSON.stringify(this.connections));
+      for(const c of this.connections) {
+        if (''+c.c1 == id) {
+          this.connection = c.connection;
+          this.comment = c.comment;
+          break;
+        }
+      }
     }
 }

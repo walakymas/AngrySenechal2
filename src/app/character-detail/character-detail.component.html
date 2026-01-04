@@ -70,17 +70,8 @@
                       <button mat-menu-item (click)="pdf()">
                         Pdf
                       </button>
-                      <button mat-menu-item disabled>
-                        Horses
-                      </button>
-                      <button mat-menu-item disabled>
-                        Army
-                      </button>
-                      <button mat-menu-item disabled>
-                        Npcs
-                      </button>
-                      <button mat-menu-item disabled>
-                        Skills
+                      <button mat-menu-item (click)="connectionsDialog()">
+                        Connection
                       </button>
                 </mat-menu>
             </h2>
@@ -222,6 +213,7 @@
                 <mat-expansion-panel  *ngIf="!isEq(c.connection, 'Children')"  hideToggle>
                     <mat-expansion-panel-header>
                     <mat-panel-title>
+                        <mat-icon *ngIf="!isEq(c.c0, id)">double_arrow</mat-icon>
                         {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>)
                         <ng-container *ngIf="c.char.main['Born']">
                             Age: {{char.year - c.char.main['Born']}}
@@ -239,10 +231,12 @@
                 <mat-expansion-panel  *ngIf="isEq(c.connection, 'Children')"  hideToggle>
                     <mat-expansion-panel-header>
                     <mat-panel-title>
-                        {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>)
+                        <mat-icon *ngIf="!isEq(c.c0, id)">double_arrow</mat-icon>
+                        {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>) 
                         <ng-container *ngIf="c.char.main['Born']">
                             Age: {{char.year - c.char.main['Born']}}
                         </ng-container>
+
                     </mat-panel-title>
                     </mat-expansion-panel-header>
                     <app-npc-detail2 [char]="c.char"></app-npc-detail2>
