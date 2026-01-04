@@ -11,4 +11,5 @@ export class Base {
     default: {};
     periods: [];
     loginNeeded: string = 'false';
+    hook: string = '';
 }
