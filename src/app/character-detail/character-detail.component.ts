@@ -88,19 +88,19 @@ export class CharacterDetailComponent implements OnInit {
         for(let t in this.base.traits) {
           this.traits.push(new Trait(this.base.traits[t][0].substring(0,3).toLowerCase(), this.base.traits[t][0], this.base.traits[t][1]));
         }
+        if (id > 0) {
+          this.service.getLord(id).subscribe( l => {
+            this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
+            this.setLord(l);
+          });
+        } else {
+          this.service.getLordByName(name).subscribe( l => {
+            this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
+            this.setLord(l)
+          });
+        }
       }
     );
-    if (id > 0) {
-      this.service.getLord(id).subscribe( l => {
-        this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
-        this.setLord(l);
-      });
-    } else {
-      this.service.getLordByName(name).subscribe( l => {
-        this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
-        this.setLord(l)
-      });
-    }
   }
 
   setConnections(l: C2C[]) {
@@ -161,8 +161,8 @@ export class CharacterDetailComponent implements OnInit {
     }
     return res;
   }
-  setLord(l: Lord) {
-    if (this.char!=null && this.char.modified == l.modified ) {
+  setLord(l: Lord, force: boolean = false) {
+    if (!force && this.char!=null && this.char.modified == l.modified && !force) {
       return;
     }
 
@@ -393,20 +393,19 @@ export class CharacterDetailComponent implements OnInit {
     });
   }
 
-  connected(j) {
-    console.log('connected:'+j.value['dbid']+'>>>>>'+JSON.stringify(j));
+  showOld(j) {
+    if(!j.value['dbid']) {
+      return false;
+    }
 
     const id : string = ''+j.value['dbid'];
-
+    let result : boolean = true;
     this.connections.forEach(c => {
-      console.log('connected:'+id+', c0:'+c.c0+', c1:'+c.c1+',');
       if (''+c.c0 == id || ''+c.c1 == id) {
-        console.log('connected:'+id+', c0:'+c.c0+', c1:'+c.c1+', connected');
-
-        return true;
+        result = false;
       }
     })
-    return false;
+    return result;
   }
 
 
@@ -474,7 +473,7 @@ export class CharacterDetailComponent implements OnInit {
         console.log(JSON.stringify(result))
                 this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
         this.service.event(this.char, result).then(c => {
-          this.setLord(c);
+          this.setLord(c, true);
           this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);
         })
       } else {

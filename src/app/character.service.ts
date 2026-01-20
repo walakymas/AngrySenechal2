@@ -72,6 +72,7 @@ export class CharacterService {
   private characterUrl = 'json';  // URL to web api
   private base : Promise<Base>;
   private url = environment.url;
+  private hook: string;
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -115,7 +116,10 @@ export class CharacterService {
   getBase(): Promise<Base>{
     if (!this.base) {
       this.base = this.http.get<Base>(this.url+`base`).pipe(
-        tap(_ => this.logger.log(`fetched base `)),
+        tap(_ => {
+          this.logger.log(`fetched base `);
+          this.hook = _.hook;
+        }),
         catchError(this.handleError<Base>(`getBase`))
       ).toPromise()
     }
@@ -238,21 +242,21 @@ export class CharacterService {
   getLord(id: number): Observable<Lord> {
     const url = this.url+`${this.characterUrl}?id=${id}`;
     return this.http.get<Lord>(url).pipe(
-      tap(_ => this.logger.log(`fetched lord id=${id}`)),
+//      tap(_ => this.logger.log(`fetched lord id=${id}`)),
       catchError(this.handleError<Lord>(`getLord id=${id}`))
     );
   }
 
   getFeast() : Observable<Feast> {
     return this.http.get<Feast>(this.url+'feast').pipe(
-      tap(_ => this.logger.log(`fetched feast`)),
+//      tap(_ => this.logger.log(`fetched feast`)),
       catchError(this.handleError<Feast>(`getFeast `))
     );
   }
 
   getFeastConfig() : Observable<FeastConfig> {
     return this.http.get<FeastConfig>(this.url+'feastConfig').pipe(
-      tap(_ => this.logger.log(`fetched feastConfig`)),
+//      tap(_ => this.logger.log(`fetched feastConfig`)),
       catchError(this.handleError<FeastConfig>(`getFeast `))
     );
   }
@@ -265,16 +269,13 @@ export class CharacterService {
     return this.http.get<LordBase[]>(this.url+`list`).pipe(
       tap(_ => {
         this.characters = _;
-        this.logger.log(`fetched lord list`+ JSON.stringify(_));
       }),
       catchError(this.handleError<LordBase[]>(`getList`))
     );
   }
 
   bot(command : string): Observable<String> {
-    let myhook : string = '';
-    this.base.then(_ => myhook = _.hook);
-    return this.http.post<String>(myhook,
+    return this.http.post<String>(this.hook,
       new HttpParams()
       .set('username', 'Captain Hook')
       .set('avatar_url','https://senechalweb.duckdns.org/attachments/hook.png')
@@ -283,14 +284,14 @@ export class CharacterService {
         headers: new HttpHeaders()
           .set('Content-Type', 'application/x-www-form-urlencoded')
       }).pipe(
-      tap(_ => this.logger.log(`hook pulled`)),
+//      tap(_ => this.logger.log(`hook pulled`)),
       catchError(this.handleError<String>(`getList`))
     );
   }
 
   getTeam(): Observable<LordData[]> {
     return this.http.get<LordData[]>(this.url+`players`).pipe(
-      tap(_ => this.logger.log(`fetched lord list`)),
+//      tap(_ => this.logger.log(`fetched lord list`)),
       catchError(this.handleError<LordData[]>(`getTeam`))
     );
   }
@@ -298,7 +299,7 @@ export class CharacterService {
   getLordByName(name: string): Observable<Lord> {
     const url = this.url+`${this.characterUrl}?ch=${name}`;
     return this.http.get<Lord>(url).pipe(
-      tap(_ => this.logger.log(`fetched lord name=${name}`)),
+//      tap(_ => this.logger.log(`fetched lord name=${name}`)),
       catchError(this.handleError<Lord>(`getLord id=${name}`))
     );
   }

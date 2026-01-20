@@ -86,7 +86,7 @@
             <span class="gold">GLORY:</span>
             <span id="glory"> {{details['glory']}}</span>
         </div>
-        <div style="text-align: center;">
+        <div style="text-align: center;" class="hidePrint">
             <button (click)="bot('d6')"><mat-icon>casino</mat-icon>D6</button>
             <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
         </div>
@@ -114,7 +114,7 @@
         </div>
     </div>
     <div class="col-1">
-        <div class="FontSizeBig"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
+        <div class="FontSizeBig hidePrint"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
     </div>
     <div class="col-1">
         <div class="FontSizeBig">
@@ -124,7 +124,7 @@
                 <span matTooltip="{{details['wounds']}}"> {{details['ahp']}}/{{details['hp']}}</span>
             </ng-template>
         </div>
-        <div>
+        <div class="hidePrint">
             <fieldset id="health">
                 <legend>Health</legend>
                 <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
@@ -205,7 +205,7 @@
         </ul>
     </div>
 </div>
-<div class="row">
+<div class="row hidePrint">
 <mat-tab-group>
     <mat-tab label="Connections">
         <mat-accordion>
@@ -214,13 +214,14 @@
                     <mat-expansion-panel-header>
                     <mat-panel-title>
                         <mat-icon *ngIf="!isEq(c.c0, id)">double_arrow</mat-icon>
+                        <mat-icon *ngIf="c.char.main['Deceased']">skull</mat-icon>
                         {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>)
                         <ng-container *ngIf="c.char.main['Born']">
                             Age: {{char.year - c.char.main['Born']}}
                         </ng-container>
                     </mat-panel-title>
                     </mat-expansion-panel-header>
-                    <app-npc-detail2 [char]="c.char"></app-npc-detail2>
+                    <app-npc-detail2 [char]="c" [parent]="this"></app-npc-detail2>
                 </mat-expansion-panel>
             </ng-container>
         </mat-accordion>
@@ -239,7 +240,7 @@
 
                     </mat-panel-title>
                     </mat-expansion-panel-header>
-                    <app-npc-detail2 [char]="c.char"></app-npc-detail2>
+                    <app-npc-detail2 [char]="c" [parent]="this"></app-npc-detail2>
                 </mat-expansion-panel>
             </ng-container>
         </mat-accordion>
@@ -247,10 +248,10 @@
     <mat-tab label="Connections Old">
         <mat-accordion>
             <ng-container *ngFor="let m of char.char['npcs'] | keyvalue ">
-                <mat-expansion-panel  *ngIf="m.value['dbid']"  hideToggle>
+                <mat-expansion-panel  *ngIf="showOld(m)"  hideToggle>
                     <mat-expansion-panel-header>
                     <mat-panel-title>
-                        {{m.key}} ({{m.value['connection']}})
+                        {{m.key}} ({{m.value['connection']}}) {{showOld(m)}}
                     </mat-panel-title>
                     </mat-expansion-panel-header>
                     <app-npc-detail [dbid]="m.value['dbid']"></app-npc-detail>

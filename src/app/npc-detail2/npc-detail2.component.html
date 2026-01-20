@@ -1,14 +1,14 @@
 <div class="row">
         <h2>Description</h2>
-        <span class="contrastedText">{{char['description']}}</span>
+        <span class="contrastedText">{{char.char['description']}}</span>
         <br/>
-        <span class="contrastedText">{{char['longdescription']}}</span>
+        <span class="contrastedText">{{char.char['longdescription']}}</span>
 </div>
 
 <div class="row">
     <div class="col-1"><h2 id="mainhead">Main </h2>
-        <ul id='main' *ngIf="char['main']">
-            <ng-container *ngFor="let m of char['main'] | keyvalue ">
+        <ul id='main' *ngIf="char.char['main']">
+            <ng-container *ngFor="let m of char.char['main'] | keyvalue ">
                 <li *ngIf="!isEq(''+m.key, 'Glory')">
                     <span class="gold" >{{m.key}}</span> {{m.value}}
                 </li>
@@ -18,20 +18,70 @@
     </div> <!-- 33.33% -->
     <div class="col-1"><h2 id="stathead">Statistics</h2>
         <ul id="statistics">
-            <li><span class="gold">SIZ</span>{{char['stats']['siz']}}</li>
-            <li><span class="gold">DEX</span>{{char['stats']['dex']}}</li>
-            <li><span class="gold">STR</span>{{char['stats']['str']}}</li>
-            <li><span class="gold">CON</span>{{char['stats']['con']}}</li>
-            <li><span class="gold">APP</span>{{char['stats']['app']}}</li>
+            <li><span class="gold">SIZ</span>{{char.char['stats']['siz']}}</li>
+            <li><span class="gold">DEX</span>{{char.char['stats']['dex']}}</li>
+            <li><span class="gold">STR</span>{{char.char['stats']['str']}}</li>
+            <li><span class="gold">CON</span>{{char.char['stats']['con']}}</li>
+            <li><span class="gold">APP</span>{{char.char['stats']['app']}}</li>
         </ul>
 
     </div> <!-- 33.33% -->
     <div class="col-1">
         <div>
             <h2 id="stathead">
-                {{char['name']}}
+                {{char.char['name']}}
             </h2>
         </div>
-        <div style="text-align: center"><img class="Image-Frame" id='charimg' src="{{char['url']}}" width="200"> </div>
+        <div style="text-align: center"><img class="Image-Frame" id='char.charimg' src="{{char.char['url']}}" width="200"> </div>
     </div> <!-- 33.33% -->
+</div>
+<div class="row">
+    <div class="col-1">
+        <h2 id="traithead">Personality Traits</h2>
+        <table class="traits" *ngIf="parent.traits && parent.traits.length">
+            <tbody *ngFor="let t of parent.traits"><tr>
+                <td><mat-checkbox [disabled]="!false" [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td
+                ><ng-container *ngIf="false"> <app-editable [enabled]="false"
+                    value="{{char.char['traits'][t.short]}}"
+                ></app-editable></ng-container><ng-container *ngIf="!false"> {{char.char['traits'][t.short]}}</ng-container></td><td >{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon><mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon></td
+                  ><td><mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}</td><td
+                  ><app-editable  [enabled]="false"
+                    value="{{20-char.char['traits'][t.short]}}"
+                ></app-editable></td><td><mat-checkbox [disabled]="!false" [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
+            </tr>
+            <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t.short)}}%"></div><div  style="width:{{100-5*getTrait(t.short)}}%" class="ratioRed"></div></div></td><td></td></tr>
+            </tbody>
+            <tr><td colspan="100%" align="center"> Chivalry: {{chivalry}}/80</td></tr>
+        </table>
+    </div>
+    <div class="col-1">
+        <h2 class="skillhead">Skills</h2>
+        <ul id="skills"Í*ngIf="char.char && char.char['skills']">
+            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [disabled]="!false" [checked]="isMarked(m.key)"
+                (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+                [enabled]="false"
+                value="{{char.char['skills']['Other'][m.key]}}"
+            ></app-editable></li>
+        </ul>
+    </div>
+    <div class="col-1">
+        <h2 class="skillhead">Combat Skills</h2>
+        <ul id="combat" *ngIf="char.char && char.char['skills']">
+            <li *ngFor="let m of char.char['skills']['Weapons'] | keyvalue"><mat-checkbox [disabled]="!false" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+              [enabled]="false"
+                value="{{char.char['skills']['Weapons'][m.key]}}"
+            ></app-editable></li>
+            <li *ngFor="let m of char.char['skills']['Combat'] | keyvalue"><mat-checkbox [disabled]="!false" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+              [enabled]="false"
+              value="{{char.char['skills']['Combat'][m.key]}}"
+            ></app-editable></li>
+        </ul>
+        <h2 id="passionhead">Passions</h2>
+        <ul id="passions">
+            <li *ngFor="let m of char.char['passions'] | keyvalue"><mat-checkbox [disabled]="!false" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold">{{m.key}}</span><app-editable
+              [enabled]="false"
+              value="{{char.char['passions'][m.key]}}"
+            ></app-editable></li>
+        </ul>
+    </div>
 </div>
