@@ -39,6 +39,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { FeastComponent } from './feast/feast.component';
 import { FeastSeatingComponent } from './feast-seating/feast-seating.component';
 import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
+import { MapsComponent } from './maps/maps.component';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -57,6 +59,7 @@ import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
         CharEditDialog,
         FeastComponent,
         FeastSeatingComponent,
+        MapsComponent,
         NpcDetail2Component,
         CharacterConnectionDialog
     ],
@@ -88,8 +91,10 @@ import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
         MatTableModule,
         MatSortModule,
         MatPaginatorModule
+        // Make sure MatTabsModule and MatIconModule are present (already imported above)
     ],
     providers: [HttpClientModule, WINDOW_PROVIDERS],
     bootstrap: [AppComponent]
 })
 export class AppModule { }
+

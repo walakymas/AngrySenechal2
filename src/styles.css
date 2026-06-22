@@ -24,6 +24,10 @@
 --mainFont: 'Overlock', serif;
 }
 
+.mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
+    background-color: var(--medievalRed);
+}
+
 /*text font, main text color, bg color */
 body {
   margin: 0px;

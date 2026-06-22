@@ -65,6 +65,15 @@ export class C2C {
   char: LordData;
 }
 
+export class MapEntry {
+  id: number;
+  created: string;
+  modified: string;
+  url: string;
+  category: string;
+  ord: number;
+  name: string;
+}
 @Injectable({ providedIn: 'root' })
 export class CharacterService {
   private characters: {} = {};
@@ -496,4 +505,12 @@ seatGuest(cid: number, seat: string): Observable<Feast> {
     );
   }
 
+  // ... inside CharacterService class ...
+
+  getMaps(): Observable<MapEntry[]> {
+    return this.http.get<MapEntry[]>(this.url + 'maps').pipe(
+      // tap(_ => this.logger.log(`fetched maps`)),
+      catchError(this.handleError<MapEntry[]>(`getMaps`, []))
+    );
+  }
 }

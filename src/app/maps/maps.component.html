@@ -1,0 +1,17 @@
+<div>
+  <mat-tab-group>
+    <mat-tab *ngFor="let c of categories" [label]="c">
+      <div class="maps-grid">
+        <div class="map-item" *ngFor="let m of grouped[c]" (click)="showPreview($event, m)">
+          <img class="thumb" [src]="m.url" [alt]="m.name || m.id"/>
+          <div class="map-caption">{{m.name || m.url}}</div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+
+  <div class="preview" *ngIf="currentPreview" [ngStyle]="previewStyle">
+    <img [src]="currentPreview.url" [alt]="currentPreview.name || currentPreview.id"/>
+  </div>
+</div>
+

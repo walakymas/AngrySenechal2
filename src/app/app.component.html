@@ -56,6 +56,10 @@
       <button mat-menu-item *ngIf="isOther(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
     </ng-container>
   </mat-menu>
+  <button mat-button routerLink="maps">
+    <mat-icon>map</mat-icon>
+    Maps
+  </button>
 <span *ngIf="user!=null" style="color: white; font-weight: bold;">User: {{user.name}}</span>
 </div><div></div>
 </nav>

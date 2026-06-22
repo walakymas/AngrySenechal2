@@ -207,6 +207,19 @@
 </div>
 <div class="row hidePrint">
 <mat-tab-group>
+    <mat-tab label="Events">
+        <h2 id="eventshead" (click)="editEvent(e)">Events</h2>
+        <mat-accordion>
+            <mat-expansion-panel  *ngFor="let y of details['years']" hideToggle>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                   Year: {{y}} - Glory: {{getGlory(y)}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)" class="event"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span style="white-space: pre-line;">{{e['description']}}</span></div>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </mat-tab>
     <mat-tab label="Connections">
         <mat-accordion>
             <ng-container *ngFor="let c of connections ">
@@ -280,19 +293,6 @@
                     </table>
                 </mat-expansion-panel>
             </ng-container>
-        </mat-accordion>
-    </mat-tab>
-    <mat-tab label="Events">
-        <h2 id="eventshead" (click)="editEvent(e)">Events</h2>
-        <mat-accordion>
-            <mat-expansion-panel  *ngFor="let y of details['years']" hideToggle>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                   Year: {{y}} - Glory: {{getGlory(y)}}
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)" class="event"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span style="white-space: pre-line;">{{e['description']}}</span></div>
-            </mat-expansion-panel>
         </mat-accordion>
     </mat-tab>
     <mat-tab label="Gears & Horses">
