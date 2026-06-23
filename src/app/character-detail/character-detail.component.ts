@@ -454,6 +454,40 @@ export class CharacterDetailComponent implements OnInit {
     return p.replace(/ /g,'_');
   }
 
+  addMainProperty(): void {
+    if (!this.hasUser()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(PropertyDialog, {
+      width: '420px',
+      data: { entry: new PropertyEntry('', '', 'Other'), scope: 'main' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.modifyProp(`main.${result.name}`, '' + result.value);
+      }
+    });
+  }
+
+  addSkillProperty(category: string = 'Other'): void {
+    if (!this.hasUser()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(PropertyDialog, {
+      width: '420px',
+      data: { entry: new PropertyEntry('', 1, category), scope: 'skills' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.modifyProp(`skills.${result.category}.${result.name}`, '' + result.value);
+      }
+    });
+  }
+
   editPassion(name: string = '', value: number = 1): void {
     if (!this.hasUser()) {
       return;
@@ -555,6 +589,14 @@ export class PassionEntry {
   ) {}
 }
 
+export class PropertyEntry {
+  constructor (
+    public name: string = '',
+    public value: string | number = '',
+    public category: string = 'Other',
+  ) {}
+}
+
 export class CharacterMain {
   constructor (
     public name: string,
@@ -622,7 +664,7 @@ export class GameEvent {
   <div mat-dialog-content>
       <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="data.passion.name">
+        <input matInput [(ngModel)]="data.passion.name" cdkFocusInitial>
         <mat-hint>Dots are not allowed</mat-hint>
       </mat-form-field>
       <mat-form-field appearance="fill" style="width:100%">
@@ -632,7 +674,7 @@ export class GameEvent {
   </div>
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button [mat-dialog-close]="result" [disabled]="!canSave()" cdkFocusInitial>Save</button>
+    <button mat-button [mat-dialog-close]="result" [disabled]="!canSave()">Save</button>
   </div> `
 })
 export class PassionDialog {
@@ -667,6 +709,104 @@ export class PassionDialog {
     const name = this.trimmedName();
     const value = Number(this.data.passion.value);
     return name.length > 0 && name.indexOf('.') < 0 && value >= 1 && value <= 15;
+  }
+}
+
+@Component({
+  selector: 'property-dialog',
+  template: `
+  <div mat-dialog-content>
+      <mat-form-field appearance="fill" style="width:100%">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="data.entry.name" cdkFocusInitial>
+        <mat-hint>Dots are not allowed</mat-hint>
+      </mat-form-field>
+      <mat-form-field *ngIf="data.scope === 'skills'" appearance="fill" style="width:100%">
+        <mat-label>Category</mat-label>
+        <mat-select [(ngModel)]="data.entry.category">
+          <mat-option value="Other">Other</mat-option>
+          <mat-option value="Weapons">Weapon</mat-option>
+          <mat-option value="Combat">Combat</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="data.scope === 'skills'" appearance="fill" style="width:100%">
+        <mat-label>Initial value</mat-label>
+        <input matInput type="number" min="1" step="1" [(ngModel)]="data.entry.value">
+      </mat-form-field>
+      <mat-form-field *ngIf="data.scope === 'main'" appearance="fill" style="width:100%">
+        <mat-label>Value</mat-label>
+        <input matInput type="text" [(ngModel)]="data.entry.value">
+      </mat-form-field>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="result" [disabled]="!canSave()">Save</button>
+  </div> `
+})
+export class PropertyDialog {
+  data: { entry: PropertyEntry; scope: 'main' | 'skills' };
+
+  constructor(
+    private dialogRef: MatDialogRef<PropertyDialog>,
+    @Inject(MAT_DIALOG_DATA) public incoming: { entry: PropertyEntry; scope: 'main' | 'skills' }
+  ) {
+    this.data = incoming || { entry: new PropertyEntry(), scope: 'main' };
+    if (!this.data.entry) {
+      this.data.entry = new PropertyEntry();
+    }
+    if (!this.data.scope) {
+      this.data.scope = 'main';
+    }
+    this.data.entry.name = this.data.entry.name || '';
+    this.data.entry.category = this.data.entry.category || 'Other';
+    if (this.data.scope === 'main') {
+      this.data.entry.value = this.normalizeMainValue(this.data.entry.value);
+    } else {
+      this.data.entry.value = this.normalizeSkillValue(this.data.entry.value);
+    }
+  }
+
+  get result(): PropertyEntry {
+    const value = this.data.scope === 'main'
+      ? this.trimmedMainValue()
+      : this.normalizeSkillValue(this.data.entry.value);
+    return new PropertyEntry(
+      this.trimmedName(),
+      value,
+      this.data.entry.category || 'Other'
+    );
+  }
+
+  trimmedName(): string {
+    return (this.data.entry.name || '').trim();
+  }
+
+  normalizeSkillValue(value: any): number {
+    const n = Number(value);
+    return Number.isInteger(n) ? n : 1;
+  }
+
+  normalizeMainValue(value: any): string {
+    return String(value ?? '').trim();
+  }
+
+  trimmedMainValue(): string {
+    return this.normalizeMainValue(this.data.entry.value);
+  }
+
+  canSave(): boolean {
+    const name = this.trimmedName();
+    if (name.length === 0 || name.indexOf('.') >= 0) {
+      return false;
+    }
+
+    if (this.data.scope === 'main') {
+      return this.trimmedMainValue().length > 0;
+    }
+
+    const valueText = String(this.data.entry.value).trim();
+    const value = Number(valueText);
+    return valueText.length > 0 && Number.isInteger(value);
   }
 }
 
