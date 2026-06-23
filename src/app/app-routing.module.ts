@@ -9,7 +9,8 @@ import { FeastComponent } from './feast/feast.component';
 import { MapsComponent } from './maps/maps.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/character/', pathMatch: 'full' },
+  { path: '', redirectTo: '/character', pathMatch: 'full' },
+  { path: 'character', component: CharacterDetailComponent },
   { path: 'character/:name', component: CharacterDetailComponent },
   { path: 'team', component: TeamComponent },
   { path: 'feast', component: FeastComponent },
@@ -23,4 +24,3 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
-

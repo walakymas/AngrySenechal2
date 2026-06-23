@@ -19,10 +19,12 @@ import { Subscription, interval } from 'rxjs';
   styleUrls: ['./character-detail.component.css']
 })
 export class CharacterDetailComponent implements OnInit {
+  private readonly lastCharacterStorageKey = 'lastCharacter';
   id : number = NaN;
   mode: 'simple' | 'advanced' = 'simple';
   modifier: number = 0;
   charImgZoomed: boolean = false;
+  private pendingDefaultCharacterLoad: boolean = false;
   traits: Trait[] = []
   checks: CheckAll[] = []
   healthmod: number = 0;
@@ -70,6 +72,7 @@ export class CharacterDetailComponent implements OnInit {
 
   setCharList(l: LordBase[]): void {
     this.chars = l;
+    this.tryLoadDefaultCharacter();
   }
 
 
@@ -80,9 +83,10 @@ export class CharacterDetailComponent implements OnInit {
 
   load(p:ParamMap) {
     const name = p.get('name');
-    let id = +name;
+    const id = name ? +name : NaN;
     console.log('route:'+name+', id:'+id)
     this.charImgZoomed = false;
+    this.pendingDefaultCharacterLoad = false;
 
     this.service.getBase().then( t =>
       {
@@ -92,17 +96,28 @@ export class CharacterDetailComponent implements OnInit {
         for(let t in this.base.traits) {
           this.traits.push(new Trait(this.base.traits[t][0].substring(0,3).toLowerCase(), this.base.traits[t][0], this.base.traits[t][1]));
         }
-        if (id > 0) {
-          this.service.getLord(id).subscribe( l => {
-            this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
-            this.setLord(l);
-          });
-        } else {
-          this.service.getLordByName(name).subscribe( l => {
-            this.service.getConnections(l.char['dbid']*1).subscribe( l => this.setConnections(l));
-            this.setLord(l)
-          });
+        if (name) {
+          if (id > 0) {
+            this.loadLordById(id);
+          } else {
+            this.loadLordByName(name);
+          }
+          return;
         }
+
+        const storedCharacter = this.getStoredLastCharacter();
+        if (storedCharacter) {
+          const storedId = +storedCharacter;
+          if (!isNaN(storedId) && storedId > 0) {
+            this.loadLordById(storedId);
+          } else {
+            this.loadLordByName(storedCharacter);
+          }
+          return;
+        }
+
+        this.pendingDefaultCharacterLoad = true;
+        this.tryLoadDefaultCharacter();
       }
     );
   }
@@ -124,8 +139,65 @@ export class CharacterDetailComponent implements OnInit {
   loadLord(): void {
     console.log('loadLord')
     if (!isNaN(this.id)) {
-      this.service.getLord(this.id).subscribe( l => this.setLord(l));
+      this.service.getLord(this.id).subscribe(l => {
+        if (l && l.char) {
+          this.setLord(l);
+        }
+      });
     }
+  }
+
+  private loadLordById(id: number, allowDefaultFallback: boolean = true): void {
+    this.service.getLord(id).subscribe(l => {
+      if (!l || !l.char) {
+        if (allowDefaultFallback) {
+          this.pendingDefaultCharacterLoad = true;
+          this.tryLoadDefaultCharacter();
+        }
+        return;
+      }
+      this.service.getConnections(l.char['dbid']*1).subscribe(connections => {
+        if (connections) {
+          this.setConnections(connections);
+        }
+      });
+      this.setLord(l);
+    });
+  }
+
+  private loadLordByName(name: string, allowDefaultFallback: boolean = true): void {
+    this.service.getLordByName(name).subscribe(l => {
+      if (!l || !l.char) {
+        if (allowDefaultFallback) {
+          this.pendingDefaultCharacterLoad = true;
+          this.tryLoadDefaultCharacter();
+        }
+        return;
+      }
+      this.service.getConnections(l.char['dbid']*1).subscribe(connections => {
+        if (connections) {
+          this.setConnections(connections);
+        }
+      });
+      this.setLord(l);
+    });
+  }
+
+  private tryLoadDefaultCharacter(): void {
+    if (!this.pendingDefaultCharacterLoad || !this.base || !this.chars || this.chars.length === 0 || this.char) {
+      return;
+    }
+
+    let fallback: LordBase = this.chars[0];
+    for (const candidate of this.chars) {
+      if (candidate.type === 'pc') {
+        fallback = candidate;
+        break;
+      }
+    }
+
+    this.pendingDefaultCharacterLoad = false;
+    this.loadLordById(fallback.id, false);
   }
 
   playDiceSound(){
@@ -166,12 +238,16 @@ export class CharacterDetailComponent implements OnInit {
     return res;
   }
   setLord(l: Lord, force: boolean = false) {
+    if (!l || !l.char) {
+      return;
+    }
     if (!force && this.char!=null && this.char.modified == l.modified && !force) {
       return;
     }
 
     this.id = l.char['dbid']*1;
     this.char =  l;
+    this.rememberLastCharacter(l);
     let g :number  = 0
     let years = [];
     let y: number;
@@ -454,6 +530,26 @@ export class CharacterDetailComponent implements OnInit {
 
   safeKey(p:string) {
     return p.replace(/ /g,'_');
+  }
+
+  private getStoredLastCharacter(): string {
+    const id = window.localStorage.getItem(this.lastCharacterStorageKey);
+    if (id) {
+      return id;
+    }
+    return window.localStorage.getItem(this.lastCharacterStorageKey + 'Name');
+  }
+
+  private rememberLastCharacter(l: Lord): void {
+    if (!l || !l.char) {
+      return;
+    }
+
+    const dbid = l.char['dbid'] * 1;
+    window.localStorage.setItem(this.lastCharacterStorageKey, '' + dbid);
+    if (l.char['name']) {
+      window.localStorage.setItem(this.lastCharacterStorageKey + 'Name', '' + l.char['name']);
+    }
   }
 
   toggleCharImageZoom(): void {
