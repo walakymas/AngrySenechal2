@@ -34,6 +34,7 @@ import { MatTabsModule} from '@angular/material/tabs';
 import { MatTableModule} from '@angular/material/table';
 import { WINDOW, WINDOW_PROVIDERS } from './windows';
 import { AdminComponent, CharEditDialog, PlayerEditDialog } from './admin/admin.component';
+import { MapsAdminComponent, MapEditDialog } from './admin/maps-admin.component';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { FeastComponent } from './feast/feast.component';
@@ -60,6 +61,8 @@ import { MapsComponent } from './maps/maps.component';
         FeastComponent,
         FeastSeatingComponent,
         MapsComponent,
+        MapsAdminComponent,
+        MapEditDialog,
         NpcDetail2Component,
         CharacterConnectionDialog
     ],
@@ -97,4 +100,3 @@ import { MapsComponent } from './maps/maps.component';
     bootstrap: [AppComponent]
 })
 export class AppModule { }
-

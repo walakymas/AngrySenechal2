@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { MapsAdminComponent } from './maps-admin.component';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
 import { C2C, CharacterService, Player, TokenAll } from '../character.service';
@@ -46,6 +47,13 @@ export class AdminComponent implements OnInit, AfterViewInit {
   ) {
     this.snackBarConfig = new MatSnackBarConfig();
     this.snackBarConfig.duration = 2000;
+  }
+
+  openMapsAdmin() {
+    const ref = this.dialog.open(MapsAdminComponent, { width: '90vw', height: '90vh' });
+    ref.afterClosed().subscribe(() => {
+      // optionally refresh anything if needed after closing
+    });
   }
 
   ngAfterViewInit() {
