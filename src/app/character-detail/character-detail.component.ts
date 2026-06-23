@@ -20,6 +20,8 @@ import { Subscription, interval } from 'rxjs';
 })
 export class CharacterDetailComponent implements OnInit {
   id : number = NaN;
+  mode: 'simple' | 'advanced' = 'simple';
+  modifier: number = 0;
   traits: Trait[] = []
   checks: CheckAll[] = []
   healthmod: number = 0;
@@ -452,9 +454,34 @@ export class CharacterDetailComponent implements OnInit {
     return p.replace(/ /g,'_');
   }
 
-  safeBot(prefix: string, key: string, suffix: string) {
-    this.bot(`${prefix}${this.safeKey(key)}${suffix}`);
-  } 
+  isAdvancedMode(): boolean {
+    return this.mode === 'advanced';
+  }
+
+  toggleMode(): void {
+    this.mode = this.isAdvancedMode() ? 'simple' : 'advanced';
+  }
+
+  clampModifier(): void {
+    const value = Number(this.modifier);
+    if (Number.isNaN(value)) {
+      this.modifier = 0;
+      return;
+    }
+    this.modifier = Math.max(-20, Math.min(20, Math.trunc(value)));
+  }
+
+  getModifier(): number {
+    this.clampModifier();
+    return this.modifier;
+  }
+
+  checkCommand(command: string): void {
+    if (!this.hasUser() || this.isAdvancedMode()) {
+      return;
+    }
+    this.bot(`${command} ${this.getModifier()}`);
+  }
 
   bot(p:string) {
     let p_ = p.replace(/ /g,'_');

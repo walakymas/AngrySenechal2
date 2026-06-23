@@ -58,6 +58,18 @@ fieldset {
     border-color: var(--goldHighlight2);
 }
 
+.settings-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 10px 0 0;
+}
+
+.modifier-field {
+    width: 120px;
+}
+
 .mat-expansion-panel-header {
     font-family: 'Cormorant Unicase', serif;
     text-align: center;
