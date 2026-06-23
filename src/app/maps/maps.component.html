@@ -10,7 +10,7 @@
     </mat-tab>
   </mat-tab-group>
 
-  <div class="preview" *ngIf="currentPreview" [ngStyle]="previewStyle">
+  <div class="preview" *ngIf="currentPreview">
     <img [src]="currentPreview.url" [alt]="currentPreview.name || currentPreview.id"/>
   </div>
 </div>

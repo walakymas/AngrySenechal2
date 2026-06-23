@@ -448,9 +448,20 @@ export class CharacterDetailComponent implements OnInit {
     link.remove();
   }
 
+  safeKey(p:string) {
+    return p.replace(/ /g,'_');
+  }
+
+  safeBot(prefix: string, key: string, suffix: string) {
+    this.bot(`${prefix}${this.safeKey(key)}${suffix}`);
+  } 
+
   bot(p:string) {
     let p_ = p.replace(/ /g,'_');
-    let command = `${p_} <@!${ this.char.char['memberId']}>`;
+    let command = `${p} cid:${ this.char.char['dbid']}`;
+    if (this.char.char['memberId']) {
+      command = `${p} <@!${ this.char.char['memberId']}>`;
+    }
     this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
   }
 

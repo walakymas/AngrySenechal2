@@ -3,3 +3,4 @@
 .map-item img { width: 100%; height: auto; display: block; }
 .map-caption { text-align: center; padding-top: 6px; font-size: 13px; }
 .map-item .thumb { opacity: 1; }
+.preview img { width: 100%; height: auto; display: block; }
