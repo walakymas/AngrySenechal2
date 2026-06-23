@@ -482,7 +482,7 @@ export class CharacterDetailComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log(JSON.stringify(result))
-                this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
+        this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
         this.service.event(this.char, result).then(c => {
           this.setLord(c, true);
           this.snackBar.open('Lord refreshed','Ok',this.snackBarConfig);

@@ -1,6 +1,8 @@
 .maps-grid { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; }
-.map-item { width: 220px; border: 1px solid #ddd; padding: 4px; border-radius: 4px; background: #fff; position:relative }
+.map-item { width: 220px; padding: 4px; border-radius: 4px; position:relative }
 .map-item img { width: 100%; height: auto; display: block; }
 .map-caption { text-align: center; padding-top: 6px; font-size: 13px; }
+.map-meta { color: #666; display: flex; flex-direction: column; font-size: 11px; gap: 2px; padding-top: 4px; text-align: center; }
 .map-item .thumb { opacity: 1; }
+.edit-map-button { margin-bottom: 4px; width: 100%; }
 .preview img { width: 100%; height: auto; display: block; }

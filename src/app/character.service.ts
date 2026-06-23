@@ -513,4 +513,22 @@ seatGuest(cid: number, seat: string): Observable<Feast> {
       catchError(this.handleError<MapEntry[]>(`getMaps`, []))
     );
   }
+
+  updateMap(map: MapEntry): Observable<any> {
+    return this.http.post<any>(this.url + 'update_map',
+      new HttpParams()
+      .set('id', '' + map.id)
+      .set('url', map.url || '')
+      .set('category', map.category || '')
+      .set('ord', '' + (map.ord || 0))
+      .set('name', map.name || '')
+      .toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`updated map id=${map.id}`)),
+      catchError(this.handleError<any>(`updateMap`))
+    );
+  }
 }

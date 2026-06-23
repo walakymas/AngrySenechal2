@@ -1,5 +1,8 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { CharacterService, MapEntry } from '../character.service';
+import { MapEditDialog } from '../admin/maps-admin.component';
 
 @Component({
   selector: 'app-maps',
@@ -16,13 +19,17 @@ export class MapsComponent implements OnInit {
   previewStyle: any = {};
   keepPreviewFlag = false;
 
-  constructor(private service: CharacterService) { }
-
+  constructor(private service: CharacterService, public dialog: MatDialog, private snack: MatSnackBar) { }
   ngOnInit(): void {
+    this.loadMaps();
+  }
+
+  loadMaps() {
     this.service.getMaps().subscribe(m => this.setMaps(m));
   }
 
   setMaps(m: MapEntry[]) {
+    const previousCategory = this.selectedCategory;
     this.maps = m;
     // ensure ord is number
     this.maps.forEach(x => x.ord = x.ord ? +x.ord : 0);
@@ -34,11 +41,30 @@ export class MapsComponent implements OnInit {
       this.grouped[c].push(mm);
     }
     this.categories = Object.keys(this.grouped);
-    if (this.categories.length > 0) this.selectedCategory = this.categories[0];
+    if (this.categories.length > 0) {
+      this.selectedCategory = this.categories.includes(previousCategory) ? previousCategory : this.categories[0];
+    }
   }
 
   selectCategory(c: string) {
     this.selectedCategory = c;
+  }
+
+  editMap(event: MouseEvent, map: MapEntry) {
+    event.stopPropagation();
+    this.currentPreview = null;
+
+    const dialogRef = this.dialog.open(MapEditDialog, { data: { map: { ...map } } });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.service.updateMap(result).subscribe(() => {
+          this.snack.open('Map updated', 'OK', { duration: 2000 });
+      this.loadMaps();
+    }, () => {
+          this.snack.open('Could not update map', 'OK', { duration: 3000 });
+    });
+  }
+    });
   }
 
   showPreview(e: MouseEvent, m: MapEntry) {
@@ -102,3 +128,4 @@ export class MapsComponent implements OnInit {
   }
 
 }
+

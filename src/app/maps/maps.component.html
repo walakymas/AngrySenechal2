@@ -4,7 +4,7 @@
       <div class="maps-grid">
         <div class="map-item" *ngFor="let m of grouped[c]" (click)="showPreview($event, m)">
           <img class="thumb" [src]="m.url" [alt]="m.name || m.id"/>
-          <div class="map-caption">{{m.name || m.url}}</div>
+          <div class="map-caption"  (click)="editMap($event, m)">{{m.name || m.url}}</div>
         </div>
       </div>
     </mat-tab>
