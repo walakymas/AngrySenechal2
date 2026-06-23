@@ -549,15 +549,15 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   private getExistingMainNames(): string[] {
-    return Object.keys(this.char?.char?.['main'] || {});
+    return Object.keys(this.char && this.char.char && this.char.char['main'] ? this.char.char['main'] : {});
   }
 
   private getExistingPassionNames(): string[] {
-    return Object.keys(this.char?.char?.['passions'] || {});
+    return Object.keys(this.char && this.char.char && this.char.char['passions'] ? this.char.char['passions'] : {});
   }
 
   private getExistingSkillNamesByCategory(): Record<string, string[]> {
-    const skills = this.char?.char?.['skills'] || {};
+    const skills = this.char && this.char.char && this.char.char['skills'] ? this.char.char['skills'] : {};
     const categories: Record<string, string[]> = {};
 
     Object.keys(skills).forEach(category => {
@@ -736,8 +736,10 @@ export class GameEvent {
         <mat-label>Name</mat-label>
         <input matInput [(ngModel)]="data.passion.name" cdkFocusInitial>
         <mat-hint>Dots are not allowed</mat-hint>
-        <mat-error *ngIf="isDuplicateName()">{{ duplicateNameMessage() }}</mat-error>
       </mat-form-field>
+      <div *ngIf="isDuplicateName()" style="color:#f44336; font-size:12px; margin-top:-10px; margin-bottom:8px;">
+        {{ duplicateNameMessage() }}
+      </div>
       <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Initial value</mat-label>
         <input matInput type="number" min="1" max="15" step="1" [(ngModel)]="data.passion.value">
@@ -809,8 +811,10 @@ export class PassionDialog {
         <mat-label>Name</mat-label>
         <input matInput [(ngModel)]="data.entry.name" cdkFocusInitial>
         <mat-hint>Dots are not allowed</mat-hint>
-        <mat-error *ngIf="isDuplicateName()">{{ duplicateNameMessage() }}</mat-error>
       </mat-form-field>
+      <div *ngIf="isDuplicateName()" style="color:#f44336; font-size:12px; margin-top:-10px; margin-bottom:8px;">
+        {{ duplicateNameMessage() }}
+      </div>
       <mat-form-field *ngIf="data.scope === 'skills'" appearance="fill" style="width:100%">
         <mat-label>Category</mat-label>
         <mat-select [(ngModel)]="data.entry.category">
@@ -897,7 +901,8 @@ export class PropertyDialog {
     }
 
     const category = this.data.entry.category || 'Other';
-    return this.data.existingNamesByCategory?.[category] || [];
+    const existingNamesByCategory = this.data.existingNamesByCategory || {};
+    return existingNamesByCategory[category] || [];
   }
 
   isDuplicateName(): boolean {
