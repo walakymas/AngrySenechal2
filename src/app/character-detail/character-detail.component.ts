@@ -461,7 +461,12 @@ export class CharacterDetailComponent implements OnInit {
 
     const dialogRef = this.dialog.open(PropertyDialog, {
       width: '420px',
-      data: { entry: new PropertyEntry('', '', 'Other'), scope: 'main' }
+      data: {
+        entry: new PropertyEntry('', '', 'Other'),
+        scope: 'main',
+        existingNames: this.getExistingMainNames(),
+        originalName: ''
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -478,7 +483,12 @@ export class CharacterDetailComponent implements OnInit {
 
     const dialogRef = this.dialog.open(PropertyDialog, {
       width: '420px',
-      data: { entry: new PropertyEntry('', 1, category), scope: 'skills' }
+      data: {
+        entry: new PropertyEntry('', 1, category),
+        scope: 'skills',
+        existingNamesByCategory: this.getExistingSkillNamesByCategory(),
+        originalName: ''
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -495,7 +505,11 @@ export class CharacterDetailComponent implements OnInit {
 
     const dialogRef = this.dialog.open(PassionDialog, {
       width: '420px',
-      data: { passion: new PassionEntry(name, value) }
+      data: {
+        passion: new PassionEntry(name, value),
+        existingNames: this.getExistingPassionNames(),
+        originalName: name
+      }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -532,6 +546,25 @@ export class CharacterDetailComponent implements OnInit {
       return;
     }
     this.bot(`${command} ${this.getModifier()}`);
+  }
+
+  private getExistingMainNames(): string[] {
+    return Object.keys(this.char?.char?.['main'] || {});
+  }
+
+  private getExistingPassionNames(): string[] {
+    return Object.keys(this.char?.char?.['passions'] || {});
+  }
+
+  private getExistingSkillNamesByCategory(): Record<string, string[]> {
+    const skills = this.char?.char?.['skills'] || {};
+    const categories: Record<string, string[]> = {};
+
+    Object.keys(skills).forEach(category => {
+      categories[category] = Object.keys(skills[category] || {});
+    });
+
+    return categories;
   }
 
   bot(p:string) {
@@ -595,6 +628,43 @@ export class PropertyEntry {
     public value: string | number = '',
     public category: string = 'Other',
   ) {}
+}
+
+function normalizeDialogName(value: string): string {
+  return (value || '').trim().toLowerCase();
+}
+
+function hasDuplicateDialogName(
+  existingNames: string[] = [],
+  name: string = '',
+  originalName: string = ''
+): boolean {
+  const trimmedName = normalizeDialogName(name);
+  if (!trimmedName) {
+    return false;
+  }
+
+  const trimmedOriginalName = normalizeDialogName(originalName);
+  return existingNames.some(existingName => {
+    const normalizedExistingName = normalizeDialogName(existingName);
+    return normalizedExistingName.length > 0
+      && normalizedExistingName === trimmedName
+      && normalizedExistingName !== trimmedOriginalName;
+  });
+}
+
+interface PassionDialogData {
+  passion: PassionEntry;
+  existingNames?: string[];
+  originalName?: string;
+}
+
+interface PropertyDialogData {
+  entry: PropertyEntry;
+  scope: 'main' | 'skills';
+  existingNames?: string[];
+  existingNamesByCategory?: Record<string, string[]>;
+  originalName?: string;
 }
 
 export class CharacterMain {
@@ -666,6 +736,7 @@ export class GameEvent {
         <mat-label>Name</mat-label>
         <input matInput [(ngModel)]="data.passion.name" cdkFocusInitial>
         <mat-hint>Dots are not allowed</mat-hint>
+        <mat-error *ngIf="isDuplicateName()">{{ duplicateNameMessage() }}</mat-error>
       </mat-form-field>
       <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Initial value</mat-label>
@@ -678,16 +749,18 @@ export class GameEvent {
   </div> `
 })
 export class PassionDialog {
-  data: { passion: PassionEntry };
+  data: PassionDialogData;
 
   constructor(
     private dialogRef: MatDialogRef<PassionDialog>,
-    @Inject(MAT_DIALOG_DATA) public incoming: { passion: PassionEntry }
+    @Inject(MAT_DIALOG_DATA) public incoming: PassionDialogData
   ) {
     this.data = incoming || { passion: new PassionEntry() };
     if (!this.data.passion) {
       this.data.passion = new PassionEntry();
     }
+    this.data.existingNames = this.data.existingNames || [];
+    this.data.originalName = this.data.originalName || '';
     this.data.passion.name = this.data.passion.name || '';
     this.data.passion.value = this.normalizeValue(this.data.passion.value);
   }
@@ -700,15 +773,31 @@ export class PassionDialog {
     return (this.data.passion.name || '').trim();
   }
 
+  trimmedOriginalName(): string {
+    return (this.data.originalName || '').trim();
+  }
+
   normalizeValue(value: any): number {
     const n = Number(value);
     return Number.isInteger(n) ? n : 1;
   }
 
+  isDuplicateName(): boolean {
+    return hasDuplicateDialogName(
+      this.data.existingNames || [],
+      this.trimmedName(),
+      this.trimmedOriginalName()
+    );
+  }
+
+  duplicateNameMessage(): string {
+    return 'A passion with this name already exists.';
+  }
+
   canSave(): boolean {
     const name = this.trimmedName();
     const value = Number(this.data.passion.value);
-    return name.length > 0 && name.indexOf('.') < 0 && value >= 1 && value <= 15;
+    return name.length > 0 && name.indexOf('.') < 0 && !this.isDuplicateName() && Number.isInteger(value) && value >= 1 && value <= 15;
   }
 }
 
@@ -720,6 +809,7 @@ export class PassionDialog {
         <mat-label>Name</mat-label>
         <input matInput [(ngModel)]="data.entry.name" cdkFocusInitial>
         <mat-hint>Dots are not allowed</mat-hint>
+        <mat-error *ngIf="isDuplicateName()">{{ duplicateNameMessage() }}</mat-error>
       </mat-form-field>
       <mat-form-field *ngIf="data.scope === 'skills'" appearance="fill" style="width:100%">
         <mat-label>Category</mat-label>
@@ -744,11 +834,11 @@ export class PassionDialog {
   </div> `
 })
 export class PropertyDialog {
-  data: { entry: PropertyEntry; scope: 'main' | 'skills' };
+  data: PropertyDialogData;
 
   constructor(
     private dialogRef: MatDialogRef<PropertyDialog>,
-    @Inject(MAT_DIALOG_DATA) public incoming: { entry: PropertyEntry; scope: 'main' | 'skills' }
+    @Inject(MAT_DIALOG_DATA) public incoming: PropertyDialogData
   ) {
     this.data = incoming || { entry: new PropertyEntry(), scope: 'main' };
     if (!this.data.entry) {
@@ -757,6 +847,9 @@ export class PropertyDialog {
     if (!this.data.scope) {
       this.data.scope = 'main';
     }
+    this.data.existingNames = this.data.existingNames || [];
+    this.data.existingNamesByCategory = this.data.existingNamesByCategory || {};
+    this.data.originalName = this.data.originalName || '';
     this.data.entry.name = this.data.entry.name || '';
     this.data.entry.category = this.data.entry.category || 'Other';
     if (this.data.scope === 'main') {
@@ -781,6 +874,10 @@ export class PropertyDialog {
     return (this.data.entry.name || '').trim();
   }
 
+  trimmedOriginalName(): string {
+    return (this.data.originalName || '').trim();
+  }
+
   normalizeSkillValue(value: any): number {
     const n = Number(value);
     return Number.isInteger(n) ? n : 1;
@@ -794,9 +891,36 @@ export class PropertyDialog {
     return this.normalizeMainValue(this.data.entry.value);
   }
 
+  currentExistingNames(): string[] {
+    if (this.data.scope === 'main') {
+      return this.data.existingNames || [];
+    }
+
+    const category = this.data.entry.category || 'Other';
+    return this.data.existingNamesByCategory?.[category] || [];
+  }
+
+  isDuplicateName(): boolean {
+    return hasDuplicateDialogName(
+      this.currentExistingNames(),
+      this.trimmedName(),
+      this.trimmedOriginalName()
+    );
+  }
+
+  duplicateNameMessage(): string {
+    return this.data.scope === 'skills'
+      ? `A skill with this name already exists in ${this.data.entry.category || 'Other'}.`
+      : 'This name already exists.';
+  }
+
   canSave(): boolean {
     const name = this.trimmedName();
     if (name.length === 0 || name.indexOf('.') >= 0) {
+      return false;
+    }
+
+    if (this.isDuplicateName()) {
       return false;
     }
 
