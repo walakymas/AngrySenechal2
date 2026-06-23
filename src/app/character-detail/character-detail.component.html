@@ -87,7 +87,16 @@
                 </mat-menu>
             </h2>
         </div>
-        <div style="text-align: center"><img class="Image-Frame" id='charimg' src="{{char.char['url']}}" width="200"> </div>
+        <div style="text-align: center">
+            <img
+                class="Image-Frame charimg"
+                id="charimg"
+                src="{{char.char['url']}}"
+                width="200"
+                [class.charimg-zoomed]="charImgZoomed"
+                (click)="toggleCharImageZoom()"
+            >
+        </div>
     </div> <!-- 33.33% -->
 </div>
 

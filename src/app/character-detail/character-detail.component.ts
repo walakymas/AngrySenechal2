@@ -22,6 +22,7 @@ export class CharacterDetailComponent implements OnInit {
   id : number = NaN;
   mode: 'simple' | 'advanced' = 'simple';
   modifier: number = 0;
+  charImgZoomed: boolean = false;
   traits: Trait[] = []
   checks: CheckAll[] = []
   healthmod: number = 0;
@@ -81,6 +82,7 @@ export class CharacterDetailComponent implements OnInit {
     const name = p.get('name');
     let id = +name;
     console.log('route:'+name+', id:'+id)
+    this.charImgZoomed = false;
 
     this.service.getBase().then( t =>
       {
@@ -452,6 +454,10 @@ export class CharacterDetailComponent implements OnInit {
 
   safeKey(p:string) {
     return p.replace(/ /g,'_');
+  }
+
+  toggleCharImageZoom(): void {
+    this.charImgZoomed = !this.charImgZoomed;
   }
 
   addMainProperty(): void {
