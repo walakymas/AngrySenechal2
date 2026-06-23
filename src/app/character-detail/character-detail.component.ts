@@ -454,6 +454,23 @@ export class CharacterDetailComponent implements OnInit {
     return p.replace(/ /g,'_');
   }
 
+  editPassion(name: string = '', value: number = 1): void {
+    if (!this.hasUser()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(PassionDialog, {
+      width: '420px',
+      data: { passion: new PassionEntry(name, value) }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.modifyProp(`passions.${result.name}`, '' + result.value);
+      }
+    });
+  }
+
   isAdvancedMode(): boolean {
     return this.mode === 'advanced';
   }
@@ -531,6 +548,13 @@ export class Trait {
     public second: string) {}
 }
 
+export class PassionEntry {
+  constructor (
+    public name: string = '',
+    public value: number = 1,
+  ) {}
+}
+
 export class CharacterMain {
   constructor (
     public name: string,
@@ -590,6 +614,60 @@ export class GameEvent {
     public glory: number = 0,
     public year: number = 0,
     public description: string = '') {}
+}
+
+@Component({
+  selector: 'passion-dialog',
+  template: `
+  <div mat-dialog-content>
+      <mat-form-field appearance="fill" style="width:100%">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="data.passion.name">
+        <mat-hint>Dots are not allowed</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="fill" style="width:100%">
+        <mat-label>Initial value</mat-label>
+        <input matInput type="number" min="1" max="15" step="1" [(ngModel)]="data.passion.value">
+      </mat-form-field>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="result" [disabled]="!canSave()" cdkFocusInitial>Save</button>
+  </div> `
+})
+export class PassionDialog {
+  data: { passion: PassionEntry };
+
+  constructor(
+    private dialogRef: MatDialogRef<PassionDialog>,
+    @Inject(MAT_DIALOG_DATA) public incoming: { passion: PassionEntry }
+  ) {
+    this.data = incoming || { passion: new PassionEntry() };
+    if (!this.data.passion) {
+      this.data.passion = new PassionEntry();
+    }
+    this.data.passion.name = this.data.passion.name || '';
+    this.data.passion.value = this.normalizeValue(this.data.passion.value);
+  }
+
+  get result(): PassionEntry {
+    return new PassionEntry(this.trimmedName(), this.normalizeValue(this.data.passion.value));
+  }
+
+  trimmedName(): string {
+    return (this.data.passion.name || '').trim();
+  }
+
+  normalizeValue(value: any): number {
+    const n = Number(value);
+    return Number.isInteger(n) ? n : 1;
+  }
+
+  canSave(): boolean {
+    const name = this.trimmedName();
+    const value = Number(this.data.passion.value);
+    return name.length > 0 && name.indexOf('.') < 0 && value >= 1 && value <= 15;
+  }
 }
 
 @Component({

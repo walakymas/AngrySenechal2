@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { CharactersComponent } from './characters/characters.component';
-import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog } from './character-detail/character-detail.component';
+import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog, PassionDialog } from './character-detail/character-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule} from '@angular/material/icon';
@@ -54,6 +54,7 @@ import { MapsComponent } from './maps/maps.component';
         DialogContentExampleDialog,
         CharacterMainDialog,
         CharacterJsonDialog,
+        PassionDialog,
         ChargenComponent,
         AdminComponent,
         PlayerEditDialog,

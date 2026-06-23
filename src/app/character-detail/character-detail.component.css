@@ -70,6 +70,10 @@ fieldset {
     width: 120px;
 }
 
+.clickableHeader {
+    cursor: pointer;
+}
+
 .mat-expansion-panel-header {
     font-family: 'Cormorant Unicase', serif;
     text-align: center;
