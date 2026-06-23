@@ -74,6 +74,10 @@ fieldset {
     cursor: pointer;
 }
 
+.main-entry {
+    cursor: pointer;
+}
+
 .charimg {
     transition: transform 0.3s ease;
     transform-origin: center center;

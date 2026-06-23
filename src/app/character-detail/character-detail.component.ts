@@ -567,7 +567,8 @@ export class CharacterDetailComponent implements OnInit {
         entry: new PropertyEntry('', '', 'Other'),
         scope: 'main',
         existingNames: this.getExistingMainNames(),
-        originalName: ''
+        originalName: '',
+        allowNameEdit: true
       }
     });
 
@@ -589,7 +590,8 @@ export class CharacterDetailComponent implements OnInit {
         entry: new PropertyEntry(name, value, 'Other'),
         scope: 'main',
         existingNames: this.getExistingMainNames(),
-        originalName: name
+        originalName: name,
+        allowNameEdit: false
       }
     });
 
@@ -789,6 +791,7 @@ interface PropertyDialogData {
   existingNames?: string[];
   existingNamesByCategory?: Record<string, string[]>;
   originalName?: string;
+  allowNameEdit?: boolean;
 }
 
 export class CharacterMain {
@@ -933,8 +936,14 @@ export class PassionDialog {
   <div mat-dialog-content>
       <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="data.entry.name" cdkFocusInitial>
-        <mat-hint>Dots are not allowed</mat-hint>
+        <ng-container *ngIf="canEditName(); else lockedMainName">
+          <input matInput [(ngModel)]="data.entry.name" cdkFocusInitial>
+        </ng-container>
+        <ng-template #lockedMainName>
+          <input matInput [(ngModel)]="data.entry.name" disabled>
+        </ng-template>
+        <mat-hint *ngIf="canEditName()">Dots are not allowed</mat-hint>
+        <mat-hint *ngIf="!canEditName()">Name is fixed for existing main values.</mat-hint>
       </mat-form-field>
       <div *ngIf="isDuplicateName()" style="color:#f44336; font-size:12px; margin-top:-10px; margin-bottom:8px;">
         {{ duplicateNameMessage() }}
@@ -978,6 +987,7 @@ export class PropertyDialog {
     this.data.existingNames = this.data.existingNames || [];
     this.data.existingNamesByCategory = this.data.existingNamesByCategory || {};
     this.data.originalName = this.data.originalName || '';
+    this.data.allowNameEdit = this.data.allowNameEdit !== false;
     this.data.entry.name = this.data.entry.name || '';
     this.data.entry.category = this.data.entry.category || 'Other';
     if (this.data.scope === 'main') {
@@ -1041,6 +1051,10 @@ export class PropertyDialog {
     return this.data.scope === 'skills'
       ? `A skill with this name already exists in ${this.data.entry.category || 'Other'}.`
       : 'This name already exists.';
+  }
+
+  canEditName(): boolean {
+    return this.data.scope !== 'main' || this.data.allowNameEdit !== false;
   }
 
   canSave(): boolean {
