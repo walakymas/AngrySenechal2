@@ -476,6 +476,28 @@ export class CharacterDetailComponent implements OnInit {
     });
   }
 
+  editMainProperty(name: string, value: string | number): void {
+    if (!this.hasUser()) {
+      return;
+    }
+
+    const dialogRef = this.dialog.open(PropertyDialog, {
+      width: '420px',
+      data: {
+        entry: new PropertyEntry(name, value, 'Other'),
+        scope: 'main',
+        existingNames: this.getExistingMainNames(),
+        originalName: name
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.modifyProp(`main.${result.name}`, '' + result.value);
+      }
+    });
+  }
+
   addSkillProperty(category: string = 'Other'): void {
     if (!this.hasUser()) {
       return;

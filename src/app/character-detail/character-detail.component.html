@@ -6,9 +6,15 @@
             <ng-container *ngFor="let m of char.char['main'] | keyvalue ">
                 <li  *ngIf="isEq(m.key, 'Born')">
                     <span class="gold">Age</span> {{char.year - m.value*1}}
+                    <button *ngIf="isAdvancedMode()" mat-icon-button type="button" title="Edit birth year" (click)="editMainProperty(m.key, m.value)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
                 </li>
                 <li *ngIf="!isEq(m.key, 'Glory')">
                     <span class="gold" >{{m.key}}</span> {{m.value}}
+                    <button *ngIf="isAdvancedMode()" mat-icon-button type="button" title="Edit main value" (click)="editMainProperty(m.key, m.value)">
+                        <mat-icon>edit</mat-icon>
+                    </button>
                 </li>
             </ng-container>
         </ul>
