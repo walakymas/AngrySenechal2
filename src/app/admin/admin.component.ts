@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MapsAdminComponent } from './maps-admin.component';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
@@ -16,7 +16,7 @@ import { MAT_DIALOG_DATA} from '@angular/material/dialog';
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.css'],
 })
-export class AdminComponent implements OnInit, AfterViewInit {
+export class AdminComponent implements OnInit {
   snackBarConfig: MatSnackBarConfig;
   players: Player[];
   dsPlayers: MatTableDataSource<Player> = new MatTableDataSource([]);
@@ -30,11 +30,6 @@ export class AdminComponent implements OnInit, AfterViewInit {
   dcChars: string[] = ['id','name','role','type', 'plyr'];
   dcTokens: string[] = ['id','expires','cid','state'];
   dcC2Cs: string[] = ['id','c0','c1','connection','comment'];
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatSort) playerSort: MatSort;
-  @ViewChild(MatSort) c2csort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatPaginator) c2cpaginator: MatPaginator;
   c0: string = '32';
   c1: string = '';
   connection: string = 'Children';
@@ -56,12 +51,46 @@ export class AdminComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.dsPlayers.sort = this.playerSort;
-    this.dsChars.sort = this.sort;
-    this.dsChars.paginator = this.paginator;
-    this.dsC2Cs.paginator = this.c2cpaginator;
-    this.dsC2Cs.sort = this.c2csort;
+  @ViewChild('c2cSort')
+  set c2cSort(sort: MatSort) {
+    if (sort) {
+      this.dsC2Cs.sort = sort;
+    }
+  }
+
+  @ViewChild('playerSort')
+  set playerSort(sort: MatSort) {
+    if (sort) {
+      this.dsPlayers.sort = sort;
+    }
+  }
+
+  @ViewChild('charSort')
+  set charSort(sort: MatSort) {
+    if (sort) {
+      this.dsChars.sort = sort;
+    }
+  }
+
+  @ViewChild('tokenSort')
+  set tokenSort(sort: MatSort) {
+    if (sort) {
+      this.dsTokens.sort = sort;
+    }
+  }
+
+  @ViewChild('charPaginator')
+  set charPaginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.dsChars.paginator = paginator;
+    }
+  }
+
+  @ViewChild('c2cPaginator')
+  set c2cPaginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.dsC2Cs.paginator = paginator;
+    }
   }
 
   ngOnInit(): void {
@@ -252,4 +281,3 @@ export class CharEditDialog {
         console.log(data)
     }
 }
-

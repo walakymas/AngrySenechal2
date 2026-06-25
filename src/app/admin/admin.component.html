@@ -1,6 +1,6 @@
 <mat-tab-group animationDuration="2000ms">
   <mat-tab label="Connections">
-    <table mat-table matSort [dataSource]="dsC2Cs" class="adminTable">
+    <table mat-table matSort #c2cSort="matSort" [dataSource]="dsC2Cs" class="adminTable">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
         <td mat-cell *matCellDef="let c2c"> {{c2c.id}} </td>
@@ -25,7 +25,7 @@
       <tr mat-row *matRowDef="let row; columns: dcC2Cs;"
       ></tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+    <mat-paginator #c2cPaginator [pageSizeOptions]="[5, 10, 20]"
       showFirstLastButtons
       aria-label="Select page of periodic elements">
     </mat-paginator>
@@ -64,7 +64,7 @@
     </table>
   </mat-tab>
   <mat-tab label="Player list">
-    <table mat-table matSort [dataSource]="dsPlayers" class="adminTable">
+    <table mat-table matSort #playerSort="matSort" [dataSource]="dsPlayers" class="adminTable">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
         <td mat-cell *matCellDef="let plyr"> {{plyr.cid}} </td>
@@ -92,7 +92,7 @@
     </table>
   </mat-tab>
   <mat-tab label="Characters">
-    <table mat-table matSort [dataSource]="dsChars" class="adminTable">
+    <table mat-table matSort #charSort="matSort" [dataSource]="dsChars" class="adminTable">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
         <td mat-cell *matCellDef="let chr"> {{chr.id}} </td>
@@ -118,13 +118,13 @@
       (click)="clickChar(row)"
       ></tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+    <mat-paginator #charPaginator [pageSizeOptions]="[5, 10, 20]"
       showFirstLastButtons
       aria-label="Select page of periodic elements">
     </mat-paginator>
   </mat-tab>
   <mat-tab label="Tokens">
-    <table mat-table matSort [dataSource]="dsTokens" class="adminTable">
+    <table mat-table matSort #tokenSort="matSort" [dataSource]="dsTokens" class="adminTable">
       <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
         <td mat-cell *matCellDef="let chr"> {{chr.id}} </td>

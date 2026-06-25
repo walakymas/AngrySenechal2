@@ -126,7 +126,7 @@ export class FeastComponent implements OnInit {
     }
 
     isHostCard(card: string) : boolean {
-        this.logger.warn("isHostCard: "+card+" "+JSON.stringify(this.feastConfig[card]));
+      //this.logger.log("isHostCard: "+card+" "+JSON.stringify(this.feastConfig[card]));
       if (this.feastConfig[card] && this.feastConfig[card].tags && this.feastConfig[card].tags.indexOf('host') >= 0) {
         return true;
       }
@@ -139,6 +139,7 @@ export class FeastComponent implements OnInit {
       }
       for (var c of cards) {
         if (this.isHostCard(c)) {
+          //this.logger.log("isInactive: "+card+" is inactive because "+c+" is host card");
           return true;
         }
       }

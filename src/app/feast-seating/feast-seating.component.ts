@@ -32,7 +32,7 @@ export class FeastSeatingComponent implements OnInit {
   }
   fallback(event: any): void {
     const target = event.target as HTMLImageElement;
-    target.src = 'https://raw.githubusercontent.com/walakymas/AngrySenechal2/refs/heads/spring/src/assets/question.png'; // vagy egy elérhető kép URL-je
+    target.src = 'assets/question.png';
     console.error('Image failed to load, using fallback image.');
   }
 

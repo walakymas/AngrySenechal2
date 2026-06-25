@@ -1,4 +1,4 @@
-<div class="feast" *ngIf="feast.data && feastConfig else preinit">
+<div class="feast" *ngIf="feast && feast.data && feastConfig else preinit">
     <div class="row">
         <div class="col-1">
     <h2>Feast {{feast.title}}</h2>
@@ -102,12 +102,13 @@
                         Action: {{m.value.rounds[feast.data.round].action}}
 
                         <div *ngIf="m.value.rounds[feast.data.round].cards" class="cards">
-                            <div *ngFor="let t of m.value.rounds[feast.data.round].cards"  [class.inactive]="isInactive(t, m.value.rounds[feast.data.round].cards, m.value.significant)" class="card">
-                                <img src="https://raw.githubusercontent.com/walakymas/lakoma/refs/heads/main/images/{{t}}.jpg"/><br/>
+                            <div *ngFor="let t of m.value.rounds[feast.data.round].cards" 
+                             [class.inactive]="isInactive(t, m.value.rounds[feast.data.round].cards, m.value.significant)" class="card">
+                                <img src="https://senechalweb.duckdns.org/feastImages/images/{{t}}.jpg"/><br/>
                             </div>
                         </div>
                         <div *ngIf="m.value.rounds[feast.data.round].acctiveCards != undefined" class="cards">
-                            <img *ngFor="let t of m.value.rounds[feast.data.round].acctiveCards" src="https://raw.githubusercontent.com/walakymas/lakoma/refs/heads/main/images/{{t}}.jpg" class="card"/><br/>
+                            <img *ngFor="let t of m.value.rounds[feast.data.round].acctiveCards" src="https://senechalweb.duckdns.org/feastImages/images/{{t}}.jpg" class="card"/><br/>
                         </div>
                     </ng-container>
                     <div>Tags: 
