@@ -101,12 +101,29 @@
             <span id="glory"> {{details['glory']}}</span>
         </div>
         <div style="text-align: center;" class="hidePrint">
-            <button (click)="bot('d6')"><mat-icon>casino</mat-icon>D6</button>
-            <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
-            <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-            <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+            <div style="padding-bottom: 10px;">
+                <div style="display: inline-block; width: 120px;">Rolls</div>
+                <button (click)="bot('d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>D6</button>
+                <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
+            </div>
+            <div style="padding-bottom: 10px;">
+                <div style="display: inline-block; width: 120px;">Weapon damage</div>
+                <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
+                <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+            </div>
+            <div>
+                <div style="display: inline-block; width: 120px;">Horse damage</div>
+                <button *ngIf="main_horse" (click)="bot(horseDamageDice()+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{horseDamageDice()}}d6</button>
+                <button *ngIf="main_horse" (click)="bot((horseDamageDice()+4)+'d6')"><mat-icon>casino</mat-icon>{{horseDamageDice()+4}}d6</button>
+            </div>
         </div>
-        <div style="text-align: center;" class="check"  *ngIf="checks.length>0">
+    </div>
+    <div class="col-1">
+        <div class="FontSizeBig hidePrint" *ngIf="!checks || checks.length==0"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
+        <div style="text-align: center;" class="check hidePrint"  *ngIf="checks.length>0">
+            <div class="FontSizeBig">
+                <span class="gold">Checks:</span>
+            </div>
           <div *ngIf="checks[actualCheck-1]">
             <span>{{checks[actualCheck-1].name}}</span>  {{check('command')}}
             <div *ngIf="checks[actualCheck-1].result['action']=='dice'">
@@ -128,9 +145,6 @@
           </div>
           <mat-slider min="1" max="{{checks.length}}" step="1" thumbLabel  [(value)]="actualCheck" ></mat-slider>
         </div>
-    </div>
-    <div class="col-1">
-        <div class="FontSizeBig hidePrint"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
     </div>
     <div class="col-1">
         <div class="FontSizeBig">

@@ -693,6 +693,13 @@ export class CharacterDetailComponent implements OnInit {
     return categories;
   }
 
+  horseDamageDice(): number {
+    if (!this.main_horse || !this.main_horse['dam']) {
+      return 0;
+    }
+    return parseInt(this.main_horse['dam'], 10) || 0;
+  }
+
   bot(p:string) {
     let p_ = p.replace(/ /g,'_');
     let command = `${p} cid:${ this.char.char['dbid']}`;
