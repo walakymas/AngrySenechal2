@@ -5,3 +5,31 @@
 .mat-button-toggle-appearance-standard .mat-button-toggle-label-content {
     line-height: 36px;
 }
+
+.name a {
+    color: var(--goldHighlight2);
+    text-decoration: none;
+}
+
+.modifier {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modifier-slider {
+    flex: 1 1 auto;
+    width: 100%;
+}
+
+.modifier-value {
+    min-width: 2em;
+    text-align: center;
+}
+
+.readonly-toggle {
+    flex: 0 0 auto;
+    transform: scale(2);
+    transform-origin: left center;
+    margin-right: 12px;
+}

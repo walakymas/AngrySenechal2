@@ -1,15 +1,16 @@
 <div id="teamdiv" *ngIf="team; else noTeam">
     <div class="row">
         <div class="col-1">
-            <mat-button-toggle-group class="modifier" [(ngModel)]="modifier">
-                <ng-container *ngFor="let a of fakeArray; let index = index">
-                    <mat-button-toggle value="{{ index-10 }}">{{ index-10 }}</mat-button-toggle>
-                </ng-container>
-            </mat-button-toggle-group><br/>
-            <mat-checkbox [(ngModel)]="readonly">Readonly</mat-checkbox>
+            <div class="modifier">
+                <button mat-icon-button class="readonly-toggle" (click)="toggleReadonly()" matTooltip="{{ readonly ? 'Readonly' : 'Active' }}">
+                    <mat-icon>{{ readonly ? 'lock' : 'lock_open' }}</mat-icon>
+                </button>
+                <mat-slider class="modifier-slider" min="-10" max="10" step="1" thumbLabel [(value)]="modifier" (change)="saveModifier()"></mat-slider>
+                <span class="modifier-value">{{ modifier }}</span>
+            </div>
 <table class="team">
     <tbody>
-        <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+        <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
         <tr id="str"><th>Strength</th><td *ngFor="let m of team">{{m['stats']['str']}}</td></tr>
         <tr id="dex"><th>Dexterity</th><td *ngFor="let m of team">{{m['stats']['dex']}}</td></tr>
         <tr id="con"><th>Constitution</th><td *ngFor="let m of team">{{m['stats']['con']}}</td></tr>
@@ -33,14 +34,14 @@
         <tr id="glo"><th>Glory</th><td *ngFor="let m of team">{{m['Glory']}}</td></tr>
     </tbody>
     <tbody id="traits">
-        <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+        <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
         <ng-container *ngFor="let t of traits">
             <tr><th (click)="bot(t.first)">{{t.first}}</th><td *ngFor="let m of team" (click)="bot(t.first, m)">{{m['traits'][t.short]}}</td></tr>
             <tr><th (click)="bot(t.second)">{{t.second}}</th><td *ngFor="let m of team" (click)="bot(t.second, m)">{{20-m['traits'][t.short]}}</td></tr>
         </ng-container>
     </tbody>
     <tbody id="passions">
-        <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+        <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
         <tr *ngFor="let p of teamprop('passions','')"><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['passions'][p]}}</td></tr>
     </tbody>
 </table>
@@ -48,15 +49,15 @@
 <div class="col-1">
     <table class="team">
         <tbody id="weapons">
-            <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+            <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
             <tr *ngFor="let p of teamprop('skills','Weapons')" ><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Weapons'][p]}}</td></tr>
         </tbody>
         <tbody id="other">
-            <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+            <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
             <tr *ngFor="let p of teamprop('skills','Other')" ><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Other'][p]}}</td></tr>
         </tbody>
         <tbody id="combat">
-            <tr class="name"><th></th><th *ngFor="let m of team">{{m['shortName']}}</th></tr>
+            <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
             <tr *ngFor="let p of teamprop('skills','Combat')"><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Combat'][p]}}</td></tr>
         </tbody>
     </table>

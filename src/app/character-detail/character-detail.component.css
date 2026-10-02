@@ -130,3 +130,9 @@ fieldset {
     width: 15px;
     font-size: 15px;
 }
+
+button.advanced .mat-icon{
+    height: 24px;
+    width: 24px;
+    color:black;
+}

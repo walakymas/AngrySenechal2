@@ -45,7 +45,7 @@ export class EditableComponent implements OnChanges {
 	constructor() {
 		this.isEditing = false;
 		this.pendingValue = 0;
-		this.showSaveButton = false;
+		this.showSaveButton = true;
 		this.valueChangeEvents = new EventEmitter();
 	}
 

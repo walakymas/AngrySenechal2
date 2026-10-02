@@ -668,10 +668,47 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   checkCommand(command: string): void {
-    if (!this.hasUser() || this.isAdvancedMode()) {
+    if (!this.hasUser()) {
       return;
     }
-    this.bot(`${command} ${this.getModifier()}`);
+    if ( this.isAdvancedMode()) {
+      const baseModifier = this.getModifier();
+      const specificModifier = this.getStoredCheckModifier(command);
+
+      const dialogRef = this.dialog.open(CheckModifierDialog, {
+        width: '360px',
+        data: {
+          command,
+          baseModifier,
+          specificModifier
+        }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result === undefined || result === null) {
+          return;
+        }
+        this.saveCheckModifier(command, result.specificModifier);
+        this.bot(`${command} ${baseModifier + result.specificModifier}`);
+      });
+    } else {
+      this.bot(`${command} ${this.getModifier()}`);
+    }
+  }
+
+  private checkModifierStorageKey(command: string): string {
+    const dbid = this.char && this.char.char ? this.char.char['dbid'] : '';
+    return `checkModifier_${dbid}_${command}`;
+  }
+
+  private getStoredCheckModifier(command: string): number {
+    const stored = window.localStorage.getItem(this.checkModifierStorageKey(command));
+    const value = Number(stored);
+    return Number.isInteger(value) ? value : 0;
+  }
+
+  private saveCheckModifier(command: string, value: number): void {
+    window.localStorage.setItem(this.checkModifierStorageKey(command), '' + value);
   }
 
   private getExistingMainNames(): string[] {
@@ -799,6 +836,12 @@ interface PropertyDialogData {
   existingNamesByCategory?: Record<string, string[]>;
   originalName?: string;
   allowNameEdit?: boolean;
+}
+
+interface CheckModifierDialogData {
+  command: string;
+  baseModifier: number;
+  specificModifier: number;
 }
 
 export class CharacterMain {
@@ -1081,6 +1124,47 @@ export class PropertyDialog {
     const valueText = String(this.data.entry.value).trim();
     const value = Number(valueText);
     return valueText.length > 0 && Number.isInteger(value);
+  }
+}
+
+@Component({
+  selector: 'check-modifier-dialog',
+  template: `
+  <div mat-dialog-content>
+      <p>{{ data.command }}</p>
+      <mat-form-field appearance="fill" style="width:100%">
+        <mat-label>Specific modifier</mat-label>
+        <input matInput type="number" step="1" [(ngModel)]="data.specificModifier" cdkFocusInitial>
+      </mat-form-field>
+      <p>Base modifier: {{ data.baseModifier }}, total: {{ total() }}</p>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button [mat-dialog-close]="result">Check</button>
+  </div> `
+})
+export class CheckModifierDialog {
+  data: CheckModifierDialogData;
+
+  constructor(
+    private dialogRef: MatDialogRef<CheckModifierDialog>,
+    @Inject(MAT_DIALOG_DATA) public incoming: CheckModifierDialogData
+  ) {
+    this.data = incoming || { command: '', baseModifier: 0, specificModifier: 0 };
+    this.data.specificModifier = this.normalizeValue(this.data.specificModifier);
+  }
+
+  normalizeValue(value: any): number {
+    const n = Number(value);
+    return Number.isInteger(n) ? n : 0;
+  }
+
+  total(): number {
+    return this.data.baseModifier + this.normalizeValue(this.data.specificModifier);
+  }
+
+  get result(): CheckModifierDialogData {
+    return { ...this.data, specificModifier: this.normalizeValue(this.data.specificModifier) };
   }
 }
 

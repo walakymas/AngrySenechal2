@@ -10,16 +10,22 @@ import { LordDetail, LordData } from '../lord';
   styleUrls: ['./team.component.css']
 })
 export class TeamComponent implements OnInit {
-  fakeArray = new Array(21);
   modifier = 0;
   team : LordData[];
   base: Base;
   traits: Trait[] = [];
-  readonly: boolean = true;
+  readonly: boolean = false;
+  private readonly modifierStorageKey = 'teamModifier';
+  private readonly readonlyStorageKey = 'teamReadonly';
   constructor(private service: CharacterService,
     ) { }
 
   ngOnInit(): void {
+    const stored = Number(window.localStorage.getItem(this.modifierStorageKey));
+    if (Number.isInteger(stored)) {
+      this.modifier = stored;
+    }
+    this.readonly = window.localStorage.getItem(this.readonlyStorageKey) === 'true';
     this.service.getBase().then( t =>
       {
         console.log('base in team')
@@ -37,6 +43,7 @@ export class TeamComponent implements OnInit {
     this.team = t;
     for (let ti in t) {
       const m = t[ti];
+      console.log('setting detail for '+m['name']+' '+m['shortName']+' '+m['player']+' '+m['memberId']);
       m.detail = new LordDetail();
       m.detail.damage = Math.round((m['stats']['str']*1+m['stats']['siz']*1)/6);
       m.detail.hr  = Math.round((m['stats']['str']*1+m['stats']['con']*1)/10);
@@ -117,9 +124,19 @@ export class TeamComponent implements OnInit {
     return keys;
   }
 
+  saveModifier() {
+    window.localStorage.setItem(this.modifierStorageKey, '' + this.modifier);
+  }
+
+  toggleReadonly() {
+    this.readonly = !this.readonly;
+    window.localStorage.setItem(this.readonlyStorageKey, '' + this.readonly);
+  }
+
   bot(p:string, m:LordData) {
     if (!this.readonly && window.localStorage.getItem('userName')!=null) {
       let p_ = p.replace(/ /g,'_');
+      console.log(`sending bot command for ${p_} ${this.modifier} <@!${m['memberId']}>`);
       let command = m?`check ${p_} ${this.modifier} <@!${m['memberId']}>`:`team ${p_}`;
       this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
     }
