@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.handleLoginRedirect();
     this.service.getList().subscribe( l => {
       this.list = l;
       window.localStorage.setItem('list', JSON.stringify(l));      
@@ -49,6 +50,28 @@ export class AppComponent implements OnInit {
         this.service.getUser().then( u => this.setUser(u));
       }}
     );
+  }
+
+  // The Discord login redirects back as <origin>/#token=... or <origin>/#error=...
+  handleLoginRedirect() {
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    const token = params.get('token');
+    const error = params.get('error');
+    if (!token && !error) {
+      return;
+    }
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    if (token) {
+      window.localStorage.setItem('token', token);
+      this.token = token;
+    } else {
+      this.snackBar.open(error == 'unknown_player'
+        ? 'This Discord account is not a known player' : 'Discord login failed', 'Ok');
+    }
+  }
+
+  loginWithDiscord() {
+    window.location.href = this.service.getUrl() + 'auth/login?return=' + encodeURIComponent(window.location.origin);
   }
 
   setUser(u: User) {

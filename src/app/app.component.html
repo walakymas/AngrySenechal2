@@ -3,13 +3,8 @@
     <mat-icon>more_vert</mat-icon>
   </button>
   <mat-menu #mainMenu="matMenu">
-    <button mat-menu-item *ngIf="!hasToken()" [matMenuTriggerFor]="login"><mat-icon>login</mat-icon>Login</button>
+    <button mat-menu-item *ngIf="!hasToken()" (click)="loginWithDiscord()"><mat-icon>login</mat-icon>Login with Discord</button>
     <button mat-menu-item *ngIf="hasToken()" (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
-  </mat-menu>
-  <mat-menu #login="matMenu">
-    <ng-container *ngFor="let c of list" >
-      <button mat-menu-item *ngIf="c.type=='pc'" (click)="loginBase(c)"><mat-icon >security</mat-icon>{{c.name}}</button>
-    </ng-container>
   </mat-menu>
   <button mat-button (click)="newChar()">
     <mat-icon>person_add</mat-icon>
