@@ -92,7 +92,6 @@ export class CharacterService {
     private logger: Logger
     ,@Inject(WINDOW) private window: Window
     ) {
-      this.getBase();
       console.log('protocol:'+this.window.location.protocol);
       if ("localhost"==this.window.location.hostname ) {
         this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8000/";
@@ -100,6 +99,7 @@ export class CharacterService {
         this.url = this.window.location.protocol+"//"+this.window.location.hostname+"/backend/";
       }
       console.log('urIIII:'+this.url);
+      this.getBase();
     }
 
   getUrl() {
