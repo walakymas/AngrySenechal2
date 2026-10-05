@@ -738,7 +738,7 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   bot(p:string) {
-    if (/^\d*[dD]\d+([+-]\d+)?$/.test(p.trim())) {
+    if (this.service.isLoggedIn() && /^\d*[dD]\d+([+-]\d+)?$/.test(p.trim())) {
       this.service.roll(p.trim(), this.char.char['dbid']).subscribe(e => console.log(`rolled "${p}" ${JSON.stringify(e)}`));
       return;
     }
@@ -747,7 +747,11 @@ export class CharacterDetailComponent implements OnInit {
     if (this.char.char['memberId']) {
       command = `${p} <@!${ this.char.char['memberId']}>`;
     }
-    this.service.command(command).subscribe(e => console.log(`sent "${command}" ${JSON.stringify(e)}`));
+    if (this.service.isLoggedIn()) {
+      this.service.command(command).subscribe(e => console.log(`sent "${command}" ${JSON.stringify(e)}`));
+    } else {
+      this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+    }
   }
 
   editEvent(e) {

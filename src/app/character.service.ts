@@ -300,6 +300,12 @@ export class CharacterService {
     );
   }
 
+  // The page has a logged in user (token validated by AppComponent); otherwise commands go through the webhook
+  isLoggedIn(): boolean {
+    const token = this.getToken();
+    return !!token && token !== 'null' && this.window.localStorage.getItem('userName') != null;
+  }
+
   // Bot command (without prefix, e.g. 'c Sword 0 cid:5') run in the user's Discord channel, no webhook involved
   command(command: string): Observable<any> {
     return this.http.post<any>(this.url + `command`,
