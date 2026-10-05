@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { Lord, LordBase } from './../lord';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
-import { C2C, CharacterService, CheckAll } from './../character.service';
+import { C2C, CharacterService, CheckAll, Player } from './../character.service';
 import { Logger } from '../logger.service';
 import { Base } from '../base';
 import { MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
@@ -772,6 +772,69 @@ export class CharacterDetailComponent implements OnInit {
         this.snackBar.open('Dialog Cacelled','Ok',this.snackBarConfig);
       }
     });
+  }
+
+  private loggedInUserId(): number | null {
+    const id = window.localStorage.getItem('userId');
+    return id ? Number(id) : null;
+  }
+
+  private ownerId(): number | null {
+    const p = this.char && this.char.char ? this.char.char['player'] : null;
+    return p ? Number(p) : null;
+  }
+
+  // 'None' / null means no player has this character as the active one
+  private activeMemberId(): string | null {
+    const m = this.char && this.char.char ? '' + this.char.char['memberId'] : '';
+    return /^\d+$/.test(m) ? m : null;
+  }
+
+  canClaim(): boolean {
+    return this.loggedInUserId() != null && this.ownerId() == null;
+  }
+
+  canActivate(): boolean {
+    const uid = this.loggedInUserId();
+    if (uid == null) {
+      return false;
+    }
+    const owner = this.ownerId();
+    if (owner != null && owner != uid) {
+      return false;
+    }
+    const member = this.activeMemberId();
+    const user = JSON.parse(window.localStorage.getItem('user') || '{}');
+    return member == null || member == '' + user.did;
+  }
+
+  claim() {
+    this.service.setCharPlayer(this.id, this.loggedInUserId()).then(c => {
+      this.setLord(c, true);
+      this.snackBar.open('Character assigned to you','Ok',this.snackBarConfig);
+    });
+  }
+
+  activate() {
+    const uid = this.loggedInUserId();
+    const user = JSON.parse(window.localStorage.getItem('user') || '{}');
+    const activate = () => {
+      const player = new Player();
+      player.cid = uid;
+      player.name = user.name;
+      player.did = user.did;
+      player.character = this.id;
+      this.service.updatePlayer(player).then(() => {
+        this.service.listChanged.next();
+        this.service.getLord(this.id).subscribe(c => this.setLord(c, true));
+        this.snackBar.open('Character activated','Ok',this.snackBarConfig);
+      });
+    };
+    if (this.ownerId() == null) {
+      this.service.setCharPlayer(this.id, uid).then(activate);
+    } else {
+      activate();
+    }
   }
 
   hasUser() {

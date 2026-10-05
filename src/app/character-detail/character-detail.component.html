@@ -21,6 +21,12 @@
                       <button mat-menu-item (click)="connectionsDialog()">
                         Connection
                       </button>
+                      <button mat-menu-item *ngIf="canClaim()" (click)="claim()">
+                        My character
+                      </button>
+                      <button mat-menu-item *ngIf="canActivate()" (click)="activate()">
+                        Activate
+                      </button>
                 </mat-menu>
             </h2>
         </div>
