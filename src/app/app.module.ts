@@ -41,6 +41,7 @@ import { FeastComponent } from './feast/feast.component';
 import { FeastSeatingComponent } from './feast-seating/feast-seating.component';
 import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
 import { MapsComponent } from './maps/maps.component';
+import { PassionGroupsPipe } from './passion-category';
 
 @NgModule({
     declarations: [
@@ -67,6 +68,7 @@ import { MapsComponent } from './maps/maps.component';
         MapsAdminComponent,
         MapEditDialog,
         NpcDetail2Component,
+        PassionGroupsPipe,
         CharacterConnectionDialog
     ],
     imports: [

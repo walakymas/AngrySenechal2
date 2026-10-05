@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Base } from '../base';
 import { CharacterService } from '../character.service';
 import { LordDetail, LordData } from '../lord';
+import { groupPassions } from '../passion-category';
 
 @Component({
   selector: 'app-team',
@@ -122,6 +123,20 @@ export class TeamComponent implements OnInit {
     }
     keys.sort()
     return keys;
+  }
+
+  // passion names of the whole team grouped by category: [{category, names}]
+  teamPassionGroups() {
+    const passions: { [name: string]: any } = {};
+    for (const name of this.teamprop('passions', '')) {
+      passions[name] = true;
+    }
+    return groupPassions(passions).map(g => ({ category: g.category, names: g.items.map(i => i.key) }));
+  }
+
+  // sum of one character's passions within a category (names: the category's passion names)
+  passionTotal(names: string[], member: any): number {
+    return names.reduce((sum, n) => sum + (parseInt(member['passions']?.[n], 10) || 0), 0);
   }
 
   saveModifier() {

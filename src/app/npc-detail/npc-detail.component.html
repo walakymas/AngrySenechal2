@@ -15,7 +15,10 @@
     <tr *ngFor="let m of npc.char['skills']['Other'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
     <tr *ngFor="let m of npc.char['skills']['Weapons'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
     <tr *ngFor="let m of npc.char['skills']['Combat'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-    <tr *ngFor="let m of npc.char['passions'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+    <ng-container *ngFor="let g of npc.char['passions'] | passionGroups">
+        <tr class="passion-cat" *ngIf="g.category !== 'Other'"><th colspan="2">{{g.category}} (<span [class.passion-warn]="g.total > 40">{{g.total}}</span>)</th></tr>
+        <tr *ngFor="let m of g.items"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+    </ng-container>
 </table>
 </div>
 <ng-template #noChar>Loading</ng-template>

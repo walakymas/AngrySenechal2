@@ -42,7 +42,10 @@
     </tbody>
     <tbody id="passions">
         <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
-        <tr *ngFor="let p of teamprop('passions','')"><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['passions'][p]}}</td></tr>
+        <ng-container *ngFor="let g of teamPassionGroups()">
+            <tr class="passion-cat" *ngIf="g.category !== 'Other'"><th>{{g.category}}</th><td *ngFor="let m of team">(<span [class.passion-warn]="passionTotal(g.names, m) > 40">{{passionTotal(g.names, m)}}</span>)</td></tr>
+            <tr *ngFor="let p of g.names"><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['passions'][p]}}</td></tr>
+        </ng-container>
     </tbody>
 </table>
 </div>
