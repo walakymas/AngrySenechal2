@@ -38,10 +38,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.handleLoginRedirect();
-    this.service.getList().subscribe( l => {
-      this.list = l;
-      window.localStorage.setItem('list', JSON.stringify(l));      
-    })
+    this.loadList();
+    this.service.listChanged.subscribe(() => this.loadList(true));
     this.service.getUser().then( u => this.setUser(u))
     this.subscription = interval(5000).subscribe(v =>
       {if ( window.localStorage.getItem('userId') ==null &&
@@ -50,6 +48,13 @@ export class AppComponent implements OnInit {
         this.service.getUser().then( u => this.setUser(u));
       }}
     );
+  }
+
+  loadList(forced: boolean = false) {
+    this.service.getList(forced).subscribe( l => {
+      this.list = l;
+      window.localStorage.setItem('list', JSON.stringify(l));
+    })
   }
 
   // The Discord login redirects back as <origin>/#token=... or <origin>/#error=...
@@ -89,6 +94,17 @@ export class AppComponent implements OnInit {
 
   isPc(c: LordBase) : boolean {
     return c.type == "pc" &&  c.role != 'Lord' && c.role != 'King';
+  }
+
+  isLoggedIn() : boolean {
+    return this.user != null && this.user.result != 'fail' && this.hasToken();
+  }
+
+  myCharacters() : LordBase[] {
+    if (!this.isLoggedIn() || !this.list) {
+      return [];
+    }
+    return this.list.filter(c => c.player == this.user.id);
   }
 
   getLink(c: LordBase) : string {
