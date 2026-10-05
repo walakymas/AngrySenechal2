@@ -738,12 +738,16 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   bot(p:string) {
+    if (/^\d*[dD]\d+([+-]\d+)?$/.test(p.trim())) {
+      this.service.roll(p.trim(), this.char.char['dbid']).subscribe(e => console.log(`rolled "${p}" ${JSON.stringify(e)}`));
+      return;
+    }
     let p_ = p.replace(/ /g,'_');
     let command = `${p} cid:${ this.char.char['dbid']}`;
     if (this.char.char['memberId']) {
       command = `${p} <@!${ this.char.char['memberId']}>`;
     }
-    this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+    this.service.command(command).subscribe(e => console.log(`sent "${command}" ${JSON.stringify(e)}`));
   }
 
   editEvent(e) {

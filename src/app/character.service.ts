@@ -300,6 +300,35 @@ export class CharacterService {
     );
   }
 
+  // Bot command (without prefix, e.g. 'c Sword 0 cid:5') run in the user's Discord channel, no webhook involved
+  command(command: string): Observable<any> {
+    return this.http.post<any>(this.url + `command`,
+      new HttpParams()
+      .set('token', this.getToken())
+      .set('command', command).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      catchError(this.handleError<any>(`command ${command}`))
+    );
+  }
+
+  // Dice roll (e.g. '4d20') shown in the user's Discord channel, no webhook involved
+  roll(dice: string, characterId: number): Observable<any> {
+    return this.http.post<any>(this.url + `roll`,
+      new HttpParams()
+      .set('token', this.getToken())
+      .set('id', characterId)
+      .set('dice', dice).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      catchError(this.handleError<any>(`roll ${dice}`))
+    );
+  }
+
   getTeam(): Observable<LordData[]> {
     return this.http.get<LordData[]>(this.url+`players`).pipe(
 //      tap(_ => this.logger.log(`fetched lord list`)),

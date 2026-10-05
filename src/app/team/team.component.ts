@@ -153,7 +153,7 @@ export class TeamComponent implements OnInit {
       let p_ = p.replace(/ /g,'_');
       console.log(`sending bot command for ${p_} ${this.modifier} <@!${m['memberId']}>`);
       let command = m?`check ${p_} ${this.modifier} <@!${m['memberId']}>`:`team ${p_}`;
-      this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+      this.service.command(command).subscribe(e => console.log(`sent "${command}" ${JSON.stringify(e)}`));
     }
   }
 }
