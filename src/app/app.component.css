@@ -6,3 +6,18 @@ div.nav {
 nav {
     background-color: #958061;
 }
+
+nav .hidePrint {
+    display: flex;
+    align-items: center;
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.user-name {
+    color: white;
+    font-weight: bold;
+    margin: 0 8px;
+}

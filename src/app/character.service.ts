@@ -5,7 +5,7 @@ import { Base } from './base';
 import { Logger } from './logger.service';
 import { environment } from './../environments/environment';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, tap,timeout } from 'rxjs/operators';
 import { GameEvent } from './character-detail/character-detail.component';
 import { WINDOW } from './windows';
@@ -77,6 +77,8 @@ export class MapEntry {
 @Injectable({ providedIn: 'root' })
 export class CharacterService {
   private characters: {} = {};
+  // emits when the character list (owners, active chars) changed and menus should reload it
+  listChanged = new Subject<void>();
 
   private characterUrl = 'json';  // URL to web api
   private base : Promise<Base>;
@@ -92,7 +94,6 @@ export class CharacterService {
     private logger: Logger
     ,@Inject(WINDOW) private window: Window
     ) {
-      this.getBase();
       console.log('protocol:'+this.window.location.protocol);
       if ("localhost"==this.window.location.hostname ) {
         this.url = this.window.location.protocol+"//"+this.window.location.hostname+":8000/";
@@ -100,6 +101,7 @@ export class CharacterService {
         this.url = this.window.location.protocol+"//"+this.window.location.hostname+"/backend/";
       }
       console.log('urIIII:'+this.url);
+      this.getBase();
     }
 
   getUrl() {
@@ -393,6 +395,21 @@ export class CharacterService {
         timeout(2000),
         tap(_ => this.logger.log(`login first phase lord name=${p.cid}`)),
         catchError(this.handleError<Player>(`token id=${p.cid}`))
+    ).toPromise();
+  }
+
+  setCharPlayer(id: number, player: number): Promise<Lord> {
+    return this.http.post<Lord>(this.url+`modify`,
+      new HttpParams()
+      .set('id',  ''+id)
+      .set('token',  this.getToken())
+      .set('player', ''+player),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => { this.logger.log(`set player ${player} of char ${id}`); this.listChanged.next(); }),
+      catchError(this.handleError<Lord>(`setCharPlayer`))
     ).toPromise();
   }
 

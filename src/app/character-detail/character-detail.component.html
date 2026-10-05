@@ -1,6 +1,46 @@
 <div *ngIf="char; else noChar" >
 
 <div class="row">
+    <div class="col-1">
+        <div>
+            <h2 id="stathead">
+                {{char.char['name']}}
+                <button mat-icon-button [matMenuTriggerFor]="character">
+                    <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #character="matMenu">
+                      <button mat-menu-item *ngIf="hasUser()" (click)="editMain(char)">
+                        Main info
+                      </button>
+                      <button mat-menu-item *ngIf="hasUser()" (click)="jsonDialog()">
+                        Json
+                      </button>
+                      <button mat-menu-item (click)="pdf()">
+                        Pdf
+                      </button>
+                      <button mat-menu-item (click)="connectionsDialog()">
+                        Connection
+                      </button>
+                      <button mat-menu-item *ngIf="canClaim()" (click)="claim()">
+                        My character
+                      </button>
+                      <button mat-menu-item *ngIf="canActivate()" (click)="activate()">
+                        Activate
+                      </button>
+                </mat-menu>
+            </h2>
+        </div>
+        <div style="text-align: center">
+            <img
+                class="Image-Frame charimg"
+                id="charimg"
+                src="{{char.char['url']}}"
+                width="200"
+                [class.charimg-zoomed]="charImgZoomed"
+                (click)="toggleCharImageZoom()"
+            >
+        </div>
+    </div> <!-- 33.33% -->
     <div class="col-1"><h2 id="mainhead" class="clickableHeader" (click)="addMainProperty()" title="Add a main value">Main </h2>
         <ul id='main'>
             <ng-container *ngFor="let m of char.char['main'] | keyvalue ">
@@ -57,40 +97,6 @@
             <li><span class="gold">Knockdown</span><em>(SIZ)=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
         </ul>
 
-    </div> <!-- 33.33% -->
-    <div class="col-1">
-        <div>
-            <h2 id="stathead">
-                {{char.char['name']}}
-                <button mat-icon-button [matMenuTriggerFor]="character">
-                    <mat-icon>more_vert</mat-icon>
-                </button>
-                <mat-menu #character="matMenu">
-                      <button mat-menu-item *ngIf="hasUser()" (click)="editMain(char)">
-                        Main info
-                      </button>
-                      <button mat-menu-item *ngIf="hasUser()" (click)="jsonDialog()">
-                        Json
-                      </button>
-                      <button mat-menu-item (click)="pdf()">
-                        Pdf
-                      </button>
-                      <button mat-menu-item (click)="connectionsDialog()">
-                        Connection
-                      </button>
-                </mat-menu>
-            </h2>
-        </div>
-        <div style="text-align: center">
-            <img
-                class="Image-Frame charimg"
-                id="charimg"
-                src="{{char.char['url']}}"
-                width="200"
-                [class.charimg-zoomed]="charImgZoomed"
-                (click)="toggleCharImageZoom()"
-            >
-        </div>
     </div> <!-- 33.33% -->
 </div>
 
