@@ -25,3 +25,17 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+
+## Production server (`server.js`)
+
+`npm start` serves the built app (`dist/AngrySenechal2`) with Express, helmet and compression.
+
+- Before `npm run build` copy `src/environments/environment.prod.ts.example` to `src/environments/environment.prod.ts`
+  (git-ignored) and set the API address in it.
+- Environment variables: `PORT` (8080), `REQUIRE_HTTPS` (`false` turns the https redirect off), `TRUST_PROXY`
+  (number of reverse proxies, default 1), `ALLOWED_HOSTS` (comma separated host names for the redirect),
+  `DIST_DIR`.
+- The Content-Security-Policy is **report-only**: open the app, look for `Content-Security-Policy-Report-Only`
+  violations in the browser console, then set `reportOnly: false` in `server.js` to enforce it.
+- `npm run test:server` runs the tests of `server.js` (plain node).
+- `ng build` now defaults to the production configuration.

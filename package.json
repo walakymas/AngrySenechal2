@@ -7,6 +7,7 @@
     "serve": "ng serve --host 0.0.0.0 --poll=1000",
     "build": "ng build --configuration production",
     "test": "ng test",
+    "test:server": "node server.test.js",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
@@ -25,7 +26,9 @@
     "ang-jsoneditor": "^1.10.5",
     "angular-inline-editors": "^2.0.4",
     "angular-material-icons": "^0.7.1",
+    "compression": "^1.7.4",
     "express": "^4.17.1",
+    "helmet": "^7.1.0",
     "jsoneditor": "^9.4.1",
     "material-design-icons": "^3.0.1",
     "material-icons-font": "^2.1.0",

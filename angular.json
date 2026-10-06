@@ -53,8 +53,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
+                  "maximumWarning": "2.2mb",
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -62,26 +62,38 @@
                   "maximumError": "40kb"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "buildOptimizer": false,
+              "extractLicenses": false,
+              "vendorChunk": true,
+              "namedChunks": true,
+              "sourceMap": true
             }
           },
-          "defaultConfiguration": ""
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "AngrySenechal2:build",
+            "browserTarget": "AngrySenechal2:build:development",
             "disableHostCheck": true
           },
           "configurations": {
             "production": {
               "browserTarget": "AngrySenechal2:build:production"
+            },
+            "development": {
+              "browserTarget": "AngrySenechal2:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "AngrySenechal2:build"
+            "browserTarget": "AngrySenechal2:build:development"
           }
         },
         "test": {

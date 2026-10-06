@@ -19,7 +19,11 @@ export class FeastSeatingComponent implements OnInit {
   
   getBase(cid:number): any {
     if (!this.list) {
-      this.list = JSON.parse(window.localStorage.getItem('list'));
+      try {
+        this.list = JSON.parse(window.localStorage.getItem('list')) || [];
+      } catch (e) {
+        this.list = [];
+      }
     }
     var lord = this.list.find(l => l.id == cid);
     if (!lord) {
