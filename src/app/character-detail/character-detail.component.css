@@ -117,6 +117,22 @@ fieldset {
     margin-right: 5px;
 }
 
+#skills li:has(> .mat-mdc-checkbox),
+#combat li:has(> .mat-mdc-checkbox),
+#passions li:has(> .mat-mdc-checkbox)
+{
+    display: flex;
+    align-items: center;
+}
+
+#skills li > .mat-mdc-checkbox,
+#combat li > .mat-mdc-checkbox,
+#passions li > .mat-mdc-checkbox
+{
+    position: relative;
+    top: -4px;
+}
+
 #skills li > span,
 #combat li > span,
 #passions li > span
