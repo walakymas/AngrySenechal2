@@ -1,463 +1,541 @@
-<div *ngIf="char; else noChar" >
-
-<div class="row">
-    <div class="col-1">
+@if (char) {
+  <div >
+    <div class="row">
+      <div class="col-1">
         <div>
-            <h2 id="stathead">
-                {{char.char['name']}}
-                <button mat-icon-button [matMenuTriggerFor]="character">
-                    <mat-icon>more_vert</mat-icon>
+          <h2 id="stathead">
+            {{char.char['name']}}
+            <button mat-icon-button [matMenuTriggerFor]="character">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #character="matMenu">
+              @if (hasUser()) {
+                <button mat-menu-item (click)="editMain(char)">
+                  Main info
                 </button>
-                <mat-menu #character="matMenu">
-                      <button mat-menu-item *ngIf="hasUser()" (click)="editMain(char)">
-                        Main info
-                      </button>
-                      <button mat-menu-item *ngIf="hasUser()" (click)="jsonDialog()">
-                        Json
-                      </button>
-                      <button mat-menu-item (click)="pdf()">
-                        Pdf
-                      </button>
-                      <button mat-menu-item (click)="connectionsDialog()">
-                        Connection
-                      </button>
-                      <button mat-menu-item *ngIf="canClaim()" (click)="claim()">
-                        My character
-                      </button>
-                      <button mat-menu-item *ngIf="canActivate()" (click)="activate()">
-                        Activate
-                      </button>
-                </mat-menu>
-            </h2>
+              }
+              @if (hasUser()) {
+                <button mat-menu-item (click)="jsonDialog()">
+                  Json
+                </button>
+              }
+              <button mat-menu-item (click)="pdf()">
+                Pdf
+              </button>
+              <button mat-menu-item (click)="connectionsDialog()">
+                Connection
+              </button>
+              @if (canClaim()) {
+                <button mat-menu-item (click)="claim()">
+                  My character
+                </button>
+              }
+              @if (canActivate()) {
+                <button mat-menu-item (click)="activate()">
+                  Activate
+                </button>
+              }
+            </mat-menu>
+          </h2>
         </div>
         <div style="text-align: center">
-            <img
-                class="Image-Frame charimg"
-                id="charimg"
-                src="{{char.char['url']}}"
-                width="200"
-                [class.charimg-zoomed]="charImgZoomed"
-                (click)="toggleCharImageZoom()"
+          <img
+            class="Image-Frame charimg"
+            id="charimg"
+            src="{{char.char['url']}}"
+            width="200"
+            [class.charimg-zoomed]="charImgZoomed"
+            (click)="toggleCharImageZoom()"
             >
-        </div>
-    </div> <!-- 33.33% -->
-    <div class="col-1"><h2 id="mainhead" class="clickableHeader" (click)="addMainProperty()" title="Add a main value">Main </h2>
-        <ul id='main'>
-            <ng-container *ngFor="let m of char.char['main'] | keyvalue ">
-                <li *ngIf="isEq(m.key, 'Born')" class="main-entry" role="button" title="Edit birth year" (click)="editMainProperty(m.key, m.value)">
-                    <span class="gold">Age</span> {{char.year - m.value*1}}
-                </li>
-                <li *ngIf="!isEq(m.key, 'Glory')" class="main-entry" role="button" title="Edit main value" (click)="editMainProperty(m.key, m.value)">
-                    <span class="gold" >{{m.key}}</span> {{m.value}}
-                </li>
-            </ng-container>
-        </ul>
-
-    </div> <!-- 33.33% -->
-    <div class="col-1"><h2 id="stathead">Statistics</h2>
-        <ul id="statistics">
-            <li><span class="gold" (click)="checkCommand('c SIZ')">SIZ</span>
-            <app-editable
-            [enabled]="hasUser()"
-            
-                value="{{char.char['stats']['siz']}}"
-                (valueChange)="modifyProp( 'stats.siz', $event )"
-            ></app-editable></li>
-            <li><span class="gold" (click)="checkCommand('c DEX')">DEX</span><app-editable
-              [enabled]="hasUser()"
-              
-                value="{{char.char['stats']['dex']}}"
-                (valueChange)="modifyProp('stats.dex', $event )"
-            ></app-editable></li>
-            <li><span class="gold" (click)="checkCommand('c STR')">STR</span>
-            <app-editable
-            [enabled]="hasUser()"
-            
-                value="{{char.char['stats']['str']}}"
-                (valueChange)="modifyProp( 'stats.str', $event )"
-            ></app-editable></li>
-            <li><span class="gold" (click)="checkCommand('c CON')">CON</span>
-            <app-editable   [enabled]="hasUser()"
-                
-                value="{{char.char['stats']['con']}}"
-                (valueChange)="modifyProp( 'stats.con', $event )"
-            ></app-editable></li>
-            <li><span class="gold" (click)="checkCommand('c APP')">APP</span>
-            <app-editable   [enabled]="hasUser()"
-                
-                value="{{char.char['stats']['app']}}"
-                (valueChange)="modifyProp( 'stats.app', $event )"
-            ></app-editable></li>
-            <li><span class="gold">Damage</span><em>(STR+SIZ)/6=</em> <strong> {{getDetail('Damage')}}d6</strong></li>
-            <li><span class="gold">Healing Rate</span><em>(STR+CON)/10=</em> <strong> {{getDetail('Healing Rate')}}</strong></li>
-            <li><span class="gold">Move Rate</span><em>(STR+DEX)/10=</em> <strong> {{getDetail('Move Rate')}}</strong></li>
-            <li><span class="gold">Total Hitpoints</span><em>(CON+SIZ)=</em> <strong> {{getDetail('Total Hitpoints')}}</strong></li>
-            <li><span class="gold">Unconscious</span><em>(HP)/4=</em> <strong> {{getDetail('Unconscious')}}</strong></li>
-            <li><span class="gold">Major Wound</span><em>(CON)=</em> <strong> {{getDetail('Major Wound')}}</strong></li>
-            <li><span class="gold">Knockdown</span><em>(SIZ)=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
-        </ul>
-
-    </div> <!-- 33.33% -->
-</div>
-
-<div class="row">
-    <div class="col-1">
-        <div class="FontSizeBig">
-            <span class="gold">GLORY:</span>
-            <span id="glory"> {{details['glory']}}</span>
-        </div>
-        <div style="text-align: center;" class="hidePrint">
-            <div style="padding-bottom: 10px;">
-                <div style="display: inline-block; width: 120px;">Rolls</div>
-                <button (click)="bot('d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>D6</button>
-                <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
-            </div>
-            <div style="padding-bottom: 10px;">
-                <div style="display: inline-block; width: 120px;">Weapon damage</div>
-                <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-                <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
-            </div>
-            <div>
-                <div style="display: inline-block; width: 120px;">Horse damage</div>
-                <button *ngIf="main_horse" (click)="bot(horseDamageDice()+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{horseDamageDice()}}d6</button>
-                <button *ngIf="main_horse" (click)="bot((horseDamageDice()+4)+'d6')"><mat-icon>casino</mat-icon>{{horseDamageDice()+4}}d6</button>
-            </div>
-        </div>
-    </div>
-    <div class="col-1">
-        <div class="FontSizeBig hidePrint" *ngIf="!checks || checks.length==0"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
-        <div style="text-align: center;" class="check hidePrint"  *ngIf="checks.length>0">
-            <div class="FontSizeBig">
-                <span class="gold">Checks:</span>
-            </div>
-          <div *ngIf="checks[actualCheck-1]">
-            <span>{{checks[actualCheck-1].name}}</span>  {{check('command')}}
-            <div *ngIf="checks[actualCheck-1].result['action']=='dice'">
-              {{check('count')}}D{{check('result')['c1']['size']}}={{checks[actualCheck-1].result['c1']['sum']}}
-              ( {{checks[actualCheck-1].result['c1']['dices']}})
-            </div>
-            <div *ngIf="check('result')['action']=='check'">
-              {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
-              Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
-            </div>
-            <div *ngIf="checks[actualCheck-1].result['action']=='trait'">
-              {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
-              Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
-              <div *ngIf="checks[actualCheck-1].result['c2']">
-                {{check('result')['c2']['name']}}({{check('result')['c2']['base']}})
-                Result: {{check('result')['c2']['success']}} ({{check('result')['c2']['ro']}})<mat-icon>{{checkIcon('c2')}}</mat-icon>
-                  </div>
-              </div>
           </div>
-          <mat-slider min="1" max="{{checks.length}}" step="1" thumbLabel  [(value)]="actualCheck" ></mat-slider>
-        </div>
-    </div>
-    <div class="col-1">
-        <div class="FontSizeBig">
-            <span class="gold">HP:</span>
-            <span *ngIf="details['hp']==details['ahp']; else wounded"> {{details['hp']}}</span>
-            <ng-template #wounded>
-                <span matTooltip="{{details['wounds']}}"> {{details['ahp']}}/{{details['hp']}}</span>
-            </ng-template>
-        </div>
-        <div class="hidePrint">
-            <fieldset id="health">
-                <legend>Health</legend>
-                <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
-                    <mat-icon>remove</mat-icon>
-                </button>
-                <button  mat-mini-fab color="accent" title="Heal" (click)="heal('heal')">
-                    <mat-icon>add</mat-icon>
-                </button>
-                <input id="healthmod" type="number" matInput [(ngModel)]="healthmod"/>
-                <br/>
-                <button  mat-mini-fab color="accent" title="Weakly Healing" (click)="heal('sunday')">
-                    <mat-icon>healing</mat-icon>
-                </button>
-                <button  mat-mini-fab color="accent" title="Complette (Winter)" (click)="heal('full')">
-                    <mat-icon>favorite</mat-icon>
-                </button>
-
-                <label for="chineed">Chirurgery</label>
-                <mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>
-
-            </fieldset>
-        </div>
-    </div>
+        </div> <!-- 33.33% -->
+        <div class="col-1"><h2 id="mainhead" class="clickableHeader" (click)="addMainProperty()" title="Add a main value">Main </h2>
+        <ul id='main'>
+          @for (m of char.char['main'] | keyvalue ; track m) {
+            @if (isEq(m.key, 'Born')) {
+              <li class="main-entry" role="button" title="Edit birth year" (click)="editMainProperty(m.key, m.value)">
+                <span class="gold">Age</span> {{char.year - m.value*1}}
+              </li>
+            }
+            @if (!isEq(m.key, 'Glory')) {
+              <li class="main-entry" role="button" title="Edit main value" (click)="editMainProperty(m.key, m.value)">
+                <span class="gold" >{{m.key}}</span> {{m.value}}
+              </li>
+            }
+          }
+        </ul>
+      </div> <!-- 33.33% -->
+      <div class="col-1"><h2 id="stathead">Statistics</h2>
+      <ul id="statistics">
+        <li><span class="gold" (click)="checkCommand('c SIZ')">SIZ</span>
+        <app-editable
+          [enabled]="hasUser()"
+          value="{{char.char['stats']['siz']}}"
+          (valueChange)="modifyProp( 'stats.siz', $event )"
+        ></app-editable></li>
+        <li><span class="gold" (click)="checkCommand('c DEX')">DEX</span><app-editable
+        [enabled]="hasUser()"
+        value="{{char.char['stats']['dex']}}"
+        (valueChange)="modifyProp('stats.dex', $event )"
+      ></app-editable></li>
+      <li><span class="gold" (click)="checkCommand('c STR')">STR</span>
+      <app-editable
+        [enabled]="hasUser()"
+        value="{{char.char['stats']['str']}}"
+        (valueChange)="modifyProp( 'stats.str', $event )"
+      ></app-editable></li>
+      <li><span class="gold" (click)="checkCommand('c CON')">CON</span>
+      <app-editable   [enabled]="hasUser()"
+        value="{{char.char['stats']['con']}}"
+        (valueChange)="modifyProp( 'stats.con', $event )"
+      ></app-editable></li>
+      <li><span class="gold" (click)="checkCommand('c APP')">APP</span>
+      <app-editable   [enabled]="hasUser()"
+        value="{{char.char['stats']['app']}}"
+        (valueChange)="modifyProp( 'stats.app', $event )"
+      ></app-editable></li>
+      <li><span class="gold">Damage</span><em>(STR+SIZ)/6=</em> <strong> {{getDetail('Damage')}}d6</strong></li>
+      <li><span class="gold">Healing Rate</span><em>(STR+CON)/10=</em> <strong> {{getDetail('Healing Rate')}}</strong></li>
+      <li><span class="gold">Move Rate</span><em>(STR+DEX)/10=</em> <strong> {{getDetail('Move Rate')}}</strong></li>
+      <li><span class="gold">Total Hitpoints</span><em>(CON+SIZ)=</em> <strong> {{getDetail('Total Hitpoints')}}</strong></li>
+      <li><span class="gold">Unconscious</span><em>(HP)/4=</em> <strong> {{getDetail('Unconscious')}}</strong></li>
+      <li><span class="gold">Major Wound</span><em>(CON)=</em> <strong> {{getDetail('Major Wound')}}</strong></li>
+      <li><span class="gold">Knockdown</span><em>(SIZ)=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
+    </ul>
+  </div> <!-- 33.33% -->
 </div>
 <div class="row">
-    <div class="col-1">
-        <h2 id="traithead">Personality Traits</h2>
-        <table class="traits">
-            <tbody *ngFor="let t of traits"><tr>
-                <td><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td
-                ><ng-container *ngIf="hasUser()"> <app-editable [enabled]="hasUser()"
-                    
-                    value="{{char.char['traits'][t.short]}}"
-                    (valueChange)="modifyProp( 'traits.'+t.short, $event )"
-                ></app-editable></ng-container><ng-container *ngIf="!hasUser()"> {{char.char['traits'][t.short]}}</ng-container></td><td (click)="checkCommand('c ' + safeKey(t.first))">{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon><mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon></td
-                  ><td (click)="checkCommand('c ' + safeKey(t.second))"><mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}</td><td
-                  ><app-editable  [enabled]="hasUser()"
-                    
-                    value="{{20-char.char['traits'][t.short]}}"
-                    (valueChange)="modifyProp( 'traits.'+ t.short, 20-$event )"
-                ></app-editable></td><td><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
-            </tr>
-            <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t.short)}}%"></div><div  style="width:{{100-5*getTrait(t.short)}}%" class="ratioRed"></div></div></td><td></td></tr>
-            </tbody>
-            <tr><td colspan="100%" align="center"> Chivalry: {{chivalry}}/80</td></tr>
-        </table>
+  <div class="col-1">
+    <div class="FontSizeBig">
+      <span class="gold">GLORY:</span>
+      <span id="glory"> {{details['glory']}}</span>
     </div>
-    <div class="col-1">
-        <h2 class="skillhead clickableHeader" (click)="addSkillProperty('Other')" title="Add a skill">Skills</h2>
-        <ul id="skills">
-            <li *ngFor="let m of char.char['skills']['Other'] | keyvalue"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)"
-                (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
-                [enabled]="hasUser()"
-                
-                value="{{char.char['skills']['Other'][m.key]}}"
-                (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
-            ></app-editable></li>
-        </ul>
+    <div style="text-align: center;" class="hidePrint">
+      <div style="padding-bottom: 10px;">
+        <div style="display: inline-block; width: 120px;">Rolls</div>
+        <button (click)="bot('d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>D6</button>
+        <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
+      </div>
+      <div style="padding-bottom: 10px;">
+        <div style="display: inline-block; width: 120px;">Weapon damage</div>
+        <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
+        <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+      </div>
+      <div>
+        <div style="display: inline-block; width: 120px;">Horse damage</div>
+        @if (main_horse) {
+          <button (click)="bot(horseDamageDice()+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{horseDamageDice()}}d6</button>
+        }
+        @if (main_horse) {
+          <button (click)="bot((horseDamageDice()+4)+'d6')"><mat-icon>casino</mat-icon>{{horseDamageDice()+4}}d6</button>
+        }
+      </div>
     </div>
-    <div class="col-1">
-        <h2 class="skillhead clickableHeader" (click)="addSkillProperty('Weapons')" title="Add a skill">Combat Skills</h2>
-        <ul id="combat">
-            <li *ngFor="let m of char.char['skills']['Weapons'] | keyvalue"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
-              [enabled]="hasUser()"
-              
-                value="{{char.char['skills']['Weapons'][m.key]}}"
-                (valueChange)="modifyProp( 'skills.Weapons.'+ m.key, $event )"
-            ></app-editable></li>
-            <li *ngFor="let m of char.char['skills']['Combat'] | keyvalue"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
-              [enabled]="hasUser()"
-              
-              value="{{char.char['skills']['Combat'][m.key]}}"
-                (valueChange)="modifyProp( 'skills.Combat.'+ m.key, $event )"
-            ></app-editable></li>
-        </ul>
-        <h2 id="passionhead" class="clickableHeader" (click)="editPassion()" title="Add a passion">Passions</h2>
-        <ul id="passions">
-            <ng-container *ngFor="let g of char.char['passions'] | passionGroups">
-            <li class="passion-cat" *ngIf="g.category !== 'Other'">{{g.category}} (<span [class.passion-warn]="g.total > 40">{{g.total}}</span>)</li>
-            <li *ngFor="let m of g.items"><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
-              [enabled]="hasUser()"
-
-              value="{{char.char['passions'][m.key]}}"
-                (valueChange)="modifyProp( 'passions.'+ m.key, $event )"
-            ></app-editable></li>
-            </ng-container>
-        </ul>
-        <h2>Settings</h2>
-        <div class="settings-controls">
-            <button  mat-mini-fab color="accent" class="advanced" mat-stroked-button type="button" (click)="toggleMode()">
-                <mat-icon *ngIf="isAdvancedMode()">trending_down</mat-icon>
-                <mat-icon *ngIf="!isAdvancedMode()">trending_up</mat-icon>
-            </button>
-            <mat-form-field appearance="fill" class="modifier-field">
-                <mat-label>Modifier</mat-label>
-                <input matInput type="number" min="-20" max="20" [(ngModel)]="modifier" (ngModelChange)="clampModifier()">
-            </mat-form-field>
+  </div>
+  <div class="col-1">
+    @if (!checks || checks.length==0) {
+      <div class="FontSizeBig hidePrint"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
+    }
+    @if (checks.length>0) {
+      <div style="text-align: center;" class="check hidePrint" >
+        <div class="FontSizeBig">
+          <span class="gold">Checks:</span>
         </div>
+        @if (checks[actualCheck-1]) {
+          <div>
+            <span>{{checks[actualCheck-1].name}}</span>  {{check('command')}}
+            @if (checks[actualCheck-1].result['action']=='dice') {
+              <div>
+                {{check('count')}}D{{check('result')['c1']['size']}}={{checks[actualCheck-1].result['c1']['sum']}}
+                ( {{checks[actualCheck-1].result['c1']['dices']}})
+              </div>
+            }
+            @if (check('result')['action']=='check') {
+              <div>
+                {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
+                Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
+              </div>
+            }
+            @if (checks[actualCheck-1].result['action']=='trait') {
+              <div>
+                {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
+                Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
+                @if (checks[actualCheck-1].result['c2']) {
+                  <div>
+                    {{check('result')['c2']['name']}}({{check('result')['c2']['base']}})
+                    Result: {{check('result')['c2']['success']}} ({{check('result')['c2']['ro']}})<mat-icon>{{checkIcon('c2')}}</mat-icon>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+        <mat-slider min="1" max="{{checks.length}}" step="1" thumbLabel ><input matSliderThumb [(value)]="actualCheck" /></mat-slider>
+      </div>
+    }
+  </div>
+  <div class="col-1">
+    <div class="FontSizeBig">
+      <span class="gold">HP:</span>
+      @if (details['hp']==details['ahp']) {
+        <span> {{details['hp']}}</span>
+      } @else {
+        <span matTooltip="{{details['wounds']}}"> {{details['ahp']}}/{{details['hp']}}</span>
+      }
     </div>
+    <div class="hidePrint">
+      <fieldset id="health">
+        <legend>Health</legend>
+        <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
+          <mat-icon>remove</mat-icon>
+        </button>
+        <button  mat-mini-fab color="accent" title="Heal" (click)="heal('heal')">
+          <mat-icon>add</mat-icon>
+        </button>
+        <input id="healthmod" type="number" matInput [(ngModel)]="healthmod"/>
+        <br/>
+        <button  mat-mini-fab color="accent" title="Weakly Healing" (click)="heal('sunday')">
+          <mat-icon>healing</mat-icon>
+        </button>
+        <button  mat-mini-fab color="accent" title="Complette (Winter)" (click)="heal('full')">
+          <mat-icon>favorite</mat-icon>
+        </button>
+        <label for="chineed">Chirurgery</label>
+        <mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>
+      </fieldset>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-1">
+    <h2 id="traithead">Personality Traits</h2>
+    <table class="traits">
+      @for (t of traits; track t) {
+        <tbody><tr>
+          <td><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(t.first)" (change)="mark($event.checked, t.first)"></mat-checkbox></td><td
+          >@if (hasUser()) {
+          <app-editable [enabled]="hasUser()"
+            value="{{char.char['traits'][t.short]}}"
+            (valueChange)="modifyProp( 'traits.'+t.short, $event )"
+          ></app-editable>
+          }@if (!hasUser()) {
+          {{char.char['traits'][t.short]}}
+        }</td><td (click)="checkCommand('c ' + safeKey(t.first))">{{t.first}}@if (isChivalry(t.first)) {
+        <mat-icon>security</mat-icon>
+        }@if (isVirtue(t.first)) {
+        <mat-icon>emoji_events</mat-icon>
+        }</td
+        ><td (click)="checkCommand('c ' + safeKey(t.second))">@if (isVirtue(t.second)) {
+        <mat-icon>emoji_events</mat-icon>
+      }{{t.second}}</td><td
+      ><app-editable  [enabled]="hasUser()"
+      value="{{20-char.char['traits'][t.short]}}"
+      (valueChange)="modifyProp( 'traits.'+ t.short, 20-$event )"
+      ></app-editable></td><td><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(t.second)" (change)="mark($event.checked, t.second)"></mat-checkbox></td>
+    </tr>
+    <tr><td></td><td colspan="4"><div><div class="ratioGreen"  style="width:{{5*getTrait(t.short)}}%"></div><div  style="width:{{100-5*getTrait(t.short)}}%" class="ratioRed"></div></div></td><td></td></tr>
+  </tbody>
+}
+<tr><td colspan="100%" align="center"> Chivalry: {{chivalry}}/80</td></tr>
+</table>
+</div>
+<div class="col-1">
+  <h2 class="skillhead clickableHeader" (click)="addSkillProperty('Other')" title="Add a skill">Skills</h2>
+  <ul id="skills">
+    @for (m of char.char['skills']['Other'] | keyvalue; track m) {
+      <li><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)"
+        (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
+        [enabled]="hasUser()"
+        value="{{char.char['skills']['Other'][m.key]}}"
+        (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
+      ></app-editable></li>
+    }
+  </ul>
+</div>
+<div class="col-1">
+  <h2 class="skillhead clickableHeader" (click)="addSkillProperty('Weapons')" title="Add a skill">Combat Skills</h2>
+  <ul id="combat">
+    @for (m of char.char['skills']['Weapons'] | keyvalue; track m) {
+      <li><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
+      [enabled]="hasUser()"
+      value="{{char.char['skills']['Weapons'][m.key]}}"
+      (valueChange)="modifyProp( 'skills.Weapons.'+ m.key, $event )"
+    ></app-editable></li>
+  }
+  @for (m of char.char['skills']['Combat'] | keyvalue; track m) {
+    <li><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
+    [enabled]="hasUser()"
+    value="{{char.char['skills']['Combat'][m.key]}}"
+    (valueChange)="modifyProp( 'skills.Combat.'+ m.key, $event )"
+  ></app-editable></li>
+}
+</ul>
+<h2 id="passionhead" class="clickableHeader" (click)="editPassion()" title="Add a passion">Passions</h2>
+<ul id="passions">
+  @for (g of char.char['passions'] | passionGroups; track g) {
+    @if (g.category !== 'Other') {
+      <li class="passion-cat">{{g.category}} (<span [class.passion-warn]="g.total > 40">{{g.total}}</span>)</li>
+    }
+    @for (m of g.items; track m) {
+      <li><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)" (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
+      [enabled]="hasUser()"
+      value="{{char.char['passions'][m.key]}}"
+      (valueChange)="modifyProp( 'passions.'+ m.key, $event )"
+    ></app-editable></li>
+  }
+}
+</ul>
+<h2>Settings</h2>
+<div class="settings-controls">
+  <button  mat-mini-fab color="accent" class="advanced" mat-stroked-button type="button" (click)="toggleMode()">
+    @if (isAdvancedMode()) {
+      <mat-icon>trending_down</mat-icon>
+    }
+    @if (!isAdvancedMode()) {
+      <mat-icon>trending_up</mat-icon>
+    }
+  </button>
+  <mat-form-field appearance="fill" class="modifier-field">
+    <mat-label>Modifier</mat-label>
+    <input matInput type="number" min="-20" max="20" [(ngModel)]="modifier" (ngModelChange)="clampModifier()">
+  </mat-form-field>
+</div>
+</div>
 </div>
 <div class="row hidePrint">
-<mat-tab-group>
+  <mat-tab-group>
     <mat-tab label="Events">
-        <h2 id="eventshead" (click)="editEvent(e)">Events</h2>
-        <mat-accordion>
-            <mat-expansion-panel  *ngFor="let y of details['years']" hideToggle>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                   Year: {{y}} - Glory: {{getGlory(y)}}
-                </mat-panel-title>
-              </mat-expansion-panel-header>
-              <div *ngFor="let e of getEvents(y)" (click)="editEvent(e)" class="event"><span class="gold" *ngIf="e['glory']>0">{{e['glory']}} </span><span style="white-space: pre-line;">{{e['description']}}</span></div>
+      <h2 id="eventshead" (click)="editEvent(e)">Events</h2>
+      <mat-accordion>
+        @for (y of details['years']; track y) {
+          <mat-expansion-panel  hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Year: {{y}} - Glory: {{getGlory(y)}}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            @for (e of getEvents(y); track e) {
+              <div (click)="editEvent(e)" class="event">@if (e['glory']>0) {
+                <span class="gold">{{e['glory']}} </span>
+                }<span style="white-space: pre-line;">{{e['description']}}</span></div>
+              }
             </mat-expansion-panel>
+          }
         </mat-accordion>
-    </mat-tab>
-    <mat-tab label="Connections">
+      </mat-tab>
+      <mat-tab label="Connections">
         <mat-accordion>
-            <ng-container *ngFor="let c of connections ">
-                <mat-expansion-panel  *ngIf="!isEq(c.connection, 'Children')"  hideToggle>
-                    <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        <mat-icon *ngIf="!isEq(c.c0, id)">double_arrow</mat-icon>
-                        <mat-icon *ngIf="c.char.main['Deceased']">skull</mat-icon>
-                        {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>)
-                        <ng-container *ngIf="c.char.main['Born']">
-                            Age: {{char.year - c.char.main['Born']}}
-                        </ng-container>
-                    </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <app-npc-detail2 [char]="c" [parent]="this"></app-npc-detail2>
-                </mat-expansion-panel>
-            </ng-container>
-        </mat-accordion>
-    </mat-tab>
-    <mat-tab label="Children">
-        <mat-accordion>
-            <ng-container *ngFor="let c of connections ">
-                <mat-expansion-panel  *ngIf="isEq(c.connection, 'Children')"  hideToggle>
-                    <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        <mat-icon *ngIf="!isEq(c.c0, id)">double_arrow</mat-icon>
-                        {{c.char.name}} ({{c.connection}}<ng-container *ngIf="c.comment"> : {{c.comment}}</ng-container>) 
-                        <ng-container *ngIf="c.char.main['Born']">
-                            Age: {{char.year - c.char.main['Born']}}
-                        </ng-container>
-
-                    </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <app-npc-detail2 [char]="c" [parent]="this"></app-npc-detail2>
-                </mat-expansion-panel>
-            </ng-container>
-        </mat-accordion>
-    </mat-tab>
-    <mat-tab label="Connections Old">
-        <mat-accordion>
-            <ng-container *ngFor="let m of char.char['npcs'] | keyvalue ">
-                <mat-expansion-panel  *ngIf="showOld(m)"  hideToggle>
-                    <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        {{m.key}} ({{m.value['connection']}}) {{showOld(m)}}
-                    </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <app-npc-detail [dbid]="m.value['dbid']"></app-npc-detail>
-                </mat-expansion-panel>
-            </ng-container>
-        </mat-accordion>
-    </mat-tab>
-    <mat-tab label="Connections Json">
-        <mat-accordion>
-            <ng-container *ngFor="let m of char.char['npcs'] | keyvalue ">
-                <mat-expansion-panel  *ngIf="!m.value['dbid']"  hideToggle>
-                    <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        {{m.key}} ({{m.value['connection']}})
-                    </mat-panel-title>
-                    </mat-expansion-panel-header>
-                    <table  width="100%">
-                        <ng-container *ngFor="let m of m.value['show']  | keyvalue ">
-                            <tr  *ngIf="isEq(m.key, 'Born')">
-                                <th>Age</th><td>{{char.year - m.value*1}}</td>
-                            </tr>
-                            <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-                        </ng-container>
-
-                        <tr *ngFor="let s of m.value['skills'] | keyvalue"><th>{{s.key}}</th><td>{{s.value}}</td></tr>
-                    </table>
-                </mat-expansion-panel>
-            </ng-container>
-        </mat-accordion>
-    </mat-tab>
-    <mat-tab label="Gears & Horses">
-        <mat-accordion>
-            <mat-expansion-panel hideToggle>
+          @for (c of connections ; track c) {
+            @if (!isEq(c.connection, 'Children')) {
+              <mat-expansion-panel   hideToggle>
                 <mat-expansion-panel-header>
                   <mat-panel-title>
-                    Combat gear
+                    @if (!isEq(c.c0, id)) {
+                      <mat-icon>double_arrow</mat-icon>
+                    }
+                    @if (c.char.main['Deceased']) {
+                      <mat-icon>skull</mat-icon>
+                    }
+                    {{c.char.name}} ({{c.connection}}@if (c.comment) {
+                    : {{c.comment}}
+                    })
+                    @if (c.char.main['Born']) {
+                      Age: {{char.year - c.char.main['Born']}}
+                    }
                   </mat-panel-title>
                 </mat-expansion-panel-header>
-                <table width="100%" class="stats">
-                    <thead>
-                    <tr><th>Weapon</th><td>
-                        <mat-select [(value)]="char.char['combat']['weapon']" (selectionChange)="modifyCombat( 'weapon')">
-                            <mat-option *ngFor="let m of base.weapons | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
-                        </mat-select>
-                    </td></tr>
-                    <tr><th>Shield</th><td>
-                        <mat-select [(value)]="char.char['combat']['shield']" (selectionChange)="modifyCombat( 'shield')">
-                            <mat-option *ngFor="let m of base.shields | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
-                        </mat-select>
-                    </td></tr>
-                    <tr><th>Armor</th><td>
-                        <mat-select [(value)]="char.char['combat']['armor']" (selectionChange)="modifyCombat( 'armor')">
-                            <mat-option *ngFor="let m of base.armors | keyvalue" value="{{m.key}}" >{{m.key}}</mat-option>
-                        </mat-select>
-                    </td></tr>
-                    </thead>
-                    <tbody id="combatgear">
-                        <tr><th>Skill</th><td>{{weapon['skill']}}</td></tr>
-                        <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
-                        <tr>
-                            <td></td><td>
-                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-                                <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Damage reduction</th>
-                            <td>{{base.armors[char.char['combat']['armor']]['red']}} + {{base.shields[char.char['combat']['shield']]['red']}}
-                            </td>
-                        </tr>
-                        <tr><th>Dex modifier</th><td>{{base.armors[char.char['combat']['armor']]['red']}}</td></tr>
-                        <tr><th>Effective Dex</th><td>{{char.char['stats']['dex'] - base.armors[char.char['combat']['armor']]['red']}}</td></tr>
-                    </tbody>
-                </table>
-            </mat-expansion-panel>
-            <mat-expansion-panel hideToggle>
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    Army
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-                <table width="100%" id="army" class="stats">
-                    <tr *ngFor="let m of char.char['army'] | keyvalue "><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-                </table>
-            </mat-expansion-panel>
-            <mat-expansion-panel hideToggle *ngIf="main_horse">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    Horses
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
-                <h5>Main</h5>
-                <table width="100%" id="horses" class="stats">
-                    <tr><th>Type</th><td id="htyp" colspan="2" style="text-transform: capitalize">{{char.char['winter']['horses'][0]}}</td></tr>
-                    <tr><th>SIZ</th><td id="hsiz">{{main_horse['siz']}}</td><th>CON</th><td id="hcon">{{main_horse['con']}}</td></tr>
-                    <tr><th>DEX</th><td id="hdex">{{main_horse['dex']}}</td><th>STR</th><td id="hstr">{{main_horse['str']}}</td></tr>
-                    <tr><th>Damage</th><td id="hdam" colspan="2">{{main_horse['dam']}}</td></tr>
-                    <tr><th>Move</th><td id="hmov">{{main_horse['mov']}}</td><th>Armor</th><td id="harm">{{main_horse['arm']}}</td></tr>
-                    <tr><th>Total Hitpoints</th><td id="hhp">{{main_horse['siz']+main_horse['con']}}</td><th>Healing Rate</th><td id="hhea">{{main_horse['hea']}}</td></tr>
-                </table>
-                <h5>Others</h5>
-                <table  width="100%" id="hother" class="stats">
-                    <ng-container *ngFor="let h of char.char['winter']['horses']; index as i">
-                        <tr *ngIf="i>0 && base.horsetypes[h]">
-                            <th style="text-transform: capitalize">{{h}}</th>
-                            <td><span class="gold">Move</span>  {{base.horsetypes[h]['mov']}}</td>
-                            <td><span class="gold">Armor</span> {{base.horsetypes[h]['arm']}}</td>
-                            <td><span class="gold">HP</span> {{base.horsetypes[h]['siz']+base.horsetypes[h]['con']}}</td>
-                        </tr>
-                    </ng-container>
-                </table>
-            </mat-expansion-panel>
+                <app-npc-detail2 [char]="c" [parent]="this"></app-npc-detail2>
+              </mat-expansion-panel>
+            }
+          }
         </mat-accordion>
-    </mat-tab>
-    <mat-tab label="Description">
-        <h2>Description</h2>
-        <span class="contrastedText" style="white-space: pre-line;">{{char.char['description']}}</span>
-        <br/>
-        <span class="contrastedText" style="white-space: pre-line;">{{char.char['longdescription']}}</span>
-    </mat-tab>
+      </mat-tab>
+      <mat-tab label="Children">
+        <mat-accordion>
+          @for (c of connections ; track c) {
+            @if (isEq(c.connection, 'Children')) {
+              <mat-expansion-panel   hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    @if (!isEq(c.c0, id)) {
+                      <mat-icon>double_arrow</mat-icon>
+                    }
+                    {{c.char.name}} ({{c.connection}}@if (c.comment) {
+                    : {{c.comment}}
+                    })
+                    @if (c.char.main['Born']) {
+                      Age: {{char.year - c.char.main['Born']}}
+                    }
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-npc-detail2 [char]="c" [parent]="this"></app-npc-detail2>
+              </mat-expansion-panel>
+            }
+          }
+        </mat-accordion>
+      </mat-tab>
+      <mat-tab label="Connections Old">
+        <mat-accordion>
+          @for (m of char.char['npcs'] | keyvalue ; track m) {
+            @if (showOld(m)) {
+              <mat-expansion-panel   hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{m.key}} ({{m.value['connection']}}) {{showOld(m)}}
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <app-npc-detail [dbid]="m.value['dbid']"></app-npc-detail>
+              </mat-expansion-panel>
+            }
+          }
+        </mat-accordion>
+      </mat-tab>
+      <mat-tab label="Connections Json">
+        <mat-accordion>
+          @for (m of char.char['npcs'] | keyvalue ; track m) {
+            @if (!m.value['dbid']) {
+              <mat-expansion-panel   hideToggle>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{m.key}} ({{m.value['connection']}})
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                <table  width="100%">
+                  @for (m of m.value['show']  | keyvalue ; track m) {
+                    @if (isEq(m.key, 'Born')) {
+                      <tr >
+                        <th>Age</th><td>{{char.year - m.value*1}}</td>
+                      </tr>
+                    }
+                    <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+                  }
+                  @for (s of m.value['skills'] | keyvalue; track s) {
+                    <tr><th>{{s.key}}</th><td>{{s.value}}</td></tr>
+                  }
+                </table>
+              </mat-expansion-panel>
+            }
+          }
+        </mat-accordion>
+      </mat-tab>
+      <mat-tab label="Gears & Horses">
+        <mat-accordion>
+          <mat-expansion-panel hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Combat gear
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <table width="100%" class="stats">
+              <thead>
+                <tr><th>Weapon</th><td>
+                <mat-select [(value)]="char.char['combat']['weapon']" (selectionChange)="modifyCombat( 'weapon')">
+                  @for (m of base.weapons | keyvalue; track m) {
+                    <mat-option value="{{m.key}}" >{{m.key}}</mat-option>
+                  }
+                </mat-select>
+              </td></tr>
+              <tr><th>Shield</th><td>
+              <mat-select [(value)]="char.char['combat']['shield']" (selectionChange)="modifyCombat( 'shield')">
+                @for (m of base.shields | keyvalue; track m) {
+                  <mat-option value="{{m.key}}" >{{m.key}}</mat-option>
+                }
+              </mat-select>
+            </td></tr>
+            <tr><th>Armor</th><td>
+            <mat-select [(value)]="char.char['combat']['armor']" (selectionChange)="modifyCombat( 'armor')">
+              @for (m of base.armors | keyvalue; track m) {
+                <mat-option value="{{m.key}}" >{{m.key}}</mat-option>
+              }
+            </mat-select>
+          </td></tr>
+        </thead>
+        <tbody id="combatgear">
+          <tr><th>Skill</th><td>{{weapon['skill']}}</td></tr>
+          <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
+          <tr>
+            <td></td><td>
+            <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
+            <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+          </td>
+        </tr>
+        <tr>
+          <th>Damage reduction</th>
+          <td>{{base.armors[char.char['combat']['armor']]['red']}} + {{base.shields[char.char['combat']['shield']]['red']}}
+          </td>
+        </tr>
+        <tr><th>Dex modifier</th><td>{{base.armors[char.char['combat']['armor']]['red']}}</td></tr>
+        <tr><th>Effective Dex</th><td>{{char.char['stats']['dex'] - base.armors[char.char['combat']['armor']]['red']}}</td></tr>
+      </tbody>
+    </table>
+  </mat-expansion-panel>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Army
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <table width="100%" id="army" class="stats">
+      @for (m of char.char['army'] | keyvalue ; track m) {
+        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+      }
+    </table>
+  </mat-expansion-panel>
+  @if (main_horse) {
+    <mat-expansion-panel hideToggle>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Horses
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <h5>Main</h5>
+      <table width="100%" id="horses" class="stats">
+        <tr><th>Type</th><td id="htyp" colspan="2" style="text-transform: capitalize">{{char.char['winter']['horses'][0]}}</td></tr>
+        <tr><th>SIZ</th><td id="hsiz">{{main_horse['siz']}}</td><th>CON</th><td id="hcon">{{main_horse['con']}}</td></tr>
+        <tr><th>DEX</th><td id="hdex">{{main_horse['dex']}}</td><th>STR</th><td id="hstr">{{main_horse['str']}}</td></tr>
+        <tr><th>Damage</th><td id="hdam" colspan="2">{{main_horse['dam']}}</td></tr>
+        <tr><th>Move</th><td id="hmov">{{main_horse['mov']}}</td><th>Armor</th><td id="harm">{{main_horse['arm']}}</td></tr>
+        <tr><th>Total Hitpoints</th><td id="hhp">{{main_horse['siz']+main_horse['con']}}</td><th>Healing Rate</th><td id="hhea">{{main_horse['hea']}}</td></tr>
+      </table>
+      <h5>Others</h5>
+      <table  width="100%" id="hother" class="stats">
+        @for (h of char.char['winter']['horses']; track h; let i = $index) {
+          @if (i>0 && base.horsetypes[h]) {
+            <tr>
+              <th style="text-transform: capitalize">{{h}}</th>
+              <td><span class="gold">Move</span>  {{base.horsetypes[h]['mov']}}</td>
+              <td><span class="gold">Armor</span> {{base.horsetypes[h]['arm']}}</td>
+              <td><span class="gold">HP</span> {{base.horsetypes[h]['siz']+base.horsetypes[h]['con']}}</td>
+            </tr>
+          }
+        }
+      </table>
+    </mat-expansion-panel>
+  }
+</mat-accordion>
+</mat-tab>
+<mat-tab label="Description">
+  <h2>Description</h2>
+  <span class="contrastedText" style="white-space: pre-line;">{{char.char['description']}}</span>
+  <br/>
+  <span class="contrastedText" style="white-space: pre-line;">{{char.char['longdescription']}}</span>
+</mat-tab>
 </mat-tab-group>
 </div>
-
 </div>
-<ng-template #noChar>
-    <style>
-        .wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: calc(100vh - 20px);
-        }
-        .inner {
-            padding: 12px;
-        }
-    </style>
-    <div class="wrapper">
-        <mat-spinner class="inner"></mat-spinner>
-    </div>
-</ng-template>
+} @else {
+  <style>
+    .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 20px);
+  }
+  .inner {
+  padding: 12px;
+}
+</style>
+<div class="wrapper">
+  <mat-spinner class="inner"></mat-spinner>
+</div>
+}

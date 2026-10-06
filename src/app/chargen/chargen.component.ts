@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { ActivatedRoute } from '@angular/router';
@@ -8,12 +8,14 @@ import { Base } from '../base';
 import { Trait } from '../character-detail/character-detail.component';
 
 @Component({
-  selector: 'app-chargen',
-  templateUrl: './chargen.component.html',
-  styleUrls: ['./chargen.component.css'],
-  providers: [{
-    provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true }
-  }]
+    selector: 'app-chargen',
+    templateUrl: './chargen.component.html',
+    styleUrls: ['./chargen.component.css'],
+    providers: [{
+            provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true }
+        }],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class ChargenComponent implements OnInit {
   base: Base = null;

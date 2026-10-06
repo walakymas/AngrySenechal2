@@ -1,11 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { LordBase } from '../lord';
 import { Logger } from '../logger.service';
 
 @Component({
-  selector: 'feast-seating',
-  templateUrl: './feast-seating.component.html',
-  styleUrls: ['./feast-seating.component.css']
+    selector: 'feast-seating',
+    templateUrl: './feast-seating.component.html',
+    styleUrls: ['./feast-seating.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class FeastSeatingComponent implements OnInit {
   @Input() filter: string = '';

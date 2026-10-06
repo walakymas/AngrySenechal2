@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { NpcDetailComponent } from './npc-detail.component';
+import { AppModule } from '../app.module';
 
 describe('NpcDetailComponent', () => {
   let component: NpcDetailComponent;
@@ -8,12 +11,10 @@ describe('NpcDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NpcDetailComponent ]
-    })
-    .compileComponents();
-  });
+      imports: [AppModule, NoopAnimationsModule],
+      providers: [provideHttpClientTesting()],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(NpcDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

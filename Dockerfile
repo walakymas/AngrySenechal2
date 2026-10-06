@@ -1,5 +1,5 @@
 # Production image: builds the app, then serves dist/ with the hardened Express server (server.js).
-FROM node:16-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -8,7 +8,7 @@ COPY . .
 RUN [ -f src/environments/environment.prod.ts ] || cp src/environments/environment.prod.ts.example src/environments/environment.prod.ts
 RUN npm run build
 
-FROM node:16-alpine
+FROM node:22-alpine
 ENV NODE_ENV=production PORT=8080
 WORKDIR /app
 # the server needs only express and helmet (not the Angular toolchain)

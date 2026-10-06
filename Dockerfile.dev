@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM node:22-alpine
 
 # development server (ng serve) as an unprivileged user
 RUN mkdir /app && chown node:node /app

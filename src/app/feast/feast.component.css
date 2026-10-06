@@ -17,8 +17,9 @@ div.card.inactive
     background:red;
 }
 
-.mat-mini-fab.mat-accent ,
-.mat-select,
+/* TODO(mdc-migration): The following rule targets internal classes of select that may no longer apply for the MDC version. */
+.mat-mdc-mini-fab.mat-accent ,
+.mat-mdc-select,
 .mat-select-value
 {
     background-color: var(--goldHighlight2);

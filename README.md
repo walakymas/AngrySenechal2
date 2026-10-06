@@ -40,3 +40,10 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
   violations in the browser console, then set `reportOnly: false` in `server.js` to enforce it.
 - `npm run test:server` runs the tests of `server.js` (plain node).
 - `ng build` now defaults to the production configuration.
+
+## Angular 22 / Node 22
+
+- Needs **Node ≥ 22.22.3** (the Docker images use `node:22-alpine`); use `npm ci`.
+- Unit tests: `ng test --watch=false --browsers=ChromeHeadlessNoSandbox` (set `CHROME_BIN` to a Chromium); `npm run test:server` tests `server.js`.
+- There is no linter and no e2e suite at the moment (`tslint` and `protractor` no longer exist); ESLint (`ng add angular-eslint`) and a Playwright smoke test are the natural replacements.
+- The JSON editor of the character page is `src/app/json-editor` (a wrapper of `jsoneditor`).
