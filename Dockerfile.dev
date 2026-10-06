@@ -1,11 +1,14 @@
 FROM node:16-alpine
 
+# development server (ng serve) as an unprivileged user
+RUN mkdir /app && chown node:node /app
 WORKDIR /app
+USER node
 
-COPY package*.json ./
-RUN npm install
+COPY --chown=node:node package*.json ./
+RUN npm ci
 
-COPY . .
+COPY --chown=node:node . .
 
 EXPOSE 4200
 

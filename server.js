@@ -4,14 +4,13 @@
 //   PORT            listening port (default 8080)
 //   DIST_DIR        folder of the built app (default dist/AngrySenechal2; the tests use a temporary one)
 //   REQUIRE_HTTPS   'false' turns the redirect to https off (default: on)
-//   TRUST_PROXY     number of reverse proxies in front of the app (default 1: Heroku / one proxy), or an
+//   TRUST_PROXY     number of reverse proxies in front of the app (default 1: one proxy), or an
 //                   Express "trust proxy" value; X-Forwarded-Proto is only believed for trusted proxies
 //   ALLOWED_HOSTS   comma separated host names the https redirect may use; if unset any plain host name is
 //                   accepted (no path, user info or spaces), anything else gets a 400
 const path = require('path');
 const express = require('express');
 const helmet = require('helmet');
-const compression = require('compression');
 
 const DIST = process.env.DIST_DIR || path.join(__dirname, 'dist', 'AngrySenechal2');
 const HASHED_ASSET = /\.[0-9a-f]{16,}\.(js|css)$/;  // Angular production build: content hash in the file name
@@ -68,7 +67,6 @@ app.use(helmet({
     },
     crossOriginEmbedderPolicy: false,
 }));
-app.use(compression());
 
 app.use(express.static(DIST, {
     index: false,

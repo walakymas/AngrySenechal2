@@ -28,7 +28,8 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Production server (`server.js`)
 
-`npm start` serves the built app (`dist/AngrySenechal2`) with Express, helmet and compression.
+`npm start` serves the built app (`dist/AngrySenechal2`) with Express and helmet (compression is left to the
+  reverse proxy: the `compression` package has a known denial-of-service advisory).
 
 - Before `npm run build` copy `src/environments/environment.prod.ts.example` to `src/environments/environment.prod.ts`
   (git-ignored) and set the API address in it.

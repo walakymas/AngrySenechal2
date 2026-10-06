@@ -4,3 +4,8 @@ dist
 .gitignore
 Dockerfile
 README.md
+.angular
+.env
+.env.*
+*.log
+__pycache__
