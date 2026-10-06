@@ -744,8 +744,9 @@ export class CharacterDetailComponent implements OnInit {
     }
     let p_ = p.replace(/ /g,'_');
     let command = `${p} cid:${ this.char.char['dbid']}`;
-    if (this.char.char['memberId']) {
-      command = `${p} <@!${ this.char.char['memberId']}>`;
+    const member = this.activeMemberId();
+    if (member) {
+      command = `${p} <@!${member}>`;
     }
     if (this.service.isLoggedIn()) {
       this.service.command(command).subscribe(e => console.log(`sent "${command}" ${JSON.stringify(e)}`));
