@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Lord, LordBase } from './../lord';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
@@ -9,14 +9,17 @@ import { MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef} from '@angular/material/dialog';
 import { MatSelect } from '@angular/material/select';
 import { MAT_DIALOG_DATA} from '@angular/material/dialog';
-import { JsonEditorComponent, JsonEditorOptions } from 'ang-jsoneditor';
+import { JsonEditorComponent } from '../json-editor/json-editor.component';
+import { JSONEditorOptions } from 'jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Subscription, interval } from 'rxjs';
 
 @Component({
-  selector: 'app-character-detail',
-  templateUrl: './character-detail.component.html',
-  styleUrls: ['./character-detail.component.css']
+    selector: 'app-character-detail',
+    templateUrl: './character-detail.component.html',
+    styleUrls: ['./character-detail.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class CharacterDetailComponent implements OnInit {
   private readonly lastCharacterStorageKey = 'lastCharacter';
@@ -738,12 +741,21 @@ export class CharacterDetailComponent implements OnInit {
   }
 
   bot(p:string) {
+    if (this.service.isLoggedIn() && /^\d*[dD]\d+([+-]\d+)?$/.test(p.trim())) {
+      this.service.roll(p.trim(), this.char.char['dbid']).subscribe(e => console.log(`rolled "${p}" ${JSON.stringify(e)}`));
+      return;
+    }
     let p_ = p.replace(/ /g,'_');
     let command = `${p} cid:${ this.char.char['dbid']}`;
-    if (this.char.char['memberId']) {
-      command = `${p} <@!${ this.char.char['memberId']}>`;
+    const member = this.activeMemberId();
+    if (member) {
+      command = `${p} <@!${member}>`;
     }
-    this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+    if (this.service.isLoggedIn()) {
+      this.service.command(command).subscribe(e => console.log(`sent "${command}" ${JSON.stringify(e)}`));
+    } else {
+      this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+    }
   }
 
   editEvent(e) {
@@ -919,8 +931,8 @@ export class CharacterMain {
 }
 
 @Component({
-  selector: 'character-main-dialog',
-  template: `
+    selector: 'character-main-dialog',
+    template: `
   <div mat-dialog-content>
       <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Name</mat-label>
@@ -950,7 +962,10 @@ export class CharacterMain {
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="data.main" cdkFocusInitial>Save</button>
-  </div> `})
+  </div> `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
 export class CharacterMainDialog {
   constructor(
     private dialogRef: MatDialogRef<CharacterMainDialog>,
@@ -969,26 +984,30 @@ export class GameEvent {
 }
 
 @Component({
-  selector: 'passion-dialog',
-  template: `
+    selector: 'passion-dialog',
+    template: `
   <div mat-dialog-content>
-      <mat-form-field appearance="fill" style="width:100%">
-        <mat-label>Name</mat-label>
-        <input matInput [(ngModel)]="data.passion.name" cdkFocusInitial>
-        <mat-hint>Dots are not allowed</mat-hint>
-      </mat-form-field>
-      <div *ngIf="isDuplicateName()" style="color:#f44336; font-size:12px; margin-top:-10px; margin-bottom:8px;">
+    <mat-form-field appearance="fill" style="width:100%">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="data.passion.name" cdkFocusInitial>
+      <mat-hint>Dots are not allowed</mat-hint>
+    </mat-form-field>
+    @if (isDuplicateName()) {
+      <div style="color:#f44336; font-size:12px; margin-top:-10px; margin-bottom:8px;">
         {{ duplicateNameMessage() }}
       </div>
-      <mat-form-field appearance="fill" style="width:100%">
-        <mat-label>Initial value</mat-label>
-        <input matInput type="number" min="1" max="15" step="1" [(ngModel)]="data.passion.value">
-      </mat-form-field>
+    }
+    <mat-form-field appearance="fill" style="width:100%">
+      <mat-label>Initial value</mat-label>
+      <input matInput type="number" min="1" max="15" step="1" [(ngModel)]="data.passion.value">
+    </mat-form-field>
   </div>
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="result" [disabled]="!canSave()">Save</button>
-  </div> `
+  </div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class PassionDialog {
   data: PassionDialogData;
@@ -1044,24 +1063,30 @@ export class PassionDialog {
 }
 
 @Component({
-  selector: 'property-dialog',
-  template: `
+    selector: 'property-dialog',
+    template: `
   <div mat-dialog-content>
-      <mat-form-field appearance="fill" style="width:100%">
-        <mat-label>Name</mat-label>
-        <ng-container *ngIf="canEditName(); else lockedMainName">
-          <input matInput [(ngModel)]="data.entry.name" cdkFocusInitial>
-        </ng-container>
-        <ng-template #lockedMainName>
-          <input matInput [(ngModel)]="data.entry.name" disabled>
-        </ng-template>
-        <mat-hint *ngIf="canEditName()">Dots are not allowed</mat-hint>
-        <mat-hint *ngIf="!canEditName()">Name is fixed for existing main values.</mat-hint>
-      </mat-form-field>
-      <div *ngIf="isDuplicateName()" style="color:#f44336; font-size:12px; margin-top:-10px; margin-bottom:8px;">
+    <mat-form-field appearance="fill" style="width:100%">
+      <mat-label>Name</mat-label>
+      @if (canEditName()) {
+        <input matInput [(ngModel)]="data.entry.name" cdkFocusInitial>
+      } @else {
+        <input matInput [(ngModel)]="data.entry.name" disabled>
+      }
+      @if (canEditName()) {
+        <mat-hint>Dots are not allowed</mat-hint>
+      }
+      @if (!canEditName()) {
+        <mat-hint>Name is fixed for existing main values.</mat-hint>
+      }
+    </mat-form-field>
+    @if (isDuplicateName()) {
+      <div style="color:#f44336; font-size:12px; margin-top:-10px; margin-bottom:8px;">
         {{ duplicateNameMessage() }}
       </div>
-      <mat-form-field *ngIf="data.scope === 'skills'" appearance="fill" style="width:100%">
+    }
+    @if (data.scope === 'skills') {
+      <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Category</mat-label>
         <mat-select [(ngModel)]="data.entry.category">
           <mat-option value="Other">Other</mat-option>
@@ -1069,19 +1094,26 @@ export class PassionDialog {
           <mat-option value="Combat">Combat</mat-option>
         </mat-select>
       </mat-form-field>
-      <mat-form-field *ngIf="data.scope === 'skills'" appearance="fill" style="width:100%">
+    }
+    @if (data.scope === 'skills') {
+      <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Initial value</mat-label>
         <input matInput type="number" min="1" step="1" [(ngModel)]="data.entry.value">
       </mat-form-field>
-      <mat-form-field *ngIf="data.scope === 'main'" appearance="fill" style="width:100%">
+    }
+    @if (data.scope === 'main') {
+      <mat-form-field appearance="fill" style="width:100%">
         <mat-label>Value</mat-label>
         <input matInput type="text" [(ngModel)]="data.entry.value">
       </mat-form-field>
+    }
   </div>
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="result" [disabled]="!canSave()">Save</button>
-  </div> `
+  </div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class PropertyDialog {
   data: PropertyDialogData;
@@ -1191,8 +1223,8 @@ export class PropertyDialog {
 }
 
 @Component({
-  selector: 'check-modifier-dialog',
-  template: `
+    selector: 'check-modifier-dialog',
+    template: `
   <div mat-dialog-content>
       <p>{{ data.command }}</p>
       <mat-form-field appearance="fill" style="width:100%">
@@ -1204,7 +1236,9 @@ export class PropertyDialog {
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="result">Check</button>
-  </div> `
+  </div> `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class CheckModifierDialog {
   data: CheckModifierDialogData;
@@ -1232,27 +1266,32 @@ export class CheckModifierDialog {
 }
 
 @Component({
-  selector: 'dialog-content-example-dialog',
-  template: `
+    selector: 'dialog-content-example-dialog',
+    template: `
   <div mat-dialog-content>
-      <mat-form-field appearance="fill" style="width:50%">
-        <mat-label>Year</mat-label>
-        <input type="number" matInput [(ngModel)]="data.event.year">
-      </mat-form-field>
-      <mat-form-field appearance="fill" style="width:50%">
-        <mat-label>Glory</mat-label>
-        <input type="number" matInput [(ngModel)]="data.event.glory">
-      </mat-form-field>
-      <mat-form-field appearance="fill" style="width:100%;">
-        <mat-label>Description</mat-label>
-        <textarea matInput [(ngModel)]="data.event.description" style="min-height:120px;"></textarea>
-      </mat-form-field>
+    <mat-form-field appearance="fill" style="width:50%">
+      <mat-label>Year</mat-label>
+      <input type="number" matInput [(ngModel)]="data.event.year">
+    </mat-form-field>
+    <mat-form-field appearance="fill" style="width:50%">
+      <mat-label>Glory</mat-label>
+      <input type="number" matInput [(ngModel)]="data.event.glory">
+    </mat-form-field>
+    <mat-form-field appearance="fill" style="width:100%;">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="data.event.description" style="min-height:120px;"></textarea>
+    </mat-form-field>
   </div>
   <div mat-dialog-actions align="end">
-    <button mat-button [mat-dialog-close]="delete" cdkFocusInitial *ngIf="delete">Delete</button>
+    @if (delete) {
+      <button mat-button [mat-dialog-close]="delete" cdkFocusInitial>Delete</button>
+    }
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="data.event" cdkFocusInitial>Save</button>
-  </div> `})
+  </div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
 export class DialogContentExampleDialog {
   delete: GameEvent;
   constructor(
@@ -1267,8 +1306,8 @@ export class DialogContentExampleDialog {
 }
 
 @Component({
-  selector: 'character-json-dialog',
-  template: `
+    selector: 'character-json-dialog',
+    template: `
   <div mat-dialog-content>
     <form  [formGroup]="fg">
       <json-editor [options]="editorOptions" class="jsondialog" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
@@ -1278,9 +1317,12 @@ export class DialogContentExampleDialog {
     {{lord.char['name']}}
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="char" cdkFocusInitial [disabled]="!char">Save</button>
-  </div> `})
+  </div> `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
 export class CharacterJsonDialog {
-  editorOptions : JsonEditorOptions;
+  editorOptions : JSONEditorOptions;
   lord: Lord;
   @ViewChild(JsonEditorComponent, { static: false }) editor: JsonEditorComponent;
   public fg: FormGroup;
@@ -1291,9 +1333,7 @@ export class CharacterJsonDialog {
     private dialogRef: MatDialogRef<DialogContentExampleDialog>,
     @Inject(MAT_DIALOG_DATA) public data: {lord: Lord}) {
       this.lord = data.lord;
-      this.editorOptions = new JsonEditorOptions()
-      this.editorOptions.modes = ['code', 'tree'];
-      this.editorOptions.mode = 'code';
+      this.editorOptions = { modes: ['code', 'tree'], mode: 'code' };
     }
     ngOnInit(): void {
       this.fg = this.formBuilder.group({
@@ -1304,43 +1344,48 @@ export class CharacterJsonDialog {
 }
 
 @Component({
-  selector: 'character-connection-dialog',
-  template: `
+    selector: 'character-connection-dialog',
+    template: `
   <div mat-dialog-content>
     <table>
       <tr><th>Character 1</th><td> {{lord.char['name']}}</td></tr>
       <tr><th>Character 2</th><td>
-          <mat-select [(value)]="c1" (selectionChange)="changed(c1)">
-            <ng-container *ngFor="let c of chars | keyvalue">
-                <mat-option *ngIf="enabled(c.value.id)" value="{{c.value.id}}" >{{c.value.id}}-{{c.value.name}}</mat-option>
-            </ng-container>
-          </mat-select>
-
-      </td></tr>
-      <tr><th>Connection</th><td>
-          <mat-select [(value)]="connection">
-              <mat-option value="Wife" >Wife</mat-option>
-              <mat-option value="Follower" >Follower</mat-option>
-              <mat-option value="Children" >Children</mat-option>
-              <mat-option value="Husband" >Husband</mat-option>
-              <mat-option value="Squire" >Squire</mat-option>
-              <mat-option value="Relative" >Relative</mat-option>
-              <mat-option value="Other" >Other</mat-option>
-
-          </mat-select>
-
-      </td></tr>
-      <tr><th>Comment</th><td>
-        <input [(ngModel)]="comment" type="text" placeholder="Comment"/>
-      </td></tr>
-      <tr><th></th><td>
-      </td></tr>
-    </table>
+      <mat-select [(value)]="c1" (selectionChange)="changed(c1)">
+        @for (c of chars | keyvalue; track c) {
+          @if (enabled(c.value.id)) {
+            <mat-option value="{{c.value.id}}" >{{c.value.id}}-{{c.value.name}}</mat-option>
+          }
+        }
+      </mat-select>
+  
+    </td></tr>
+    <tr><th>Connection</th><td>
+    <mat-select [(value)]="connection">
+      <mat-option value="Wife" >Wife</mat-option>
+      <mat-option value="Follower" >Follower</mat-option>
+      <mat-option value="Children" >Children</mat-option>
+      <mat-option value="Husband" >Husband</mat-option>
+      <mat-option value="Squire" >Squire</mat-option>
+      <mat-option value="Relative" >Relative</mat-option>
+      <mat-option value="Other" >Other</mat-option>
+  
+    </mat-select>
+  
+  </td></tr>
+  <tr><th>Comment</th><td>
+  <input [(ngModel)]="comment" type="text" placeholder="Comment"/>
+  </td></tr>
+  <tr><th></th><td>
+  </td></tr>
+  </table>
   </div>
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="char" (click)="addConnection()" [disabled]="!c1 || !connection">Add connection</button>
-  </div> `})
+  </div>`,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
 export class CharacterConnectionDialog {
   connections: C2C[];
   c1: string = '';

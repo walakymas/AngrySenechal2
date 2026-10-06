@@ -1,275 +1,324 @@
-<div *ngIf="base; else noBase">
-  <div class="row wide">
-    <div class="col-1">
-      <mat-vertical-stepper linear #stepper (selectionChange)="onStepChange($event)">
-        <!-- MAIN INFO -->
-        <mat-step [stepControl]="mainFormGroup" errorMessage="Missing information.">
-          <form [formGroup]="mainFormGroup">
-            <ng-template matStepLabel>Base information</ng-template>
-            <mat-form-field>
-              <mat-label>Born</mat-label>
-              <input matInput placeholder="480-566" formControlName="born" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Year</mat-label>
-              <input matInput placeholder="480-566" formControlName="year" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Culture</mat-label>
-              <mat-select [(value)]="char['main']['Culture']"  (selectionChange)="updateCulture()">
-                <mat-option *ngFor="let culture of base.newchar | keyvalue" [value]="culture.key">{{culture.key}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Religion</mat-label>
-              <mat-select [(value)]="char['main']['Religion']" (selectionChange)="changeReligion()">
-                <mat-option *ngFor="let r of base.newchar[char['main']['Culture']].traits | keyvalue" [value]="r.key">{{r.key}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <br />
-            <mat-form-field>
-              <mat-label>Gender</mat-label>
-              <mat-select [(value)]="gender" (selectionChange)="updateGender()">
-                <mat-option value="male">Sir</mat-option>
-                <mat-option value="female">Lady</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Name</mat-label>
-              <input matInput placeholder="Unknown" formControlName="name" required>
-            </mat-form-field>
-            <button mat-icon-button (click)="genName()">
-              <mat-icon>shuffle</mat-icon>
-            </button>
-            <br />
-            <mat-form-field>
-              <mat-label>Homeland</mat-label>
-              <mat-select [(value)]="char.main.Homeland" (selectionChange)="initPassions()">
-                <mat-option *ngFor="let hl of base.newchar[char['main']['Culture']].homeland | keyvalue"
-                  [value]="hl.key">{{hl.key}}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Lord</mat-label>
-              <input matInput placeholder="Unknown" formControlName="lord" required>
-            </mat-form-field>
-            <button mat-icon-button (click)="genLord()">
-              <mat-icon>shuffle</mat-icon>
-            </button>
-          </form>
-        </mat-step>
-        <!-- TRAIT -->
-        <mat-step [stepControl]="traitFormGroup" errorMessage="Traits faileds">
-          <ng-template matStepLabel>Traits</ng-template>
-          <form [formGroup]="traitFormGroup">
-            <mat-form-field>
-              <mat-label>Method</mat-label>
-              <mat-select [(value)]="traitMode" (selectionChange)="changeTraitMethod()">
-                <mat-option value="base">Base</mat-option>
-                <mat-option value="random">Random</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-radio-group [(ngModel)]="charBase['famous']"  [ngModelOptions]="{standalone: true}" (change)="changeTraitFamous()">
-            <div class="traitmods">
-              <ng-container *ngFor="let t of traits">
-                <div class="info" (click)="setTraitAct(t.short)">
-                  <div>
-                    {{char['traits'][t.short]}}
-                    <span>{{t.first}}
-                    <mat-icon *ngIf="isChivalry(t.first)">security</mat-icon>
-                    <mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon>
-                    </span>
-                  </div>
-                  <div>
-                    {{traitModification[t.short]}}
-                  </div>
-                  <div>
-                    <span>
-                      <mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>
-                      {{t.second}}
-                    </span>
-                    {{20-char['traits'][t.short]}}
-                  </div>
+@if (base) {
+  <div>
+    <div class="row wide">
+      <div class="col-1">
+        <mat-vertical-stepper linear #stepper (selectionChange)="onStepChange($event)">
+          <!-- MAIN INFO -->
+          <mat-step [stepControl]="mainFormGroup" errorMessage="Missing information.">
+            <form [formGroup]="mainFormGroup">
+              <ng-template matStepLabel>Base information</ng-template>
+              <mat-form-field>
+                <mat-label>Born</mat-label>
+                <input matInput placeholder="480-566" formControlName="born" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Year</mat-label>
+                <input matInput placeholder="480-566" formControlName="year" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Culture</mat-label>
+                <mat-select [(value)]="char['main']['Culture']"  (selectionChange)="updateCulture()">
+                  @for (culture of base.newchar | keyvalue; track culture) {
+                    <mat-option [value]="culture.key">{{culture.key}}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Religion</mat-label>
+                <mat-select [(value)]="char['main']['Religion']" (selectionChange)="changeReligion()">
+                  @for (r of base.newchar[char['main']['Culture']].traits | keyvalue; track r) {
+                    <mat-option [value]="r.key">{{r.key}}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <br />
+              <mat-form-field>
+                <mat-label>Gender</mat-label>
+                <mat-select [(value)]="gender" (selectionChange)="updateGender()">
+                  <mat-option value="male">Sir</mat-option>
+                  <mat-option value="female">Lady</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Name</mat-label>
+                <input matInput placeholder="Unknown" formControlName="name" required>
+              </mat-form-field>
+              <button mat-icon-button (click)="genName()">
+                <mat-icon>shuffle</mat-icon>
+              </button>
+              <br />
+              <mat-form-field>
+                <mat-label>Homeland</mat-label>
+                <mat-select [(value)]="char.main.Homeland" (selectionChange)="initPassions()">
+                  @for (hl of base.newchar[char['main']['Culture']].homeland | keyvalue; track hl) {
+                    <mat-option
+                      [value]="hl.key">{{hl.key}}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Lord</mat-label>
+                <input matInput placeholder="Unknown" formControlName="lord" required>
+              </mat-form-field>
+              <button mat-icon-button (click)="genLord()">
+                <mat-icon>shuffle</mat-icon>
+              </button>
+            </form>
+          </mat-step>
+          <!-- TRAIT -->
+          <mat-step [stepControl]="traitFormGroup" errorMessage="Traits faileds">
+            <ng-template matStepLabel>Traits</ng-template>
+            <form [formGroup]="traitFormGroup">
+              <mat-form-field>
+                <mat-label>Method</mat-label>
+                <mat-select [(value)]="traitMode" (selectionChange)="changeTraitMethod()">
+                  <mat-option value="base">Base</mat-option>
+                  <mat-option value="random">Random</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-radio-group [(ngModel)]="charBase['famous']"  [ngModelOptions]="{standalone: true}" (change)="changeTraitFamous()">
+                <div class="traitmods">
+                  @for (t of traits; track t) {
+                    <div class="info" (click)="setTraitAct(t.short)">
+                      <div>
+                        {{char['traits'][t.short]}}
+                        <span>{{t.first}}
+                          @if (isChivalry(t.first)) {
+                            <mat-icon>security</mat-icon>
+                          }
+                          @if (isVirtue(t.first)) {
+                            <mat-icon>emoji_events</mat-icon>
+                          }
+                        </span>
+                      </div>
+                      <div>
+                        {{traitModification[t.short]}}
+                      </div>
+                      <div>
+                        <span>
+                          @if (isVirtue(t.second)) {
+                            <mat-icon>emoji_events</mat-icon>
+                          }
+                          {{t.second}}
+                        </span>
+                        {{20-char['traits'][t.short]}}
+                      </div>
+                    </div>
+                    <div class="modification" [hidden]="traitAct!=t.short">
+                      <div>
+                        <mat-radio-button value="{{t.short}}+"></mat-radio-button>
+                      </div>
+                      <div class="select" colspan="3">
+                        <!-- TODO: The 'invert' property no longer exists -->
+                        <mat-slider disabled="{{isSliderDisabled(t.short)}}" min="{{-sliderMax(t.short, false)}}" max="{{sliderMax(t.short)}}" step="1" thumbLabel #ngSlider><input matSliderThumb (change)="changeTrait()" #ngSliderThumb="matSliderThumb" [(value)]="traitModification[t.short]" /></mat-slider>
+                      </div>
+                      <div>
+                        <mat-radio-button value="{{t.short}}-"></mat-radio-button>
+                      </div>
+                    </div>
+                  }
                 </div>
-                <div class="modification" [hidden]="traitAct!=t.short">
-                  <div>
-                    <mat-radio-button value="{{t.short}}+"></mat-radio-button>
-                  </div>
-                  <div class="select" colspan="3">
-                    <mat-slider disabled="{{isSliderDisabled(t.short)}}" min="{{-sliderMax(t.short, false)}}" max="{{sliderMax(t.short)}}" step="1" thumbLabel invert [(value)]="traitModification[t.short]" (change)="changeTrait()"></mat-slider>
-                  </div>
-                  <div>
-                    <mat-radio-button value="{{t.short}}-"></mat-radio-button>
-                  </div>
+                <div class="traitsummary">
+                  <mat-radio-button value="none">No famous trait</mat-radio-button><br/>
+                  Mods: {{traitModificationSum}}/ {{traitModificationMaxSum}}<br/>
                 </div>
-              </ng-container>
-            </div>
-            <div class="traitsummary">
-              <mat-radio-button value="none">No famous trait</mat-radio-button><br/>
-                Mods: {{traitModificationSum}}/ {{traitModificationMaxSum}}<br/>
-            </div>
-            </mat-radio-group>
-          </form>
-        </mat-step>
-        <mat-step [stepControl]="thirdFormGroup" errorMessage="Túl sok attr">
-          <ng-template matStepLabel>Attributes</ng-template>
-          <form [formGroup]="thirdFormGroup">
-            <mat-form-field>
-              <mat-label>Method</mat-label>
-              <mat-select [(value)]="attribMode" (selectionChange)="changeAttrib('method')">
-                <mat-option value="base">Base</mat-option> 
-                <mat-option value="random">Random</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <div *ngIf="attribMode!='random'">
-              <table>
-                <tr><th>SIZ</th><td><mat-icon (click)="attr('siz',-1)">remove</mat-icon></td><td>{{charBase.stats.siz}}</td><td><mat-icon (click)="attr('siz',1)">add</mat-icon></td><td>{{attrMod('siz')}}</td></tr>
-                <tr><th>DEX</th><td><mat-icon (click)="attr('dex',-1)">remove</mat-icon></td><td>{{charBase.stats.dex}}</td><td><mat-icon (click)="attr('dex',1)">add</mat-icon></td><td>{{attrMod('dex')}}</td></tr>
-                <tr><th>STR</th><td><mat-icon (click)="attr('str',-1)">remove</mat-icon></td><td>{{charBase.stats.str}}</td><td><mat-icon (click)="attr('str',1)">add</mat-icon></td><td>{{attrMod('str')}}</td></tr>
-                <tr><th>CON</th><td><mat-icon (click)="attr('con',-1)">remove</mat-icon></td><td>{{charBase.stats.con}}</td><td><mat-icon (click)="attr('con',1)">add</mat-icon></td><td>{{attrMod('con')}}</td></tr>
-                <tr><th>APP</th><td><mat-icon (click)="attr('app',-1)">remove</mat-icon></td><td>{{charBase.stats.app}}</td><td><mat-icon (click)="attr('app',1)">add</mat-icon></td><td>{{attrMod('app')}}</td></tr>
-                <tr><td colspan="100%" align="center">
-                  <input matInput placeholder="60" formControlName="sum" required readonly>
-                </td></tr>
-              </table>
-            </div>
-          </form>
-        </mat-step>
-        <mat-step [stepControl]="fourthFormGroup" errorMessage="Skills faileds">
-          <ng-template matStepLabel>Skills</ng-template>
-          <form [formGroup]="fourthFormGroup">
-            <mat-form-field>
-              <mat-label>P15 Skill</mat-label>
-              <mat-select [(value)]="charBase['individual']['p15']" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listP15() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>P10 Skill 1</mat-label>
-              <mat-select [(value)]="charBase['individual']['p10'][0]" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listP10() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>P10 Skill 2</mat-label>
-              <mat-select [(value)]="charBase['individual']['p10'][1]" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listP10() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>P10 Skill 3</mat-label>
-              <mat-select [(value)]="charBase['individual']['p10'][2]" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listP10() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Spec 1</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][0]" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Spec 2</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][1]" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Spec 3</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][2]" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Spec 4</mat-label>
-              <mat-select [(value)]="charBase['individual']['spec'][3]" (selectionChange)="updateSkillPhase()">
-                <mat-option value="none">None</mat-option>
-                <mat-option *ngFor="let l of listSpecial() | keyvalue" value="{{l.value}}">{{l.key}}</mat-option>
-              </mat-select>
-            </mat-form-field>
-            <table class="individual">
-                <tr *ngFor="let s of char['skills']['Other'] | keyvalue">
-                  <td>
+              </mat-radio-group>
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="thirdFormGroup" errorMessage="Túl sok attr">
+            <ng-template matStepLabel>Attributes</ng-template>
+            <form [formGroup]="thirdFormGroup">
+              <mat-form-field>
+                <mat-label>Method</mat-label>
+                <mat-select [(value)]="attribMode" (selectionChange)="changeAttrib('method')">
+                  <mat-option value="base">Base</mat-option>
+                  <mat-option value="random">Random</mat-option>
+                </mat-select>
+              </mat-form-field>
+              @if (attribMode!='random') {
+                <div>
+                  <table>
+                    <tr><th>SIZ</th><td><mat-icon (click)="attr('siz',-1)">remove</mat-icon></td><td>{{charBase.stats.siz}}</td><td><mat-icon (click)="attr('siz',1)">add</mat-icon></td><td>{{attrMod('siz')}}</td></tr>
+                    <tr><th>DEX</th><td><mat-icon (click)="attr('dex',-1)">remove</mat-icon></td><td>{{charBase.stats.dex}}</td><td><mat-icon (click)="attr('dex',1)">add</mat-icon></td><td>{{attrMod('dex')}}</td></tr>
+                    <tr><th>STR</th><td><mat-icon (click)="attr('str',-1)">remove</mat-icon></td><td>{{charBase.stats.str}}</td><td><mat-icon (click)="attr('str',1)">add</mat-icon></td><td>{{attrMod('str')}}</td></tr>
+                    <tr><th>CON</th><td><mat-icon (click)="attr('con',-1)">remove</mat-icon></td><td>{{charBase.stats.con}}</td><td><mat-icon (click)="attr('con',1)">add</mat-icon></td><td>{{attrMod('con')}}</td></tr>
+                    <tr><th>APP</th><td><mat-icon (click)="attr('app',-1)">remove</mat-icon></td><td>{{charBase.stats.app}}</td><td><mat-icon (click)="attr('app',1)">add</mat-icon></td><td>{{attrMod('app')}}</td></tr>
+                    <tr><td colspan="100%" align="center">
+                      <input matInput placeholder="60" formControlName="sum" required readonly>
+                    </td></tr>
+                  </table>
+                </div>
+              }
+            </form>
+          </mat-step>
+          <mat-step [stepControl]="fourthFormGroup" errorMessage="Skills faileds">
+            <ng-template matStepLabel>Skills</ng-template>
+            <form [formGroup]="fourthFormGroup">
+              <mat-form-field>
+                <mat-label>P15 Skill</mat-label>
+                <mat-select [(value)]="charBase['individual']['p15']" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listP15() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>P10 Skill 1</mat-label>
+                <mat-select [(value)]="charBase['individual']['p10'][0]" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listP10() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>P10 Skill 2</mat-label>
+                <mat-select [(value)]="charBase['individual']['p10'][1]" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listP10() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>P10 Skill 3</mat-label>
+                <mat-select [(value)]="charBase['individual']['p10'][2]" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listP10() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Spec 1</mat-label>
+                <mat-select [(value)]="charBase['individual']['spec'][0]" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listSpecial() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Spec 2</mat-label>
+                <mat-select [(value)]="charBase['individual']['spec'][1]" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listSpecial() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Spec 3</mat-label>
+                <mat-select [(value)]="charBase['individual']['spec'][2]" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listSpecial() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Spec 4</mat-label>
+                <mat-select [(value)]="charBase['individual']['spec'][3]" (selectionChange)="updateSkillPhase()">
+                  <mat-option value="none">None</mat-option>
+                  @for (l of listSpecial() | keyvalue; track l) {
+                    <mat-option value="{{l.value}}">{{l.key}}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <table class="individual">
+                @for (s of char['skills']['Other'] | keyvalue; track s) {
+                  <tr>
+                    <td>
                       {{s.key}}
                     </td>
                     <td class="select">
                       {{individual['disc'][s.key]}}
                     </td>
                     <td class="select">
-                        <mat-slider disabled="{{skillSliderMax(s.key)==0}}" min="0" max="{{skillSliderMax(s.key)}}" step="1" thumbLabel [(value)]="individual['disc'][s.key]" (change)="updateSkillPhase()"></mat-slider>
-                  </td>
-                </tr>
-            </table>
-            <p><b>Lord</b><br/>
+                      <mat-slider disabled="{{skillSliderMax(s.key)==0}}" min="0" max="{{skillSliderMax(s.key)}}" step="1" thumbLabel #ngSlider><input matSliderThumb (change)="updateSkillPhase()" #ngSliderThumb="matSliderThumb" [(value)]="individual['disc'][s.key]" /></mat-slider>
+                    </td>
+                  </tr>
+                }
+              </table>
+              <p><b>Lord</b><br/>
               15 Point<br/>
               3x10 noncombat<br/>
               4x 1 trait, 1 passion, 1 attribute or skill+5<br/>
               10 skill points on  non combats
             </p>
             <p><b>Lady</b><br/>
-              15 Point Siege/Dagger/non-combat<br/>
-              3x10 Siege/Dagger/non-combat<br/>
-              4x 1 trait, 1 passion, 1 attribute or skill+5<br/>
-              10 skill points on  non combats
-            </p>
-          </form>
-        </mat-step>
-        <mat-step>
-          <ng-template matStepLabel>Final</ng-template>
-        </mat-step>
-      </mat-vertical-stepper>
-      <pre>{{getChar()}}</pre>
-    </div>
-    <div class="col-2">
-      <div class="row">
-        <div class="col-1">
-          <h2 id="mainhead">Main </h2>
-          <ul id='main'>
-            <ng-container *ngFor="let m of char['main'] | keyvalue ">
-              <li *ngIf="isEq(m.key, 'Born')">
+            15 Point Siege/Dagger/non-combat<br/>
+            3x10 Siege/Dagger/non-combat<br/>
+            4x 1 trait, 1 passion, 1 attribute or skill+5<br/>
+            10 skill points on  non combats
+          </p>
+        </form>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Final</ng-template>
+      </mat-step>
+    </mat-vertical-stepper>
+    <pre>{{getChar()}}</pre>
+  </div>
+  <div class="col-2">
+    <div class="row">
+      <div class="col-1">
+        <h2 id="mainhead">Main </h2>
+        <ul id='main'>
+          @for (m of char['main'] | keyvalue ; track m) {
+            @if (isEq(m.key, 'Born')) {
+              <li>
                 <span class="gold">Age</span> {{year - m.value*1}}
               </li>
-              <li *ngIf="!isEq(m.key, 'Glory')">
+            }
+            @if (!isEq(m.key, 'Glory')) {
+              <li>
                 <span class="gold">{{m.key}}</span> {{m.value}}
               </li>
-            </ng-container>
-          </ul>
-          <h2 id="passionshead">Passions</h2>
-          <ul id="passions">
-            <li *ngFor="let p of char['passions'] | keyvalue"><span class="gold">{{p.key}}</span> {{p.value}}</li>
-          </ul>
-        </div>
-        <div class="col-1">
-          <h2 id="traithead">Attributes</h2>
-          <ul id="statistics">
-            <li><span class="gold">SIZ</span> {{char.stats.siz}}</li>
-            <li><span class="gold">DEX</span> {{char.stats.dex}}</li>
-            <li><span class="gold">STR</span> {{char.stats.str}}</li>
-            <li><span class="gold">CON</span> {{char.stats.con}}</li>
-            <li><span class="gold">APP</span> {{char.stats.app}}</li>
-            <li *ngFor="let d of charBase.derived | keyvalue"><span class="gold">{{d.key}}</span> {{d.value}}</li>
-          </ul>
-          <h2 id="traithead">Personality Traits</h2>
-          <table class="traits">
-            <tbody *ngFor="let t of traits">
+            }
+          }
+        </ul>
+        <h2 id="passionshead">Passions</h2>
+        <ul id="passions">
+          @for (p of char['passions'] | keyvalue; track p) {
+            <li><span class="gold">{{p.key}}</span> {{p.value}}</li>
+          }
+        </ul>
+      </div>
+      <div class="col-1">
+        <h2 id="traithead">Attributes</h2>
+        <ul id="statistics">
+          <li><span class="gold">SIZ</span> {{char.stats.siz}}</li>
+          <li><span class="gold">DEX</span> {{char.stats.dex}}</li>
+          <li><span class="gold">STR</span> {{char.stats.str}}</li>
+          <li><span class="gold">CON</span> {{char.stats.con}}</li>
+          <li><span class="gold">APP</span> {{char.stats.app}}</li>
+          @for (d of charBase.derived | keyvalue; track d) {
+            <li><span class="gold">{{d.key}}</span> {{d.value}}</li>
+          }
+        </ul>
+        <h2 id="traithead">Personality Traits</h2>
+        <table class="traits">
+          @for (t of traits; track t) {
+            <tbody>
               <tr>
                 <td></td>
                 <td>{{char['traits'][t.short]}}</td>
-                <td>{{t.first}}<mat-icon *ngIf="isChivalry(t.first)">security</mat-icon>
-                  <mat-icon *ngIf="isVirtue(t.first)">emoji_events</mat-icon>
-                </td>
-                <td>
-                  <mat-icon *ngIf="isVirtue(t.second)">emoji_events</mat-icon>{{t.second}}
+                <td>{{t.first}}@if (isChivalry(t.first)) {
+                  <mat-icon>security</mat-icon>
+                }
+                @if (isVirtue(t.first)) {
+                  <mat-icon>emoji_events</mat-icon>
+                }
+              </td>
+              <td>
+                @if (isVirtue(t.second)) {
+                  <mat-icon>emoji_events</mat-icon>
+                  }{{t.second}}
                 </td>
                 <td>{{20-char['traits'][t.short]}}</td>
                 <td></td>
@@ -285,43 +334,49 @@
                 <td></td>
               </tr>
             </tbody>
-            <tr>
-              <td colspan="100%" align="center"> Chivalry: {{chivalry}}/80</td>
-            </tr>
-          </table>
-        </div>
-        <div class="col-1">
-          <h2 id="skillhead">Combat</h2>
-          <ul id="combat">
-            <li *ngFor="let p of char['skills']['Combat'] | keyvalue"><span class="gold">{{p.key}}</span> {{p.value}}</li>
-          </ul>
-          <h2 id="skillhead">Weapons</h2>
-          <ul id="combat">
-            <li *ngFor="let p of char['skills']['Weapons'] | keyvalue"><span class="gold">{{p.key}}</span> {{p.value}}</li>
-          </ul>
-          <h2 id="skillhead">Other</h2>
-          <ul id="other">
-            <li *ngFor="let p of char['skills']['Other'] | keyvalue"><span class="gold">{{p.key}}</span> {{p.value}}</li>
-          </ul>
-        </div>
+          }
+          <tr>
+            <td colspan="100%" align="center"> Chivalry: {{chivalry}}/80</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-1">
+        <h2 id="skillhead">Combat</h2>
+        <ul id="combat">
+          @for (p of char['skills']['Combat'] | keyvalue; track p) {
+            <li><span class="gold">{{p.key}}</span> {{p.value}}</li>
+          }
+        </ul>
+        <h2 id="skillhead">Weapons</h2>
+        <ul id="combat">
+          @for (p of char['skills']['Weapons'] | keyvalue; track p) {
+            <li><span class="gold">{{p.key}}</span> {{p.value}}</li>
+          }
+        </ul>
+        <h2 id="skillhead">Other</h2>
+        <ul id="other">
+          @for (p of char['skills']['Other'] | keyvalue; track p) {
+            <li><span class="gold">{{p.key}}</span> {{p.value}}</li>
+          }
+        </ul>
       </div>
     </div>
   </div>
 </div>
-<ng-template #noBase>
+</div>
+} @else {
   <style>
     .wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: calc(100vh - 20px);
-    }
-
-    .inner {
-      padding: 12px;
-    }
-  </style>
-  <div class="wrapper">
-    <mat-spinner class="inner"></mat-spinner>
-  </div>
-</ng-template>
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 20px);
+  }
+  .inner {
+  padding: 12px;
+}
+</style>
+<div class="wrapper">
+  <mat-spinner class="inner"></mat-spinner>
+</div>
+}

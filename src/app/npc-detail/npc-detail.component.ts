@@ -1,11 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CharacterService } from './../character.service';
 import { Lord } from './../lord';
 
 @Component({
-  selector: 'app-npc-detail',
-  templateUrl: './npc-detail.component.html',
-  styleUrls: ['./npc-detail.component.css']
+    selector: 'app-npc-detail',
+    templateUrl: './npc-detail.component.html',
+    styleUrls: ['./npc-detail.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class NpcDetailComponent implements OnInit {
   @Input("dbid") dbid: number=1;

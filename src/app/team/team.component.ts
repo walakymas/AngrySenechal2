@@ -1,13 +1,16 @@
 import { HttpParams } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Base } from '../base';
 import { CharacterService } from '../character.service';
 import { LordDetail, LordData } from '../lord';
+import { groupPassions } from '../passion-category';
 
 @Component({
-  selector: 'app-team',
-  templateUrl: './team.component.html',
-  styleUrls: ['./team.component.css']
+    selector: 'app-team',
+    templateUrl: './team.component.html',
+    styleUrls: ['./team.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class TeamComponent implements OnInit {
   modifier = 0;
@@ -124,6 +127,20 @@ export class TeamComponent implements OnInit {
     return keys;
   }
 
+  // passion names of the whole team grouped by category: [{category, names}]
+  teamPassionGroups() {
+    const passions: { [name: string]: any } = {};
+    for (const name of this.teamprop('passions', '')) {
+      passions[name] = true;
+    }
+    return groupPassions(passions).map(g => ({ category: g.category, names: g.items.map(i => i.key) }));
+  }
+
+  // sum of one character's passions within a category (names: the category's passion names)
+  passionTotal(names: string[], member: any): number {
+    return names.reduce((sum, n) => sum + (parseInt(member['passions']?.[n], 10) || 0), 0);
+  }
+
   saveModifier() {
     window.localStorage.setItem(this.modifierStorageKey, '' + this.modifier);
   }
@@ -138,7 +155,11 @@ export class TeamComponent implements OnInit {
       let p_ = p.replace(/ /g,'_');
       console.log(`sending bot command for ${p_} ${this.modifier} <@!${m['memberId']}>`);
       let command = m?`check ${p_} ${this.modifier} <@!${m['memberId']}>`:`team ${p_}`;
-      this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+      if (this.service.isLoggedIn()) {
+        this.service.command(command).subscribe(e => console.log(`sent "${command}" ${JSON.stringify(e)}`));
+      } else {
+        this.service.bot(command).subscribe(e => console.log(`sent "${command}" ${e}`));
+      }
     }
   }
 }

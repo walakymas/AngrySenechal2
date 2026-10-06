@@ -8,6 +8,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, tap,timeout } from 'rxjs/operators';
 import { GameEvent } from './character-detail/character-detail.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { WINDOW } from './windows';
 
 export class User {
@@ -93,6 +94,7 @@ export class CharacterService {
     private http: HttpClient,
     private logger: Logger
     ,@Inject(WINDOW) private window: Window
+    ,private snackBar: MatSnackBar
     ) {
       console.log('protocol:'+this.window.location.protocol);
       if ("localhost"==this.window.location.hostname ) {
@@ -300,6 +302,41 @@ export class CharacterService {
     );
   }
 
+  // The page has a logged in user (token validated by AppComponent); otherwise commands go through the webhook
+  isLoggedIn(): boolean {
+    const token = this.getToken();
+    return !!token && token !== 'null' && this.window.localStorage.getItem('userName') != null;
+  }
+
+  // Bot command (without prefix, e.g. 'c Sword 0 cid:5') run in the user's Discord channel, no webhook involved
+  command(command: string): Observable<any> {
+    return this.http.post<any>(this.url + `command`,
+      new HttpParams()
+      .set('token', this.getToken())
+      .set('command', command).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      catchError(this.handleError<any>(`command ${command}`))
+    );
+  }
+
+  // Dice roll (e.g. '4d20') shown in the user's Discord channel, no webhook involved
+  roll(dice: string, characterId: number): Observable<any> {
+    return this.http.post<any>(this.url + `roll`,
+      new HttpParams()
+      .set('token', this.getToken())
+      .set('id', characterId)
+      .set('dice', dice).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      catchError(this.handleError<any>(`roll ${dice}`))
+    );
+  }
+
   getTeam(): Observable<LordData[]> {
     return this.http.get<LordData[]>(this.url+`players`).pipe(
 //      tap(_ => this.logger.log(`fetched lord list`)),
@@ -334,15 +371,26 @@ export class CharacterService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
-
-      // TODO: better job of transforming error for user consumption
+      console.error(error);
       this.logger.log(`${operation} failed: ${error.message}`);
+      this.notifyError(operation);
 
       // Let the app keep running by returning an empty result.
       return of(result as T);
     };
+  }
+
+  private lastErrors: { [operation: string]: number } = {};
+
+  // Tell the user that a call failed; the same operation is reported at most every 10 seconds
+  // (the login poll would otherwise show a message every 5 seconds)
+  private notifyError(operation: string) {
+    const now = Date.now();
+    if (now - (this.lastErrors[operation] || 0) < 10000) {
+      return;
+    }
+    this.lastErrors[operation] = now;
+    this.snackBar.open(`Request failed: ${operation}`, 'Ok', { duration: 4000 });
   }
 
   getToken() {

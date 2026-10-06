@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AdminComponent } from './admin.component';
+import { AppModule } from '../app.module';
 
 describe('AdminComponent', () => {
   let component: AdminComponent;
@@ -8,12 +11,10 @@ describe('AdminComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AdminComponent ]
-    })
-    .compileComponents();
-  });
+      imports: [AppModule, NoopAnimationsModule],
+      providers: [provideHttpClientTesting()],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(AdminComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

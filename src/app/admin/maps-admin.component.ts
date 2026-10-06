@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CharacterService, MapEntry } from '../character.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -7,9 +7,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-maps-admin',
-  templateUrl: './maps-admin.component.html',
-  styleUrls: ['./maps-admin.component.css']
+    selector: 'app-maps-admin',
+    templateUrl: './maps-admin.component.html',
+    styleUrls: ['./maps-admin.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class MapsAdminComponent implements OnInit {
   ds: MatTableDataSource<MapEntry> = new MatTableDataSource([]);
@@ -69,8 +71,8 @@ import { Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
-  selector: 'map-edit-dialog',
-  template: `
+    selector: 'map-edit-dialog',
+    template: `
   <h2 mat-dialog-title>Map</h2>
   <div mat-dialog-content>
     <mat-form-field appearance="fill" style="width:100%"><mat-label>Name</mat-label><input matInput [(ngModel)]="data.map.name"></mat-form-field>
@@ -82,7 +84,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="data.map">Save</button>
   </div>
-  `
+  `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class MapEditDialog {
   constructor(public dialogRef: MatDialogRef<MapEditDialog>, @Inject(MAT_DIALOG_DATA) public data: {map: MapEntry}) {}

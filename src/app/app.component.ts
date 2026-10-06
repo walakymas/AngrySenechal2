@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CharacterService, User } from './character.service';
 import { MessageService } from './message.service';
 import { Logger } from './logger.service';
@@ -9,16 +9,19 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { Subscription, interval, timer } from 'rxjs';
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   list: LordBase[];
   lastChar:string;
   token:string;
   snackBarConfig = new MatSnackBarConfig();
   subscription: Subscription;
+  listSubscription: Subscription;
   user: User;
   constructor (
 
@@ -33,13 +36,12 @@ export class AppComponent implements OnInit {
   {
     this.snackBarConfig.duration = 2000;
     this.token = window.localStorage.getItem('token')
-    this.logger.log('token:'+this.token)
   }
 
   ngOnInit(): void {
     this.handleLoginRedirect();
     this.loadList();
-    this.service.listChanged.subscribe(() => this.loadList(true));
+    this.listSubscription = this.service.listChanged.subscribe(() => this.loadList(true));
     this.service.getUser().then( u => this.setUser(u))
     this.subscription = interval(5000).subscribe(v =>
       {if ( window.localStorage.getItem('userId') ==null &&
@@ -48,6 +50,11 @@ export class AppComponent implements OnInit {
         this.service.getUser().then( u => this.setUser(u));
       }}
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription?.unsubscribe();
+    this.listSubscription?.unsubscribe();
   }
 
   loadList(forced: boolean = false) {
@@ -81,7 +88,7 @@ export class AppComponent implements OnInit {
 
   setUser(u: User) {
     this.user = u;
-    if(u.result=='fail') {
+    if(!u || u.result=='fail') {
       window.localStorage.removeItem('user')
       window.localStorage.removeItem('userId')
       window.localStorage.removeItem('userName')

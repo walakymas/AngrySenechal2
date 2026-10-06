@@ -1,5 +1,5 @@
 // Import the core angular services.
-import { Component } from "@angular/core";
+import { Component, ChangeDetectionStrategy } from "@angular/core";
 import { EventEmitter } from "@angular/core";
 import { OnChanges } from "@angular/core";
 import { SimpleChanges } from "@angular/core";
@@ -8,29 +8,38 @@ import { SimpleChanges } from "@angular/core";
 // ----------------------------------------------------------------------------------- //
 
 @Component({
-	selector: "app-editable",
-	inputs: [ "value", "enabled", "showSaveButton" ],
-	outputs: [ "valueChangeEvents: valueChange" ],
-	styleUrls: [ "./editable.component.css" ],
-	template:
-	`
-		<span *ngIf="isEditing && enabled" class="editor">
-			<input
-				type="number"
-				name="value"
-				autofocus
-				[(ngModel)]="pendingValue"
-				(keydown.Enter)="processChanges()"
-				(keydown.Meta.Enter)="processChanges()"
-				(keydown.Escape)="cancel()"
-			/>
-			<button *ngIf="showSaveButton" mat-button type="button" (click)="processChanges()">Save</button>
-			<button *ngIf="showSaveButton" mat-button type="button" (click)="cancel()">Cancel</button>
-		</span>
-		<span *ngIf="( ! (isEditing  && enabled) )" (click)="enabled && edit()">
-			{{ value }}
-		</span>
-	`
+    selector: "app-editable",
+    inputs: ["value", "enabled", "showSaveButton"],
+    outputs: ["valueChangeEvents: valueChange"],
+    styleUrls: ["./editable.component.css"],
+    template: `
+ 		@if (isEditing && enabled) {
+ 		  <span class="editor">
+ 		    <input
+ 		      type="number"
+ 		      name="value"
+ 		      autofocus
+ 		      [(ngModel)]="pendingValue"
+ 		      (keydown.Enter)="processChanges()"
+ 		      (keydown.Meta.Enter)="processChanges()"
+ 		      (keydown.Escape)="cancel()"
+ 		      />
+ 		    @if (showSaveButton) {
+ 		      <button mat-button type="button" (click)="processChanges()">Save</button>
+ 		    }
+ 		    @if (showSaveButton) {
+ 		      <button mat-button type="button" (click)="cancel()">Cancel</button>
+ 		    }
+ 		  </span>
+ 		}
+ 		@if (( ! (isEditing  && enabled) )) {
+ 		  <span (click)="enabled && edit()">
+ 		    {{ value }}
+ 		  </span>
+ 		}
+ 		`,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class EditableComponent implements OnChanges {
 

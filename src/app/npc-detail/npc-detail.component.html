@@ -1,21 +1,47 @@
-<div *ngIf="npc; else noChar" >
-  <ng-container *ngIf="npc.char['main']['Deceased'] "> <b>Deceased {{npc.char['main']['Deceased']}} </b></ng-container>
-<p *ngIf="npc.char['description']">{{npc.char['description']}}</p>
-<img width="100%" src="{{npc.char['url']}}" *ngIf="npc.char['url']"/>
-<br/>
-<a routerLink="/character/{{npc.char['name']}}">Link</a><br/>
-<table width="100%">
-    <tr *ngFor="let m of npc.char['stats'] | keyvalue"><th style="text-transform:'uppercase'">{{m.key}}</th><td>{{m.value}}</td></tr>
-    <ng-container *ngFor="let m of npc.char['main'] | keyvalue ">
-        <tr  *ngIf="isEq(m.key, 'Born')">
+@if (npc) {
+  <div >
+    @if (npc.char['main']['Deceased'] ) {
+      <b>Deceased {{npc.char['main']['Deceased']}} </b>
+    }
+    @if (npc.char['description']) {
+      <p>{{npc.char['description']}}</p>
+    }
+    @if (npc.char['url']) {
+      <img width="100%" src="{{npc.char['url']}}"/>
+    }
+    <br/>
+    <a routerLink="/character/{{npc.char['name']}}">Link</a><br/>
+    <table width="100%">
+      @for (m of npc.char['stats'] | keyvalue; track m) {
+        <tr><th style="text-transform:'uppercase'">{{m.key}}</th><td>{{m.value}}</td></tr>
+      }
+      @for (m of npc.char['main'] | keyvalue ; track m) {
+        @if (isEq(m.key, 'Born')) {
+          <tr >
             <th>Age</th><td>{{npc.year - m.value*1}}</td>
-        </tr>
+          </tr>
+        }
         <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-    </ng-container>
-    <tr *ngFor="let m of npc.char['skills']['Other'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-    <tr *ngFor="let m of npc.char['skills']['Weapons'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-    <tr *ngFor="let m of npc.char['skills']['Combat'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-    <tr *ngFor="let m of npc.char['passions'] | keyvalue"><th>{{m.key}}</th><td>{{m.value}}</td></tr>
-</table>
-</div>
-<ng-template #noChar>Loading</ng-template>
+      }
+      @for (m of npc.char['skills']['Other'] | keyvalue; track m) {
+        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+      }
+      @for (m of npc.char['skills']['Weapons'] | keyvalue; track m) {
+        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+      }
+      @for (m of npc.char['skills']['Combat'] | keyvalue; track m) {
+        <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+      }
+      @for (g of npc.char['passions'] | passionGroups; track g) {
+        @if (g.category !== 'Other') {
+          <tr class="passion-cat"><th colspan="2">{{g.category}} (<span [class.passion-warn]="g.total > 40">{{g.total}}</span>)</th></tr>
+        }
+        @for (m of g.items; track m) {
+          <tr><th>{{m.key}}</th><td>{{m.value}}</td></tr>
+        }
+      }
+    </table>
+  </div>
+} @else {
+  Loading
+}
