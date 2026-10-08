@@ -8,6 +8,11 @@
   max-height: none;
 }
 
+#json-dialog {
+  max-height: none;
+  overflow: auto;
+}
+
 .jsondialog .jsoneditor-outer {height:90vh}
 
 /*colors*/

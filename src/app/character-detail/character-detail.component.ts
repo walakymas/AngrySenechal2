@@ -412,6 +412,40 @@ export class CharacterDetailComponent implements OnInit {
     this.modifyProp('combat.'+prop,this.char.char['combat'][prop]);
 	}
 
+  public manors(): any[] {
+    const economy = this.char.char['economy'] ??= {};
+    return economy['manors'] ??= [];
+  }
+
+  public addManor(): void {
+    this.manors().push({name: 'New manor', status: '', income: 10, region: '', hundred: '', improvements: []});
+    this.saveManors();
+  }
+
+  public deleteManor(index: number): void {
+    const manor = this.manors()[index];
+    if (!confirm(`Delete manor "${manor?.name}"?`)) {
+      return;
+    }
+    this.manors().splice(index, 1);
+    this.saveManors();
+  }
+
+  public setManorIncome(manor: object, value: string): void {
+    const income = Number(value);
+    manor['income'] = value.trim() !== '' && !isNaN(income) ? income : 10;
+    this.saveManors();
+  }
+
+  public setManorImprovements(manor: object, value: string): void {
+    manor['improvements'] = value.split(',').map(i => i.trim()).filter(i => i.length > 0);
+    this.saveManors();
+  }
+
+  public saveManors(): void {
+    this.modifyProp('economy.manors', JSON.stringify(this.manors()));
+  }
+
   public modifyProp( prop: string, newValue: string ) : void {
     console.log(`${prop}:=${newValue}`)
     this.service.modifyProp(this.char.char['dbid'],prop, newValue).then(c => {
@@ -1308,7 +1342,7 @@ export class DialogContentExampleDialog {
 @Component({
     selector: 'character-json-dialog',
     template: `
-  <div mat-dialog-content>
+  <div id="json-dialog" mat-dialog-content>
     <form  [formGroup]="fg">
       <json-editor [options]="editorOptions" class="jsondialog" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
     </form>

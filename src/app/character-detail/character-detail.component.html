@@ -418,8 +418,72 @@
           }
         </mat-accordion>
       </mat-tab>
-      <mat-tab label="Gears & Horses">
+      <mat-tab label="Economy">
         <mat-accordion>
+          <mat-expansion-panel hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Money
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <table width="100%" class="stats">
+              <tr><th>Font</th><td>
+                @if (hasUser()) {
+                  <app-editable [enabled]="hasUser()"
+                    value="{{char.char['economy']?.['money']?.['font'] ?? 0}}"
+                    (valueChange)="modifyProp( 'economy.money.font', $event )"
+                  ></app-editable>
+                } @else {
+                  {{char.char['economy']?.['money']?.['font'] ?? 0}}
+                }
+              </td></tr>
+              <tr><th>Silver</th><td>
+                @if (hasUser()) {
+                  <app-editable [enabled]="hasUser()"
+                    value="{{char.char['economy']?.['money']?.['silver'] ?? 0}}"
+                    (valueChange)="modifyProp( 'economy.money.silver', $event )"
+                  ></app-editable>
+                } @else {
+                  {{char.char['economy']?.['money']?.['silver'] ?? 0}}
+                }
+              </td></tr>
+            </table>
+          </mat-expansion-panel>
+          <mat-expansion-panel hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Manors
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            @for (m of char.char['economy']?.['manors'] ?? []; track $index; let i = $index) {
+              @if (hasUser()) {
+                <h5>{{m['name']}}</h5>
+                <table width="100%" class="stats">
+                  <tr><th>Name</th><td><input matInput [(ngModel)]="m['name']" (change)="saveManors()"/></td></tr>
+                  <tr><th>Status</th><td><input matInput [(ngModel)]="m['status']" (change)="saveManors()"/></td></tr>
+                  <tr><th>Income</th><td><input matInput type="number" [ngModel]="m['income'] ?? 10" (change)="setManorIncome(m, $any($event.target).value)"/></td></tr>
+                  <tr><th>Region</th><td><input matInput [(ngModel)]="m['region']" (change)="saveManors()"/></td></tr>
+                  <tr><th>Hundred</th><td><input matInput [(ngModel)]="m['hundred']" (change)="saveManors()"/></td></tr>
+                  <tr><th>Improvements</th><td><input matInput placeholder="comma separated" [ngModel]="(m['improvements'] ?? []).join(', ')" (change)="setManorImprovements(m, $any($event.target).value)"/></td></tr>
+                  <tr><td></td><td><button (click)="deleteManor(i)"><mat-icon>delete</mat-icon>Delete</button></td></tr>
+                </table>
+              } @else {
+                <h5>{{m['name']}}</h5>
+                <table width="100%" class="stats">
+                  <tr><th>Status</th><td>{{m['status']}}</td></tr>
+                  <tr><th>Income</th><td>{{m['income'] ?? 10}}</td></tr>
+                  <tr><th>Region</th><td>{{m['region']}}</td></tr>
+                  <tr><th>Hundred</th><td>{{m['hundred']}}</td></tr>
+                  <tr><th>Improvements</th><td>{{(m['improvements'] ?? []).join(', ')}}</td></tr>
+                </table>
+              }
+            } @empty {
+              No manors.
+            }
+            @if (hasUser()) {
+              <button (click)="addManor()"><mat-icon>add</mat-icon>Add manor</button>
+            }
+          </mat-expansion-panel>
           <mat-expansion-panel hideToggle>
             <mat-expansion-panel-header>
               <mat-panel-title>
