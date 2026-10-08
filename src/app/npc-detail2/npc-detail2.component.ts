@@ -1,11 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Lord, LordData } from '../lord';
 import { CharacterDetailComponent } from '../character-detail/character-detail.component';
 
 @Component({
-  selector: 'app-npc-detail2',
-  templateUrl: './npc-detail2.component.html',
-  styleUrls: ['./npc-detail2.component.css']
+    selector: 'app-npc-detail2',
+    templateUrl: './npc-detail2.component.html',
+    styleUrls: ['./npc-detail2.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class NpcDetail2Component implements OnInit {
   @Input("char") char: Lord;

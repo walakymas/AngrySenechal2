@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { CharacterService } from '../character.service';
 import { Logger } from '../logger.service';
@@ -9,9 +9,11 @@ import { Subscription, interval } from 'rxjs';
 
 
 @Component({
-  selector: 'app-feast',
-  templateUrl: './feast.component.html',
-  styleUrls: ['./feast.component.css'],
+    selector: 'app-feast',
+    templateUrl: './feast.component.html',
+    styleUrls: ['./feast.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class FeastComponent implements OnInit {
   snackBarConfig: MatSnackBarConfig;

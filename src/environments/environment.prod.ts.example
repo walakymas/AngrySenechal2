@@ -1,0 +1,6 @@
+// Copy to environment.prod.ts (git-ignored) before `npm run build`; angular.json swaps it in for environment.ts.
+export const environment = {
+  production: true,
+  url: "https://your-api.example.org/",  // address of the senechal API, with a trailing slash
+  prefix: '!'
+};

@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CharacterService, MapEntry } from '../character.service';
 import { MapEditDialog } from '../admin/maps-admin.component';
 
 @Component({
-  selector: 'app-maps',
-  templateUrl: './maps.component.html',
-  styleUrls: ['./maps.component.css']
+    selector: 'app-maps',
+    templateUrl: './maps.component.html',
+    styleUrls: ['./maps.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class MapsComponent implements OnInit {
   maps: MapEntry[] = [];

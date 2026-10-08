@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { CharactersComponent } from './characters/characters.component';
 import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog, PassionDialog, PropertyDialog, CheckModifierDialog } from './character-detail/character-detail.component';
 import { MessagesComponent } from './messages/messages.component';
@@ -26,7 +26,7 @@ import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule} from '@angular/material/input';
 import { MatButtonToggleModule} from '@angular/material/button-toggle';
 import { MatStepperModule} from '@angular/material/stepper';
-import { NgJsonEditorModule } from 'ang-jsoneditor';
+import { JsonEditorComponent } from './json-editor/json-editor.component';
 import { ChargenComponent } from './chargen/chargen.component'
 import { MatSliderModule} from '@angular/material/slider';
 import { MatRadioModule} from '@angular/material/radio';
@@ -43,9 +43,9 @@ import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
 import { MapsComponent } from './maps/maps.component';
 import { PassionGroupsPipe } from './passion-category';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AppComponent,
+        JsonEditorComponent,
         CharactersComponent,
         CharacterDetailComponent,
         MessagesComponent,
@@ -71,10 +71,8 @@ import { PassionGroupsPipe } from './passion-category';
         PassionGroupsPipe,
         CharacterConnectionDialog
     ],
-    imports: [
-        BrowserModule,
+    bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,
-        HttpClientModule,
         BrowserAnimationsModule,
         MatCheckboxModule,
         MatExpansionModule,
@@ -90,7 +88,6 @@ import { PassionGroupsPipe } from './passion-category';
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
-        NgJsonEditorModule,
         MatButtonToggleModule,
         MatStepperModule,
         MatSliderModule,
@@ -100,8 +97,5 @@ import { PassionGroupsPipe } from './passion-category';
         MatSortModule,
         MatPaginatorModule
         // Make sure MatTabsModule and MatIconModule are present (already imported above)
-    ],
-    providers: [HttpClientModule, WINDOW_PROVIDERS],
-    bootstrap: [AppComponent]
-})
+    ], providers: [WINDOW_PROVIDERS, provideHttpClient(withXhr(), withInterceptorsFromDi())] })
 export class AppModule { }

@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FeastComponent } from './feast.component';
+import { AppModule } from '../app.module';
 
 describe('FeastComponent', () => {
   let component: FeastComponent;
@@ -8,12 +11,10 @@ describe('FeastComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FeastComponent ]
-    })
-    .compileComponents();
-  });
+      imports: [AppModule, NoopAnimationsModule],
+      providers: [provideHttpClientTesting()],
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(FeastComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

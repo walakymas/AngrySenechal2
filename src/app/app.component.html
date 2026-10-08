@@ -11,12 +11,14 @@
     Players
   </button>
   <mat-menu #players="matMenu">
-    <ng-container *ngFor="let c of list" >
-      <button mat-menu-item *ngIf="isPc(c)" routerLink="character/{{c.name}}">
-        <mat-icon >security</mat-icon>
-        {{c.name}}
-      </button>
-    </ng-container>
+    @for (c of list; track c) {
+      @if (isPc(c)) {
+        <button mat-menu-item routerLink="character/{{c.name}}">
+          <mat-icon >security</mat-icon>
+          {{c.name}}
+        </button>
+      }
+    }
   </mat-menu>
   <button mat-button [matMenuTriggerFor]="all"><mat-icon>switch_account</mat-icon>All</button>
   <mat-menu #all="matMenu">
@@ -26,25 +28,33 @@
     <button mat-menu-item [matMenuTriggerFor]="Other"><mat-icon>transgender</mat-icon>Other</button>
   </mat-menu>
   <mat-menu #Ladies="matMenu">
-    <ng-container *ngFor="let c of list" >
-      <button mat-menu-item *ngIf="isLady(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
-    </ng-container>
+    @for (c of list; track c) {
+      @if (isLady(c)) {
+        <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
+      }
+    }
   </mat-menu>
   <mat-menu #Lords="matMenu">
-    <ng-container *ngFor="let c of list" >
-      <button mat-menu-item *ngIf="isLord(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
-    </ng-container>
+    @for (c of list; track c) {
+      @if (isLord(c)) {
+        <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
+      }
+    }
   </mat-menu>
   <mat-menu #Other="matMenu">
-    <ng-container *ngFor="let c of list" >
-      <button mat-menu-item *ngIf="isOther(c)" routerLink="character/{{c.name}}">{{c.name}}</button>
-    </ng-container>
+    @for (c of list; track c) {
+      @if (isOther(c)) {
+        <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
+      }
+    }
   </mat-menu>
-  <button mat-button *ngIf="isLoggedIn()" [matMenuTriggerFor]="myChars"><mat-icon>account_circle</mat-icon>MyCharacters</button>
+  @if (isLoggedIn()) {
+    <button mat-button [matMenuTriggerFor]="myChars"><mat-icon>account_circle</mat-icon>MyCharacters</button>
+  }
   <mat-menu #myChars="matMenu">
-    <ng-container *ngFor="let c of myCharacters()">
+    @for (c of myCharacters(); track c) {
       <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
-    </ng-container>
+    }
   </mat-menu>
   <button mat-button routerLink="team">
     <mat-icon>groups</mat-icon>
@@ -55,10 +65,16 @@
     Maps
   </button>
   <span class="spacer"></span>
-  <button mat-button *ngIf="!hasToken()" (click)="loginWithDiscord()"><mat-icon>login</mat-icon>Login with Discord</button>
-  <button mat-button *ngIf="hasToken()" (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
-  <span *ngIf="isLoggedIn()" class="user-name">{{user.name}}</span>
-</div><div></div>
+  @if (!hasToken()) {
+    <button mat-button (click)="loginWithDiscord()"><mat-icon>login</mat-icon>Login with Discord</button>
+  }
+  @if (hasToken()) {
+    <button mat-button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
+  }
+  @if (isLoggedIn()) {
+    <span class="user-name">{{user.name}}</span>
+  }
+  </div><div></div>
 </nav>
 <router-outlet></router-outlet>
 <app-messages></app-messages>

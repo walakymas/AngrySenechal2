@@ -46,7 +46,10 @@ export function groupPassions(passions: { [name: string]: any } | undefined | nu
   return groups.filter(g => g.items.length > 0);
 }
 
-@Pipe({ name: 'passionGroups' })
+@Pipe({
+    name: 'passionGroups',
+    standalone: false
+})
 export class PassionGroupsPipe implements PipeTransform {
   transform(passions: { [name: string]: any } | undefined | null): PassionGroup[] {
     return groupPassions(passions);

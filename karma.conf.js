@@ -38,6 +38,10 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['Chrome'],
+    customLaunchers: {
+      // for containers / CI: CHROME_BIN=... ng test --watch=false --browsers=ChromeHeadlessNoSandbox
+      ChromeHeadlessNoSandbox: { base: 'ChromeHeadless', flags: ['--no-sandbox'] }
+    },
     singleRun: false,
     restartOnFileChange: true
   });

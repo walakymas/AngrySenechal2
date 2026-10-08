@@ -1,87 +1,158 @@
-<div id="teamdiv" *ngIf="team; else noTeam">
+@if (team) {
+  <div id="teamdiv">
     <div class="row">
-        <div class="col-1">
-            <div class="modifier">
-                <button mat-icon-button class="readonly-toggle" (click)="toggleReadonly()" matTooltip="{{ readonly ? 'Readonly' : 'Active' }}">
-                    <mat-icon>{{ readonly ? 'lock' : 'lock_open' }}</mat-icon>
-                </button>
-                <mat-slider class="modifier-slider" min="-10" max="10" step="1" thumbLabel [(value)]="modifier" (change)="saveModifier()"></mat-slider>
-                <span class="modifier-value">{{ modifier }}</span>
-            </div>
-<table class="team">
-    <tbody>
-        <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
-        <tr id="str"><th>Strength</th><td *ngFor="let m of team">{{m['stats']['str']}}</td></tr>
-        <tr id="dex"><th>Dexterity</th><td *ngFor="let m of team">{{m['stats']['dex']}}</td></tr>
-        <tr id="con"><th>Constitution</th><td *ngFor="let m of team">{{m['stats']['con']}}</td></tr>
-        <tr id="siz"><th>Size</th><td *ngFor="let m of team">{{m['stats']['siz']}}</td></tr>
-        <tr id="app"><th>Appearence</th><td *ngFor="let m of team">{{m['stats']['app']}}</td></tr>
-        <tr id="dam"><th>Damage</th><td *ngFor="let m of team">{{m.detail.damage}}d6</td></tr>
-        <tr id="hr"><th>Healing Rate</th><td *ngFor="let m of team">{{m.detail.hr}}</td></tr>
-        <tr id="mhp"><th>Max HP</th><td *ngFor="let m of team">{{m.detail.hp}}</td></tr>
-        <tr id="ahp"><th>Actual HP</th><td *ngFor="let m of team" matTooltip="{{m.detail.wounds}}">{{m.detail.ahp}}</td></tr>
-        <tr id="chi"><th>Chirurgery</th><td *ngFor="let m of team">
-            <span *ngIf="m.detail.chi==='-'; else elseBlock">-</span>
-            <ng-template #elseBlock>
-                <span *ngIf="m.detail.chi; else noChiBlock">Yes</span>
-                <ng-template #noChiBlock><span>No</span></ng-template>
-            </ng-template>
-        </td></tr>
-        <tr id="mr"><th>Move Rate</th><td *ngFor="let m of team">{{m.detail.mr}}</td></tr>
-        <tr id="unc"><th>Unconscious</th><td *ngFor="let m of team">{{m.detail.unc}}</td></tr>
-        <tr id="mw"><th>Major Wound</th><td *ngFor="let m of team">{{m.detail.mw}}</td></tr>
-        <tr id="kno"><th>Knockdown</th><td *ngFor="let m of team">{{m.detail.kno}}</td></tr>
-        <tr id="glo"><th>Glory</th><td *ngFor="let m of team">{{m['Glory']}}</td></tr>
-    </tbody>
-    <tbody id="traits">
-        <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
-        <ng-container *ngFor="let t of traits">
-            <tr><th (click)="bot(t.first)">{{t.first}}</th><td *ngFor="let m of team" (click)="bot(t.first, m)">{{m['traits'][t.short]}}</td></tr>
-            <tr><th (click)="bot(t.second)">{{t.second}}</th><td *ngFor="let m of team" (click)="bot(t.second, m)">{{20-m['traits'][t.short]}}</td></tr>
-        </ng-container>
-    </tbody>
-    <tbody id="passions">
-        <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
-        <ng-container *ngFor="let g of teamPassionGroups()">
-            <tr class="passion-cat" *ngIf="g.category !== 'Other'"><th>{{g.category}}</th><td *ngFor="let m of team">(<span [class.passion-warn]="passionTotal(g.names, m) > 40">{{passionTotal(g.names, m)}}</span>)</td></tr>
-            <tr *ngFor="let p of g.names"><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['passions'][p]}}</td></tr>
-        </ng-container>
-    </tbody>
+      <div class="col-1">
+        <div class="modifier">
+          <button mat-icon-button class="readonly-toggle" (click)="toggleReadonly()" matTooltip="{{ readonly ? 'Readonly' : 'Active' }}">
+            <mat-icon>{{ readonly ? 'lock' : 'lock_open' }}</mat-icon>
+          </button>
+          <mat-slider class="modifier-slider" min="-10" max="10" step="1" thumbLabel #ngSlider><input matSliderThumb (change)="saveModifier()" #ngSliderThumb="matSliderThumb" [(value)]="modifier" /></mat-slider>
+          <span class="modifier-value">{{ modifier }}</span>
+        </div>
+        <table class="team">
+          <tbody>
+            <tr class="name"><th></th>@for (m of team; track m) {
+            <th><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th>
+          }</tr>
+          <tr id="str"><th>Strength</th>@for (m of team; track m) {
+          <td>{{m['stats']['str']}}</td>
+        }</tr>
+        <tr id="dex"><th>Dexterity</th>@for (m of team; track m) {
+        <td>{{m['stats']['dex']}}</td>
+      }</tr>
+      <tr id="con"><th>Constitution</th>@for (m of team; track m) {
+      <td>{{m['stats']['con']}}</td>
+    }</tr>
+    <tr id="siz"><th>Size</th>@for (m of team; track m) {
+    <td>{{m['stats']['siz']}}</td>
+  }</tr>
+  <tr id="app"><th>Appearence</th>@for (m of team; track m) {
+  <td>{{m['stats']['app']}}</td>
+}</tr>
+<tr id="dam"><th>Damage</th>@for (m of team; track m) {
+<td>{{m.detail.damage}}d6</td>
+}</tr>
+<tr id="hr"><th>Healing Rate</th>@for (m of team; track m) {
+<td>{{m.detail.hr}}</td>
+}</tr>
+<tr id="mhp"><th>Max HP</th>@for (m of team; track m) {
+<td>{{m.detail.hp}}</td>
+}</tr>
+<tr id="ahp"><th>Actual HP</th>@for (m of team; track m) {
+<td matTooltip="{{m.detail.wounds}}">{{m.detail.ahp}}</td>
+}</tr>
+<tr id="chi"><th>Chirurgery</th>@for (m of team; track m) {
+<td>
+  @if (m.detail.chi==='-') {
+    <span>-</span>
+  } @else {
+    @if (m.detail.chi) {
+      <span>Yes</span>
+    } @else {
+      <span>No</span>
+    }
+  }
+</td>
+}</tr>
+<tr id="mr"><th>Move Rate</th>@for (m of team; track m) {
+<td>{{m.detail.mr}}</td>
+}</tr>
+<tr id="unc"><th>Unconscious</th>@for (m of team; track m) {
+<td>{{m.detail.unc}}</td>
+}</tr>
+<tr id="mw"><th>Major Wound</th>@for (m of team; track m) {
+<td>{{m.detail.mw}}</td>
+}</tr>
+<tr id="kno"><th>Knockdown</th>@for (m of team; track m) {
+<td>{{m.detail.kno}}</td>
+}</tr>
+<tr id="glo"><th>Glory</th>@for (m of team; track m) {
+<td>{{m['Glory']}}</td>
+}</tr>
+</tbody>
+<tbody id="traits">
+  <tr class="name"><th></th>@for (m of team; track m) {
+  <th><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th>
+}</tr>
+@for (t of traits; track t) {
+  <tr><th (click)="bot(t.first)">{{t.first}}</th>@for (m of team; track m) {
+  <td (click)="bot(t.first, m)">{{m['traits'][t.short]}}</td>
+}</tr>
+<tr><th (click)="bot(t.second)">{{t.second}}</th>@for (m of team; track m) {
+<td (click)="bot(t.second, m)">{{20-m['traits'][t.short]}}</td>
+}</tr>
+}
+</tbody>
+<tbody id="passions">
+  <tr class="name"><th></th>@for (m of team; track m) {
+  <th><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th>
+}</tr>
+@for (g of teamPassionGroups(); track g) {
+  @if (g.category !== 'Other') {
+    <tr class="passion-cat"><th>{{g.category}}</th>@for (m of team; track m) {
+    <td>(<span [class.passion-warn]="passionTotal(g.names, m) > 40">{{passionTotal(g.names, m)}}</span>)</td>
+  }</tr>
+}
+@for (p of g.names; track p) {
+  <tr><th (click)="bot(p)">{{p}}</th>@for (m of team; track m) {
+  <td (click)="bot(p, m)">{{m['passions'][p]}}</td>
+}</tr>
+}
+}
+</tbody>
 </table>
 </div>
 <div class="col-1">
-    <table class="team">
-        <tbody id="weapons">
-            <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
-            <tr *ngFor="let p of teamprop('skills','Weapons')" ><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Weapons'][p]}}</td></tr>
-        </tbody>
-        <tbody id="other">
-            <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
-            <tr *ngFor="let p of teamprop('skills','Other')" ><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Other'][p]}}</td></tr>
-        </tbody>
-        <tbody id="combat">
-            <tr class="name"><th></th><th *ngFor="let m of team"><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th></tr>
-            <tr *ngFor="let p of teamprop('skills','Combat')"><th (click)="bot(p)">{{p}}</th><td *ngFor="let m of team" (click)="bot(p, m)">{{m['skills']['Combat'][p]}}</td></tr>
-        </tbody>
-    </table>
-    </div>
-    </div>
+  <table class="team">
+    <tbody id="weapons">
+      <tr class="name"><th></th>@for (m of team; track m) {
+      <th><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th>
+    }</tr>
+    @for (p of teamprop('skills','Weapons'); track p) {
+      <tr ><th (click)="bot(p)">{{p}}</th>@for (m of team; track m) {
+      <td (click)="bot(p, m)">{{m['skills']['Weapons'][p]}}</td>
+    }</tr>
+  }
+</tbody>
+<tbody id="other">
+  <tr class="name"><th></th>@for (m of team; track m) {
+  <th><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th>
+}</tr>
+@for (p of teamprop('skills','Other'); track p) {
+  <tr ><th (click)="bot(p)">{{p}}</th>@for (m of team; track m) {
+  <td (click)="bot(p, m)">{{m['skills']['Other'][p]}}</td>
+}</tr>
+}
+</tbody>
+<tbody id="combat">
+  <tr class="name"><th></th>@for (m of team; track m) {
+  <th><a target="_blank" [routerLink]="['/character', m['name']]">{{m['shortName']}}</a></th>
+}</tr>
+@for (p of teamprop('skills','Combat'); track p) {
+  <tr><th (click)="bot(p)">{{p}}</th>@for (m of team; track m) {
+  <td (click)="bot(p, m)">{{m['skills']['Combat'][p]}}</td>
+}</tr>
+}
+</tbody>
+</table>
 </div>
+</div>
+</div>
+} @else {
+  <style>
+    .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 20px);
+  }
+  .inner {
+  padding: 12px;
+}
+</style>
+<div class="wrapper">
+  <mat-spinner class="inner"></mat-spinner>
+</div>
+}
 
 
-<ng-template #noTeam>
-    <style>
-        .wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: calc(100vh - 20px);
-        }
-        .inner {
-            padding: 12px;
-        }
-    </style>
-    <div class="wrapper">
-        <mat-spinner class="inner"></mat-spinner>
-    </div>
-</ng-template>

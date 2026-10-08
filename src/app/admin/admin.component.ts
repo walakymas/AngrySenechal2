@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { MapsAdminComponent } from './maps-admin.component';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
@@ -12,9 +12,11 @@ import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import { MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-admin',
-  templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css'],
+    selector: 'app-admin',
+    templateUrl: './admin.component.html',
+    styleUrls: ['./admin.component.css'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class AdminComponent implements OnInit {
   snackBarConfig: MatSnackBarConfig;
@@ -183,8 +185,8 @@ export class AdminComponent implements OnInit {
 }
 
 @Component({
-  selector: 'player-main-dialog',
-  template: `
+    selector: 'player-main-dialog',
+    template: `
   <div mat-dialog-content>
   <mat-form-field appearance="fill" style="width:50%">
         <mat-label>id</mat-label>
@@ -222,7 +224,10 @@ export class AdminComponent implements OnInit {
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="data.player" cdkFocusInitial>Save</button>
-  </div> `})
+  </div> `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
 export class PlayerEditDialog {
   constructor(
     private dialogRef: MatDialogRef<PlayerEditDialog>,
@@ -232,8 +237,8 @@ export class PlayerEditDialog {
 }
 
 @Component({
-  selector: 'char-main-dialog',
-  template: `
+    selector: 'char-main-dialog',
+    template: `
   <div mat-dialog-content>
       <mat-form-field appearance="fill" style="width:50%">
         <mat-label>id</mat-label>
@@ -273,7 +278,10 @@ export class PlayerEditDialog {
   <div mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
     <button mat-button [mat-dialog-close]="data.p" cdkFocusInitial>Save</button>
-  </div> `})
+  </div> `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
 export class CharEditDialog {
   constructor(
     private dialogRef: MatDialogRef<CharEditDialog>,

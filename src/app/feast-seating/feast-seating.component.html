@@ -1,7 +1,9 @@
 <div class="seating">
-<ng-container *ngFor="let m of participiants | keyvalue ">
-    <ng-container *ngIf="m.value.position === filter" class="guest">
+  @for (m of participiants | keyvalue ; track m) {
+    @if (m.value.position === filter) {
+      <ng-container class="guest">
         <div><img [src]="getBase(m.key).url" title="{{getBase(m.key).name}} Glory:{{m.value.glory}}" (error)="fallback($event)"/></div>
-    </ng-container>
-</ng-container>
+      </ng-container>
+    }
+  }
 </div>
