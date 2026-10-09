@@ -2,5 +2,6 @@
 export const environment = {
   production: true,
   url: "https://your-api.example.org/",  // address of the senechal API, with a trailing slash
-  prefix: '!'
+  prefix: '!',
+  feastImages: "https://senechalweb.duckdns.org/feastImages/images/"  // base URL of the feast card images (optional), with a trailing slash
 };
