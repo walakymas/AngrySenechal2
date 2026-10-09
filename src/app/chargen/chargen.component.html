@@ -1,10 +1,21 @@
-@if (base) {
+@if (base && ready) {
+  <ng-template #nav let-step="step">
+    @if (stepMissing(step).length > 0) {
+      <p class="gold">Még hiányzik: {{stepMissing(step).join('; ')}}</p>
+    }
+    <div>
+      @if (step > 0) {
+        <button mat-button type="button" (click)="goBack()">Vissza</button>
+      }
+      <button mat-flat-button color="primary" type="button" (click)="goNext()" [disabled]="stepMissing(step).length > 0">Tovább</button>
+    </div>
+  </ng-template>
   <div>
     <div class="row wide">
       <div class="col-1">
         <mat-vertical-stepper linear #stepper (selectionChange)="onStepChange($event)">
           <!-- MAIN INFO -->
-          <mat-step [stepControl]="mainFormGroup" errorMessage="Missing information.">
+          <mat-step [completed]="mainValid()" errorMessage="Hiányzó adatok.">
             <form [formGroup]="mainFormGroup">
               <ng-template matStepLabel>Base information</ng-template>
               <mat-form-field>
@@ -43,11 +54,8 @@
               </mat-form-field>
               <mat-form-field>
                 <mat-label>Name</mat-label>
-                <input matInput placeholder="Unknown" formControlName="name" required>
+                <input matInput formControlName="name" readonly>
               </mat-form-field>
-              <button mat-icon-button (click)="genName()">
-                <mat-icon>shuffle</mat-icon>
-              </button>
               <br />
               <mat-form-field>
                 <mat-label>Homeland</mat-label>
@@ -66,10 +74,29 @@
               <button mat-icon-button (click)="genLord()">
                 <mat-icon>shuffle</mat-icon>
               </button>
+              <br />
+              @if (gender == 'male') {
+                <mat-form-field>
+                  <mat-label>Family characteristic (1d20)</mat-label>
+                  <mat-select [(value)]="charBase['family']" (selectionChange)="updateSkillPhase()">
+                    <mat-option value="none">-- még nincs dobva --</mat-option>
+                    @for (f of base.familycharacteristics; track f.name) {
+                      <mat-option [value]="f.name">{{f.roll[0]}}{{f.roll[1] != f.roll[0] ? '–' + f.roll[1] : ''}}: {{f.name}} (+{{f.bonus}} {{f.skill}})</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <button mat-icon-button type="button" (click)="rollFamily()" title="Dobás 1d20-szal"><mat-icon>casino</mat-icon></button>
+                @if (charBase['familyRoll']) {
+                  <span>1d20: {{charBase['familyRoll']}}</span>
+                }
+              } @else {
+                <p>Hölgyeknél a családi jellemző helyett női ági adottság jár, ezt ez a lépés nem kezeli.</p>
+              }
             </form>
+            <ng-container *ngTemplateOutlet="nav; context: {step: 0}"></ng-container>
           </mat-step>
           <!-- TRAIT -->
-          <mat-step [stepControl]="traitFormGroup" errorMessage="Traits faileds">
+          <mat-step [completed]="traitsValid()" errorMessage="A trait pontokat ki kell osztani.">
             <ng-template matStepLabel>Traits</ng-template>
             <form [formGroup]="traitFormGroup">
               <mat-form-field>
@@ -127,8 +154,9 @@
                 </div>
               </mat-radio-group>
             </form>
+            <ng-container *ngTemplateOutlet="nav; context: {step: 1}"></ng-container>
           </mat-step>
-          <mat-step [stepControl]="thirdFormGroup" errorMessage="Túl sok attr">
+          <mat-step [completed]="attributesValid()" errorMessage="Az attribútumok összege 60 kell legyen.">
             <ng-template matStepLabel>Attributes</ng-template>
             <form [formGroup]="thirdFormGroup">
               <mat-form-field>
@@ -153,8 +181,9 @@
                 </div>
               }
             </form>
+            <ng-container *ngTemplateOutlet="nav; context: {step: 2}"></ng-container>
           </mat-step>
-          <mat-step [stepControl]="fourthFormGroup" errorMessage="Skills faileds">
+          <mat-step [completed]="skillsValid()" errorMessage="Válassz minden skillt, és oszd ki a 10 pontot.">
             <ng-template matStepLabel>Skills</ng-template>
             <form [formGroup]="fourthFormGroup">
               <mat-form-field>
@@ -257,12 +286,74 @@
             10 skill points on  non combats
           </p>
         </form>
+        <ng-container *ngTemplateOutlet="nav; context: {step: 3}"></ng-container>
+      </mat-step>
+      <mat-step [completed]="true">
+        <ng-template matStepLabel>Passions</ng-template>
+        <p>A kultúra és a homeland szerinti passziók mellé itt vehetsz fel továbbiakat (pl. <i>Love (Family)</i>, <i>Hate (Saxons)</i>). A Spec választásnál a passzió +5-öt kap (max 20).</p>
+        <table class="individual">
+          @for (p of char['passions'] | keyvalue; track p.key) {
+            <tr>
+              <td>{{p.key}}</td>
+              <td>{{p.value}}</td>
+              <td>
+                @if (isExtraPassion(p.key)) {
+                  <button mat-icon-button type="button" (click)="removePassion(p.key)" title="Törlés"><mat-icon>delete</mat-icon></button>
+                }
+              </td>
+            </tr>
+          }
+        </table>
+        <mat-form-field>
+          <mat-label>Új passzió</mat-label>
+          <input matInput [(ngModel)]="newPassionName" [ngModelOptions]="{standalone: true}" placeholder="Hate (Picts)">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Érték</mat-label>
+          <input matInput type="number" min="1" max="20" [(ngModel)]="newPassionValue" [ngModelOptions]="{standalone: true}">
+        </mat-form-field>
+        <button mat-icon-button type="button" (click)="addNewPassion()" title="Hozzáadás"><mat-icon>add</mat-icon></button>
+        <ng-container *ngTemplateOutlet="nav; context: {step: 4}"></ng-container>
+      </mat-step>
+      <mat-step [completed]="belongingsValid()" errorMessage="Dobd meg a kezdő felszerelést.">
+        <ng-template matStepLabel>Belongings</ng-template>
+        <p>Additional Belongings (Table 2.2): egyszer dobható 1d20-szal. Újradobáshoz használd az „Új kezdés" gombot a Final lépésen.</p>
+        @if (belongings(); as b) {
+          <ul>
+            @for (r of b.rolls; track $index) {
+              <li>{{r}}</li>
+            }
+          </ul>
+          <p>
+            Pénz: {{b.money.font}} £, {{b.money.silver}} d.
+            @if (b.horses.length > 0) { <br />Extra lovak: {{b.horses.join(', ')}} }
+          </p>
+        } @else {
+          <button mat-flat-button color="primary" type="button" (click)="rollBelongingsOnce()"><mat-icon>casino</mat-icon> Dobás (1d20)</button>
+        }
+        <ng-container *ngTemplateOutlet="nav; context: {step: 5}"></ng-container>
       </mat-step>
       <mat-step>
         <ng-template matStepLabel>Final</ng-template>
+        <p>A jobb oldali összegzés kerül a(z) <b>{{lord.char['name']}}</b> karakterlapjára
+          (a név, a játékos és a többi adat változatlan marad). A kezdő lovak is bekerülnek: 1 charger, 2 rouncy, 1 sumpter, plusz a felszerelés dobás lovai; a pénz az Economy fülön, a tárgyak a Belongings blokkban jelennek meg.</p>
+        @if (!allValid()) {
+          <p class="gold">Az alkotás még hiányos:
+            @if (!mainValid()) { <br />- alapadatok }
+            @if (!traitsValid()) { <br />- trait pontok ({{traitModificationSum}}/{{traitModificationMaxSum}}) }
+            @if (!attributesValid()) { <br />- attribútumok összege ({{attributeSum}}/60) }
+            @if (!skillsValid()) { <br />- skillek / skillpontok ({{skillModificationSum}}/10) }
+            @if (!belongingsValid()) { <br />- kezdő felszerelés dobás }
+          </p>
+        }
+        <div>
+          <button mat-button matStepperPrevious>Vissza</button>
+          <button mat-flat-button color="primary" (click)="finish()" [disabled]="!allValid() || saving">Befejezés</button>
+          <button mat-button (click)="restart()">Új kezdés</button>
+          <button mat-button (click)="cancel()">Mégse (állapot megmarad)</button>
+        </div>
       </mat-step>
     </mat-vertical-stepper>
-    <pre>{{getChar()}}</pre>
   </div>
   <div class="col-2">
     <div class="row">

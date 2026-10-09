@@ -13,6 +13,7 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
 import { JSONEditorOptions } from 'jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Subscription, interval } from 'rxjs';
+import { hasChargenState } from '../chargen/chargen-storage';
 
 @Component({
     selector: 'app-character-detail',
@@ -468,6 +469,28 @@ export class CharacterDetailComponent implements OnInit {
     this.modifyProp('economy.manors', JSON.stringify(this.manors()));
   }
 
+  public belongings(): any[] {
+    return this.char.char['belongings'] ??= [];
+  }
+
+  public addBelonging(): void {
+    this.belongings().push({name: 'New item', value: '', description: ''});
+    this.saveBelongings();
+  }
+
+  public deleteBelonging(index: number): void {
+    const item = this.belongings()[index];
+    if (!confirm(`Delete "${item?.name}"?`)) {
+      return;
+    }
+    this.belongings().splice(index, 1);
+    this.saveBelongings();
+  }
+
+  public saveBelongings(): void {
+    this.modifyProp('belongings', JSON.stringify(this.belongings()));
+  }
+
   public modifyProp( prop: string, newValue: string ) : void {
     console.log(`${prop}:=${newValue}`)
     this.service.modifyProp(this.char.char['dbid'],prop, newValue).then(c => {
@@ -903,6 +926,10 @@ export class CharacterDetailComponent implements OnInit {
     } else {
       activate();
     }
+  }
+
+  hasChargenState(dbid): boolean {
+    return hasChargenState(dbid);
   }
 
   hasUser() {

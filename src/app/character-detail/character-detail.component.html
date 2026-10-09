@@ -15,6 +15,11 @@
                 </button>
               }
               @if (hasUser()) {
+                <button mat-menu-item [routerLink]="['/chargen', char.char['dbid']]">
+                  {{hasChargenState(char.char['dbid']) ? 'Karakter alkotás folytatása' : 'Karakter alkotás'}}
+                </button>
+              }
+              @if (hasUser()) {
                 <button mat-menu-item (click)="jsonDialog()">
                   Json
                 </button>
@@ -482,6 +487,35 @@
             }
             @if (hasUser()) {
               <button (click)="addManor()"><mat-icon>add</mat-icon>Add manor</button>
+            }
+          </mat-expansion-panel>
+          <mat-expansion-panel hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                Belongings
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            @for (b of belongings(); track $index; let i = $index) {
+              @if (hasUser()) {
+                <h5>{{b['name']}}</h5>
+                <table width="100%" class="stats">
+                  <tr><th>Name</th><td><input matInput [(ngModel)]="b['name']" (change)="saveBelongings()"/></td></tr>
+                  <tr><th>Value</th><td><input matInput [(ngModel)]="b['value']" (change)="saveBelongings()"/></td></tr>
+                  <tr><th>Description</th><td><input matInput [(ngModel)]="b['description']" (change)="saveBelongings()"/></td></tr>
+                  <tr><td></td><td><button (click)="deleteBelonging(i)"><mat-icon>delete</mat-icon>Delete</button></td></tr>
+                </table>
+              } @else {
+                <h5>{{b['name']}}</h5>
+                <table width="100%" class="stats">
+                  <tr><th>Value</th><td>{{b['value']}}</td></tr>
+                  <tr><th>Description</th><td>{{b['description']}}</td></tr>
+                </table>
+              }
+            } @empty {
+              No belongings.
+            }
+            @if (hasUser()) {
+              <button (click)="addBelonging()"><mat-icon>add</mat-icon>Add belonging</button>
             }
           </mat-expansion-panel>
           <mat-expansion-panel hideToggle>

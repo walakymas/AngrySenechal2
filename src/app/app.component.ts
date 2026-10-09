@@ -156,8 +156,13 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log(JSON.stringify(result))
         this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
         this.service.newChar(result).then(c => {
-          this.router.navigate(['character/'+result['name']])
           this.snackBar.open('Lord created','Ok',this.snackBarConfig);
+          const dbid = c && c.char ? c.char['dbid'] : null;
+          if (dbid != null) {
+            this.router.navigate(['chargen', dbid]);
+          } else {
+            this.router.navigate(['character/'+result['name']]);
+          }
         })
       } else {
         this.snackBar.open('Dialog Cancelled','Ok',this.snackBarConfig);
