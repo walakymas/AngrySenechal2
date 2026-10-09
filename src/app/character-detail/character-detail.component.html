@@ -153,17 +153,17 @@
             @if (check('result')['action']=='check') {
               <div>
                 {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
-                Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
+                Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon [svgIcon]="checkIcon('c1')"></mat-icon>
               </div>
             }
             @if (checks[actualCheck-1].result['action']=='trait') {
               <div>
                 {{check('result')['c1']['name']}}({{check('result')['c1']['base']}})
-                Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon>{{checkIcon('c1')}}</mat-icon>
+                Result: {{check('result')['c1']['success']}} ({{check('result')['c1']['ro']}})<mat-icon [svgIcon]="checkIcon('c1')"></mat-icon>
                 @if (checks[actualCheck-1].result['c2']) {
                   <div>
                     {{check('result')['c2']['name']}}({{check('result')['c2']['base']}})
-                    Result: {{check('result')['c2']['success']}} ({{check('result')['c2']['ro']}})<mat-icon>{{checkIcon('c2')}}</mat-icon>
+                    Result: {{check('result')['c2']['success']}} ({{check('result')['c2']['ro']}})<mat-icon [svgIcon]="checkIcon('c2')"></mat-icon>
                   </div>
                 }
               </div>

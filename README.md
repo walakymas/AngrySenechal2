@@ -47,3 +47,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 - Unit tests: `ng test --watch=false --browsers=ChromeHeadlessNoSandbox` (set `CHROME_BIN` to a Chromium); `npm run test:server` tests `server.js`.
 - There is no linter and no e2e suite at the moment (`tslint` and `protractor` no longer exist); ESLint (`ng add angular-eslint`) and a Playwright smoke test are the natural replacements.
 - The JSON editor of the character page is `src/app/json-editor` (a wrapper of `jsoneditor`).
+
+## Icons
+
+The check result icons (`src/assets/icons/`: laurel-crown, shield-reflect, broken-shield, broken-skull) come from [game-icons.net](https://game-icons.net) (authors Lorc, Delapouite and contributors), licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
