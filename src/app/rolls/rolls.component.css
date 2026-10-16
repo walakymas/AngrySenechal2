@@ -1,3 +1,16 @@
 .rolls { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 16px 16px 40px; }
 .rolls-filter { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
 .rolls-count, .rolls-empty { opacity: .75; }
+.rolls-limit { width: 110px; }
+
+/* Phone: the rolls one under the other */
+.rolls-list { display: flex; flex-direction: column; align-items: center; gap: 22px; max-width: 100%; }
+
+/* PC: the rolls side by side (newest on the left), scrolled horizontally */
+@media (min-width: 900px) {
+  .rolls { align-items: stretch; }
+  .rolls-list { flex-direction: row; align-items: flex-start; gap: 28px; width: 100%;
+    overflow-x: auto; overflow-y: hidden; padding: 12px 12px 24px; }
+  .rolls-list check-card { flex: 0 0 auto; }
+  .rolls-filter, .rolls-empty { align-self: center; }
+}
