@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild, ChangeDetectionStrategy, ViewEncapsulation } from '@angular/core';
 import { Lord, LordBase } from './../lord';
 import { ActivatedRoute, ParamMap, Params } from '@angular/router';
 import { Location } from '@angular/common';
@@ -13,6 +13,7 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
 import { JSONEditorOptions } from 'jsoneditor';
 import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Subscription, interval } from 'rxjs';
+import { hasChargenState } from '../chargen/chargen-storage';
 
 @Component({
     selector: 'app-character-detail',
@@ -210,14 +211,45 @@ export class CharacterDetailComponent implements OnInit {
     audio.play();
   }
   setChecks(l: CheckAll[]) {
-    if (l[0].id !=this.lastCheck) {
+    if (l && l.length > 0 && l[0].id !=this.lastCheck) {
       console.log('setCheck')
-      if (this.lastCheck!=-1) {
-        this.playDiceSound();
-      }
+      const previous = this.lastCheck;
       this.checks = l;
       this.lastCheck = l[0].id;
+      if (previous != -1) {
+        this.playDiceSound();
+        // The popup highlights the user's own rolls and those of the character on the page (newest first)
+        const mine = l.find(c => c.id > previous && this.isRelevantCheck(c));
+        if (mine) {
+          this.showCheckResult(mine);
+        }
+      }
     }
+  }
+
+  private isRelevantCheck(c: CheckAll): boolean {
+    if (this.char?.char && c.character == this.char.char['dbid']*1) {
+      return true;
+    }
+    const userId = window.localStorage.getItem('userId');
+    return !!userId && this.service.isLoggedIn()
+      && !!this.chars?.some(ch => ch.id == c.character && ch.player == +userId);
+  }
+
+  private checkResultDialogRef?: MatDialogRef<CheckResultDialog>;
+
+  showCheckResult(c: CheckAll) {
+    this.checkResultDialogRef?.close();
+    this.checkResultDialogRef = this.dialog.open(CheckResultDialog, {
+      data: c,
+      hasBackdrop: false,
+      panelClass: 'check-result-panel',
+      position: { top: '20px' },
+      autoFocus: false
+    });
+    const ref = this.checkResultDialogRef;
+    const timer = setTimeout(() => ref.close(), 10000);
+    ref.afterClosed().subscribe(() => clearTimeout(timer));
   }
 
   check(p:string){
@@ -227,18 +259,9 @@ export class CharacterDetailComponent implements OnInit {
     }
     return res;
   }
+  // svgIcon name (registered in AppComponent) of a check result
   checkIcon(c){
-    let res = this.checks[this.actualCheck-1].result[c]['success']
-    if ("Critical"==res){
-      res = "crown"
-    } else if  ("Fail"==res) {
-      res=  "thumb_down"
-    } else if  ("Success"==res) {
-      res=  "thumb_up"
-    } else if  ("Fumble"==res) {
-      res=  "thunderstorm"
-    }
-    return res;
+    return checkIconName(this.checks[this.actualCheck-1].result[c]['success']);
   }
   setLord(l: Lord, force: boolean = false) {
     if (!l || !l.char) {
@@ -411,6 +434,62 @@ export class CharacterDetailComponent implements OnInit {
     console.log(`modifyCombat ${prop}:=${this.char.char['combat'][prop]} vs ${this.combat[prop]}`)
     this.modifyProp('combat.'+prop,this.char.char['combat'][prop]);
 	}
+
+  public manors(): any[] {
+    const economy = this.char.char['economy'] ??= {};
+    return economy['manors'] ??= [];
+  }
+
+  public addManor(): void {
+    this.manors().push({name: 'New manor', status: '', income: 10, region: '', hundred: '', improvements: []});
+    this.saveManors();
+  }
+
+  public deleteManor(index: number): void {
+    const manor = this.manors()[index];
+    if (!confirm(`Delete manor "${manor?.name}"?`)) {
+      return;
+    }
+    this.manors().splice(index, 1);
+    this.saveManors();
+  }
+
+  public setManorIncome(manor: object, value: string): void {
+    const income = Number(value);
+    manor['income'] = value.trim() !== '' && !isNaN(income) ? income : 10;
+    this.saveManors();
+  }
+
+  public setManorImprovements(manor: object, value: string): void {
+    manor['improvements'] = value.split(',').map(i => i.trim()).filter(i => i.length > 0);
+    this.saveManors();
+  }
+
+  public saveManors(): void {
+    this.modifyProp('economy.manors', JSON.stringify(this.manors()));
+  }
+
+  public belongings(): any[] {
+    return this.char.char['belongings'] ??= [];
+  }
+
+  public addBelonging(): void {
+    this.belongings().push({name: 'New item', value: '', description: ''});
+    this.saveBelongings();
+  }
+
+  public deleteBelonging(index: number): void {
+    const item = this.belongings()[index];
+    if (!confirm(`Delete "${item?.name}"?`)) {
+      return;
+    }
+    this.belongings().splice(index, 1);
+    this.saveBelongings();
+  }
+
+  public saveBelongings(): void {
+    this.modifyProp('belongings', JSON.stringify(this.belongings()));
+  }
 
   public modifyProp( prop: string, newValue: string ) : void {
     console.log(`${prop}:=${newValue}`)
@@ -849,6 +928,10 @@ export class CharacterDetailComponent implements OnInit {
     }
   }
 
+  hasChargenState(dbid): boolean {
+    return hasChargenState(dbid);
+  }
+
   hasUser() {
     return true; //this.base['loginNeeded'] != 'true' || window.localStorage.getItem('userName')!=null;
   }
@@ -1265,6 +1348,132 @@ export class CheckModifierDialog {
   }
 }
 
+function checkIconName(success: string): string {
+  const names = { Critical: 'critical', Success: 'success', Fail: 'fail', Fumble: 'fumble' };
+  return names[success] ? 'check:' + names[success] : '';
+}
+
+type CheckTone = 'gold' | 'green' | 'neutral' | 'red' | 'maroon' | 'gray' | 'black';
+
+@Component({
+    selector: 'check-result-dialog',
+    template: `
+  <div class="crd crd-{{tone}}">
+    <span class="crd-corner tl">❖</span><span class="crd-corner tr">❖</span>
+    <span class="crd-corner bl">❖</span><span class="crd-corner br">❖</span>
+    <div class="crd-name">{{ check.name }}</div>
+    <div class="crd-command">{{ command() }}</div>
+    <div class="crd-divider">⚜</div>
+    @if (check.result['action']=='dice') {
+      <div class="crd-big">{{ check.result['c1']['sum'] }}</div>
+      <div class="crd-line">{{ check.result['c1']['count'] || 1 }}D{{ check.result['c1']['size'] }}{{ modifierText() }}
+        &nbsp;·&nbsp; ({{ check.result['c1']['dices'].join(', ') }})</div>
+      <div class="crd-sub">expected {{ expected() }}</div>
+    } @else {
+      @for (k of ['c1','c2']; track k) {
+        @if (check.result[k]) {
+          <div class="crd-row">
+            <mat-icon [svgIcon]="icon(k)"></mat-icon>
+            <div>
+              <div class="crd-big small">{{ check.result[k]['success'] }}</div>
+              <div class="crd-line">{{ check.result[k]['name'] }} ({{ check.result[k]['base'] }}) &nbsp;·&nbsp; rolled {{ check.result[k]['ro'] }}</div>
+            </div>
+          </div>
+        }
+      }
+    }
+    <div class="crd-actions"><button mat-button mat-dialog-close>Close</button></div>
+  </div>`,
+    styles: [`
+  .check-result-panel .mat-mdc-dialog-container {
+    --mdc-dialog-container-color: transparent; --mat-dialog-container-color: transparent;
+    --mdc-dialog-container-shape: 0; --mat-dialog-container-shape: 0;
+  }
+  .check-result-panel .mat-mdc-dialog-surface { background: transparent !important; box-shadow: none !important; overflow: visible !important; }
+  .check-result-panel .mat-mdc-dialog-content { padding: 0; }
+  .crd { position: relative; min-width: 300px; max-width: 420px; padding: 22px 34px 12px; text-align: center;
+    background: linear-gradient(160deg, var(--crd-bg1), var(--crd-bg2)); color: var(--crd-fg);
+    border: 3px double var(--crd-frame); border-radius: 6px;
+    box-shadow: 0 0 0 2px var(--crd-bg2), 0 0 0 4px var(--crd-frame), 0 10px 28px rgba(0,0,0,.6), inset 0 0 40px rgba(0,0,0,.25);
+    font-family: 'Overlock', serif; }
+  .crd-corner { position: absolute; color: var(--crd-frame); font-size: 16px; line-height: 1; }
+  .crd-corner.tl { top: 3px; left: 5px; } .crd-corner.tr { top: 3px; right: 5px; }
+  .crd-corner.bl { bottom: 3px; left: 5px; } .crd-corner.br { bottom: 3px; right: 5px; }
+  .crd-name { font-family: 'Cormorant Unicase', serif; font-size: 26px; font-weight: bold; letter-spacing: 1px; }
+  .crd-command { font-size: 13px; opacity: .8; }
+  .crd-divider { color: var(--crd-frame); margin: 6px 0 2px; font-size: 18px; }
+  .crd-big { font-family: 'Cormorant Unicase', serif; font-size: 54px; font-weight: bold; line-height: 1.1; text-shadow: 0 2px 4px rgba(0,0,0,.35); }
+  .crd-big.small { font-size: 30px; text-transform: uppercase; letter-spacing: 2px; }
+  .crd-line { font-size: 15px; } .crd-sub { font-size: 13px; opacity: .75; margin-top: 2px; }
+  .crd-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 8px 0; text-align: left; }
+  .crd-row .mat-icon { font-size: 40px; width: 40px; height: 40px; }
+  .crd-actions { margin-top: 10px; } .crd-actions button { color: var(--crd-fg); }
+  .crd-gold    { --crd-bg1:#f0cd6b; --crd-bg2:#b8892b; --crd-fg:#2a1d05; --crd-frame:#5c3f0a; }
+  .crd-green   { --crd-bg1:#6a9a55; --crd-bg2:#3b6a2e; --crd-fg:#f4fbef; --crd-frame:#d8bf6a; }
+  .crd-neutral { --crd-bg1:#555b69; --crd-bg2:#383c46; --crd-fg:#eef0f5; --crd-frame:#c9a24b; }
+  .crd-red     { --crd-bg1:#a4442f; --crd-bg2:#6b2418; --crd-fg:#fff1ec; --crd-frame:#d8bf6a; }
+  .crd-maroon  { --crd-bg1:#55141a; --crd-bg2:#2b0709; --crd-fg:#ffd9d6; --crd-frame:#c9a24b; }
+  .crd-gray    { --crd-bg1:#b4b7bd; --crd-bg2:#8f9299; --crd-fg:#15161a; --crd-frame:#3a3c42; }
+  .crd-black   { --crd-bg1:#1b1b1b; --crd-bg2:#050505; --crd-fg:#f2e8d0; --crd-frame:#c9a24b; }
+  `],
+    encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
+export class CheckResultDialog {
+  tone: CheckTone;
+
+  constructor(@Inject(MAT_DIALOG_DATA) public check: CheckAll) {
+    this.tone = this.computeTone();
+  }
+
+  command(): string {
+    return (this.check['command'] || '').replace(/<@!\d{5,}>/, '');
+  }
+
+  private success(c: string): string {
+    return this.check.result?.[c]?.['success'];
+  }
+
+  private computeTone(): CheckTone {
+    const action = this.check.result?.['action'];
+    if (action == 'dice') {
+      const z = this.diceDeviation();
+      return z >= 1.5 ? 'gold' : z >= 0.5 ? 'green' : z > -0.5 ? 'neutral' : z > -1.5 ? 'red' : 'maroon';
+    }
+    const c1 = this.success('c1');
+    if (action == 'trait') {
+      if (c1 == 'Critical') return 'gold';
+      if (c1 == 'Success') return 'green';
+      const c2 = this.success('c2');
+      return c2 == 'Success' || c2 == 'Critical' ? 'black' : 'gray';
+    }
+    return c1 == 'Critical' ? 'gold' : c1 == 'Success' ? 'green' : c1 == 'Fumble' ? 'maroon' : 'red';
+  }
+
+  // Deviation of the sum from the expectation in standard deviations
+  private diceDeviation(): number {
+    const c = this.check.result['c1'];
+    const n = +c['count'] || 1, size = +c['size'];
+    const sd = Math.sqrt(n * (size * size - 1) / 12);
+    return sd > 0 ? (c['sum'] - this.expected()) / sd : 0;
+  }
+
+  expected(): number {
+    const c = this.check.result['c1'];
+    return (+c['count'] || 1) * (+c['size'] + 1) / 2 + (c['modifier'] || 0);
+  }
+
+  modifierText(): string {
+    const m = this.check.result['c1']['modifier'];
+    return m ? (m > 0 ? '+' : '') + m : '';
+  }
+
+  icon(c: string): string {
+    return checkIconName(this.success(c));
+  }
+}
+
 @Component({
     selector: 'dialog-content-example-dialog',
     template: `
@@ -1308,7 +1517,7 @@ export class DialogContentExampleDialog {
 @Component({
     selector: 'character-json-dialog',
     template: `
-  <div mat-dialog-content>
+  <div id="json-dialog" mat-dialog-content>
     <form  [formGroup]="fg">
       <json-editor [options]="editorOptions" class="jsondialog" [data]="data.lord.char" formControlName="jsonEditorForm"></json-editor>
     </form>

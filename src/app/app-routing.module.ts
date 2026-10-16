@@ -15,7 +15,8 @@ const routes: Routes = [
   { path: 'team', component: TeamComponent },
   { path: 'feast', component: FeastComponent },
   { path: 'maps', component: MapsComponent },
-  { path: 'chargen', component: ChargenComponent },
+  { path: 'chargen/:id', component: ChargenComponent },
+  { path: 'chargen', redirectTo: '/character', pathMatch: 'full' },
   { path: 'admin', component: AdminComponent }
 ];
 

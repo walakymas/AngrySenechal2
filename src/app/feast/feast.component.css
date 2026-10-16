@@ -95,3 +95,67 @@ div.cards {
     flex-wrap: wrap;
 }
 
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 20px);
+}
+
+.inner {
+    padding: 12px;
+}
+
+.hint {
+    opacity: 0.7;
+}
+
+h2 small, h3 small {
+    font-size: 60%;
+    font-weight: normal;
+}
+
+.guest-panel {
+    border: 1px solid var(--goldHighlight2);
+    margin-bottom: 12px;
+    padding: 8px;
+}
+
+.activities button,
+.leave button {
+    margin: 0 6px 6px 0;
+}
+
+div.card.selected {
+    outline: 3px solid var(--goldHighlight2);
+}
+
+div.card.inactive img {
+    opacity: 0.4;
+}
+
+.kept {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.cardtext {
+    white-space: pre-line;
+}
+
+tr.left {
+    opacity: 0.5;
+}
+
+.line {
+    margin: 6px 0;
+}
+
+input.small {
+    width: 4em;
+}
+
+button.next {
+    margin: 8px 0;
+}

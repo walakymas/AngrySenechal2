@@ -1,12 +1,12 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ActivatedRoute, ParamMap, Params } from '@angular/router';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CharacterService } from '../character.service';
-import { Logger } from '../logger.service';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
-import { Feast, FeastConfig, LordBase } from '../lord';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Feast, FeastConfig, FeastReply, LordBase } from '../lord';
 import { Subscription, interval } from 'rxjs';
+import { describeRoll } from './feast-util';
 
+const ADMIN = 1;
+const POLL_MS = 15000;
 
 @Component({
     selector: 'app-feast',
@@ -15,47 +15,25 @@ import { Subscription, interval } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class FeastComponent implements OnInit {
-  snackBarConfig: MatSnackBarConfig;
-  subscription: Subscription;
-  list: LordBase[];
-  notseatable = true;
-  selectedGuest: number = null;
-  selectedSeat: string = null;
-  
-  feastConfig : FeastConfig;
-  feast : Feast;
-  constructor(
-    private route: ActivatedRoute,
-    private service: CharacterService,
-    private logger: Logger,
-    private snackBar: MatSnackBar,
-    public dialog: MatDialog
-  
-  ) {
-      this.snackBarConfig = new MatSnackBarConfig();
-      this.snackBarConfig.duration = 2000;
-  }
+export class FeastComponent implements OnInit, OnDestroy {
+  list: LordBase[] = [];
+  feastConfig: FeastConfig;
+  feast: Feast | null = null;
+  loaded = false;
+  lastRoll = '';
+  private subscription: Subscription;
+
+  constructor(private service: CharacterService, private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
-    console.log('FeastComponent ngOnInit');
-    this.service.getList().subscribe( l => {
-      this.list = l;
-      this.service.getFeastConfig().subscribe( l => {
-        this.feastConfig = l;
-        this.subscription = interval(60000).subscribe(v => this.loadFeast());
+    this.service.getList().subscribe(l => {
+      this.list = l || [];
+      this.service.getFeastConfig().subscribe(c => {
+        this.feastConfig = c;
         this.loadFeast();
+        this.subscription = interval(POLL_MS).subscribe(() => this.loadFeast());
       });
     });
-  }
-
-  loadFeast(): void {
-    console.log('loadFeast')
-    this.service.getFeast().subscribe( l => this.setFeast(l));
-  }
-
-  setFeast(f:Feast) {
-    this.feast = f;
   }
 
   ngOnDestroy(): void {
@@ -63,93 +41,50 @@ export class FeastComponent implements OnInit {
       this.subscription.unsubscribe();
     }
   }
-  getCards(pid:number) {
-      this.feast.data.participiants[pid].rounds[this.feast.data.round];
+
+  loadFeast(): void {
+    this.service.getFeast().subscribe(f => {
+      this.feast = f;
+      this.loaded = true;
+    });
   }
 
-  getBase(cid:number): LordBase {
-    if (!this.list) {
-      this.logger.error('FeastComponent.getBase: Lord with id ' + cid + ' not found (null list)');
-      return null;
+  // The answer of a feast call (null when the API refused it: the reason is already shown)
+  updated(reply: FeastReply | null): void {
+    if (!reply || !reply.data) {
+      return;
     }
-    var lord = this.list.find(l => l.id == cid);
-    if (!lord) {
-      this.logger.error('FeastComponent.getBase: Lord with id ' + cid + ' not found');
-      return null;
+    this.feast = reply;
+    if (reply.rolled) {
+      this.lastRoll = describeRoll(reply.rolled);
+      this.snackBar.open(this.lastRoll, 'Ok', { duration: 6000 });
     }
-    return lord;
   }
-    selectGuest(cid: number): void {
-        this.selectedGuest = cid
-        this.notseatable = this.selectedGuest === null || this.selectedSeat === null;
-    }
-    selectSeat(s: string): void {
-        this.selectedSeat = s;
-        this.notseatable = this.selectedGuest === null || this.selectedSeat === null;
-    }
-    seatGuest(): void {
-        if (this.notseatable) {
-            this.snackBar.open('Please select a guest and a seat', 'Close', this.snackBarConfig);
-            return;
-        }
-        this.service.seatGuest(this.selectedGuest, this.selectedSeat).subscribe(
-            (f) => this.setFeast(f));
-        this.snackBar.open('Guest seated', 'Close', this.snackBarConfig);
-        this.selectedGuest = null;
-        this.notseatable = true;
-    }
-    setRounds(rounds: number): void {
-        if (this.feast.data.state !== 'init') {
-            this.snackBar.open('Cannot set rounds after initialization.', 'Close', this.snackBarConfig);
-            return;
-        }
-        this.service.setRounds(rounds).subscribe(
-            (f) => this.setFeast(f));
-        this.snackBar.open('Rounds set to ' + rounds, 'Close', this.snackBarConfig);
-    }
-    setAction(action: string, pid: number) : void {
-/*
-        if (this.feast.data.state !== 'feast') {
-            this.snackBar.open('Cannot set action after initialization.', 'Close', this.snackBarConfig);
-            return;
-        }
-*/
-        this.service.setAction(action, pid).subscribe(
-            (f) => this.setFeast(f));
-    }
-    getAction(pid: number) : string {
-        try {
-          return this.feast.data.participiants[''+pid]['rounds'][this.feast.data.round]['action'];
-        } catch (error) {
-          this.logger.warn('part:'+pid+","+JSON.stringify(this.feast.data.participiants));
-          this.logger.warn('part:'+JSON.stringify(this.feast.data.participiants[''+pid]));
-          return 'NA';
-        }
-    }
 
-    isHostCard(card: string) : boolean {
-      //this.logger.log("isHostCard: "+card+" "+JSON.stringify(this.feastConfig[card]));
-      if (this.feastConfig[card] && this.feastConfig[card].tags && this.feastConfig[card].tags.indexOf('host') >= 0) {
-        return true;
-      }
-      return false;
+  private get user(): any {
+    try {
+      return JSON.parse(window.localStorage.getItem('user') || '{}');
+    } catch (e) {
+      return {};
     }
+  }
 
-    isInactive(card: string, cards: string[], significant) {
-      if (this.isHostCard(card)) {
-        return false;
-      }
-      for (var c of cards) {
-        if (this.isHostCard(c)) {
-          //this.logger.log("isInactive: "+card+" is inactive because "+c+" is host card");
-          return true;
-        }
-      }
-      return false;
-    }
+  get loggedIn(): boolean {
+    const token = this.service.getToken();
+    return !!token && token !== 'null' && !!this.user.did;
+  }
 
-    nextState() {
-        this.service.nextState().subscribe((f) => this.setFeast(f));
-        this.snackBar.open('Next state after '+this.feast.data.state, 'Open', this.snackBarConfig);
+  get isHost(): boolean {
+    return this.loggedIn && (+this.user.rights & ADMIN) === ADMIN;
+  }
+
+  // The characters the logged in user may play with: his own, the host's all player characters
+  get mine(): number[] {
+    if (!this.loggedIn) {
+      return [];
     }
+    return this.list
+      .filter(l => l.type === 'pc' && (this.isHost || ('' + l.memberid) === '' + this.user.did))
+      .map(l => l.id);
+  }
 }

@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { CharactersComponent } from './characters/characters.component';
-import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog, PassionDialog, PropertyDialog, CheckModifierDialog } from './character-detail/character-detail.component';
+import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog, PassionDialog, PropertyDialog, CheckModifierDialog, CheckResultDialog } from './character-detail/character-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule} from '@angular/material/icon';
@@ -39,6 +39,10 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { FeastComponent } from './feast/feast.component';
 import { FeastSeatingComponent } from './feast-seating/feast-seating.component';
+import { FeastSetupComponent } from './feast/feast-setup.component';
+import { FeastRoundComponent } from './feast/feast-round.component';
+import { FeastScoreboardComponent } from './feast/feast-scoreboard.component';
+import { FeastLogComponent } from './feast/feast-log.component';
 import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
 import { MapsComponent } from './maps/maps.component';
 import { PassionGroupsPipe } from './passion-category';
@@ -58,12 +62,17 @@ import { PassionGroupsPipe } from './passion-category';
         PassionDialog,
         PropertyDialog,
         CheckModifierDialog,
+        CheckResultDialog,
         ChargenComponent,
         AdminComponent,
         PlayerEditDialog,
         CharEditDialog,
         FeastComponent,
         FeastSeatingComponent,
+        FeastSetupComponent,
+        FeastRoundComponent,
+        FeastScoreboardComponent,
+        FeastLogComponent,
         MapsComponent,
         MapsAdminComponent,
         MapEditDialog,

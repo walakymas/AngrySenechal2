@@ -1,5 +1,5 @@
 import { Injectable, OnInit,Inject } from '@angular/core';
-import { Feast, FeastConfig, Lord, LordBase, LordData} from './lord';
+import { Feast, FeastConfig, FeastReply, FeastSummary, Lord, LordBase, LordData} from './lord';
 import { CharacterMain} from './character-detail/character-detail.component';
 import { Base } from './base';
 import { Logger } from './logger.service';
@@ -260,10 +260,17 @@ export class CharacterService {
     );
   }
 
-  getFeast() : Observable<Feast> {
-    return this.http.get<Feast>(this.url+'feast').pipe(
-//      tap(_ => this.logger.log(`fetched feast`)),
-      catchError(this.handleError<Feast>(`getFeast `))
+  // The latest feast (or `fid`); null when there is none yet (the API answers 404)
+  getFeast(fid?: number) : Observable<Feast | null> {
+    const url = this.url + 'feast_get' + (fid ? `?fid=${fid}` : '');  // not the legacy 'feast': only feast_get lists the playable cards (`enabled`)
+    return this.http.get<Feast>(url).pipe(
+      catchError((error: any) => error && error.status === 404 ? of(null) : this.handleError<Feast | null>(`getFeast`, null)(error))
+    );
+  }
+
+  getFeasts() : Observable<FeastSummary[]> {
+    return this.http.get<FeastSummary[]>(this.url + 'feasts').pipe(
+      catchError(this.handleError<FeastSummary[]>(`getFeasts`, []))
     );
   }
 
@@ -479,67 +486,58 @@ export class CharacterService {
       catchError(this.handleError<Lord>(`setMark`))
     ).toPromise();
   }
-seatGuest(cid: number, seat: string): Observable<Feast> {
-    return this.http.post<Feast>(this.url+`feast`,
-      new HttpParams()
-      .set('action', 'seat')
-      .set('cid', ''+cid)
-      .set('seat', seat)
-      .set('token', this.getToken())
-      .toString(),
-      {
-        headers: new HttpHeaders()
-          .set('Content-Type', 'application/x-www-form-urlencoded')
-      }).pipe(
-      tap(_ => this.logger.log(`seated guest cid=${cid} at ${seat}`)),
-      catchError(this.handleError<Feast>(`seatGuest`))
-    );
-  }
-  setRounds(rounds: number): Observable<Feast> {
-    return this.http.post<Feast>(this.url+`feast`,
-      new HttpParams()
-      .set('action', 'setrounds')
-      .set('rounds', ''+rounds)
-      .set('token', this.getToken())
-      .toString(),
-      {
-        headers: new HttpHeaders()
-          .set('Content-Type', 'application/x-www-form-urlencoded')
-      }).pipe(
-      tap(_ => this.logger.log(`set rounds to ${rounds}`)),
-      catchError(this.handleError<Feast>(`setRounds`))
-    );
-  }
-  setAction(action: string, pid: number): Observable<Feast> {
-    return this.http.post<Feast>(this.url+`feast`,
-      new HttpParams()
-      .set('action', 'roundAction')
-      .set('roundAction', action)
-      .set('pid', ''+pid)
-      .set('token', this.getToken())
-      .toString(),
-      {
-        headers: new HttpHeaders()
-          .set('Content-Type', 'application/x-www-form-urlencoded')
-      }).pipe(
-      tap(_ => this.logger.log(`set action to ${action} for ${pid}`)),
-      catchError(this.handleError<Feast>(`setAction`))
+  // A feast call (see documentation/feast-rules.md in the backend): a POST with the session token. The answer is the
+  // whole feast (+ `rolled`); a refusal shows the reason of the API and gives null.
+  feastPost(endpoint: string, params: { [key: string]: string | number | boolean } = {}): Observable<FeastReply | null> {
+    let body = new HttpParams().set('token', this.getToken());
+    for (const key of Object.keys(params)) {
+      body = body.set(key, '' + params[key]);
+    }
+    return this.http.post<FeastReply>(this.url + endpoint, body.toString(),
+      { headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded') }).pipe(
+      catchError((error: any) => {
+        const reason = error && error.error && error.error.error;
+        if (reason) {
+          this.snackBar.open(reason, 'Ok', { duration: 5000 });
+          return of(null);
+        }
+        return this.handleError<FeastReply | null>(endpoint, null)(error);
+      })
     );
   }
 
-  nextState() {
-    return this.http.post<Feast>(this.url+`feast`,
-      new HttpParams()
-      .set('action', 'nextState')
-      .set('token', this.getToken())
-      .toString(),
-      {
-        headers: new HttpHeaders()
-          .set('Content-Type', 'application/x-www-form-urlencoded')
-      }).pipe(
-      tap(_ => this.logger.log(`nextState set`)),
-      catchError(this.handleError<Feast>(`nextState`))
-    );
+  feastNew(title: string, rounds: number, royal: boolean) {
+    return this.feastPost('feast_new', { title, rounds, royal: royal ? 1 : 0 });
+  }
+  feastNext() {
+    return this.feastPost('feast_next');
+  }
+  feastSeat(cid: number, seat: string) {
+    return this.feastPost('feast_seat', { cid, seat });
+  }
+  feastAppRoll(cid: number, jewelry: number, fashion: number) {
+    return this.feastPost('feast_app_roll', { cid, jewelry, fashion });
+  }
+  feastActivity(cid: number, activity: string) {
+    return this.feastPost('feast_activity', { cid, activity });
+  }
+  feastRequirement(cid: number, trait: string) {
+    return this.feastPost('feast_requirement', { cid, trait });
+  }
+  feastRoll(cid: number, trait?: string) {
+    return this.feastPost('feast_roll', trait ? { cid, trait } : { cid });
+  }
+  feastSelectCard(cid: number, card: number) {
+    return this.feastPost('feast_select_card', { cid, card });
+  }
+  feastDiscardKept(cid: number, card: number) {
+    return this.feastPost('feast_discard_kept', { cid, card });
+  }
+  feastLeave(cid: number, voluntary: boolean) {
+    return this.feastPost('feast_leave', voluntary ? { cid, voluntary: 1 } : { cid });
+  }
+  feastReturn(cid: number) {
+    return this.feastPost('feast_return', { cid });
   }
 
   addC2C(c0: string, c1: string, connection: string, comment: string, withchars: boolean = false): Promise<C2C[]> {

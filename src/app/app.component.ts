@@ -7,7 +7,12 @@ import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 import { CharacterMain, CharacterMainDialog } from './character-detail/character-detail.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription, interval, timer } from 'rxjs';
+// Result -> game-icons.net file
+const CHECK_ICON_FILES = { critical: 'laurel-crown', success: 'shield-reflect', fail: 'broken-shield', fumble: 'broken-skull' };
+
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -32,8 +37,15 @@ export class AppComponent implements OnInit, OnDestroy {
     private message: MessageService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
+    iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer,
     )
   {
+    // Check result icons (game-icons.net, CC BY 3.0): <mat-icon svgIcon="check:critical">
+    for (const name of ['critical', 'success', 'fail', 'fumble']) {
+      iconRegistry.addSvgIconInNamespace('check', name,
+        sanitizer.bypassSecurityTrustResourceUrl(`assets/icons/${CHECK_ICON_FILES[name]}.svg`));
+    }
     this.snackBarConfig.duration = 2000;
     this.token = window.localStorage.getItem('token')
   }
@@ -144,8 +156,13 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log(JSON.stringify(result))
         this.snackBar.open('Dialog ok','Ok',this.snackBarConfig);
         this.service.newChar(result).then(c => {
-          this.router.navigate(['character/'+result['name']])
           this.snackBar.open('Lord created','Ok',this.snackBarConfig);
+          const dbid = c && c.char ? c.char['dbid'] : null;
+          if (dbid != null) {
+            this.router.navigate(['chargen', dbid]);
+          } else {
+            this.router.navigate(['character/'+result['name']]);
+          }
         })
       } else {
         this.snackBar.open('Dialog Cancelled','Ok',this.snackBarConfig);

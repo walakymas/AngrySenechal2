@@ -56,49 +56,76 @@ export class Deck {
   pos:number;
   deck: [];
 }
-export class FeastRound {
-  action: string;
-  card: string;
-
+export interface FeastRoundData {
+  action?: string;          // card, gossip, indulge, flirt, game, pass
+  cards?: number[];         // the hand of the round
+  selected?: number;        // the played card
+  discarded?: number[];
+  requires?: string[];      // round 1: Temperate / Chaste rolls still to make
+  forced?: boolean;
+  result?: string;          // critical, success, failure, fumble
 }
-export class GuestRound {
-  cards: number[];
+export interface FeastGuest {
+  position: string;         // above, near, below, floor, -1 before the seating
+  glory: number;
+  geniality: number;
+  app?: number;
+  fumbled: boolean;
+  left: boolean;
+  kept: number[];
+  award: number;
+  finalGlory?: number;
+  significant: string[];
+  rounds: { [round: string]: FeastRoundData };
+  enabled?: number[];       // the cards of the current round that can be played
 }
-export class GuestRoundMap {
-  [key: number]: GuestRound;
+export interface FeastGuestMap {
+  [cid: string]: FeastGuest;
 }
-export class FeastGuest {
-  id:number;
-  name:string;
-  glory:number;
-  seat:number;
-  activeCard:number[];
-  hand:number[];
-  rounds:GuestRoundMap;
-  history:FeastRound[];
+export interface FeastLogEntry {
+  round: number;
+  cid: string;
+  text: string;
 }
-
-export class FeastGuestMap {
-  [key: number]: FeastGuest;
-}
-export class FeastData {
-  name:string;
-  round:number;
-  rounds:number;
+export interface FeastData {
+  round: number;
+  rounds: number;
+  royal: boolean;
   participiants: FeastGuestMap;
-  deck:Deck;
-  state:string;
+  state: string;            // init, feast, end
+  log: FeastLogEntry[];
 }
-export class Feast {
-  data:FeastData;
-  description:string;
-  title:string;
-  id:number;
-  pos:number;
+export interface Feast {
+  data: FeastData;
+  description: string;
+  title: string;
+  id: number;
+  pos: number;
+}
+export interface RollResult {
+  result: string;
+  roll: number;
+  total: number;
+  target: number;
+}
+export interface FeastReply extends Feast {
+  rolled?: any;             // what the call rolled (a RollResult, or the APP rolls with the seat)
+}
+export interface FeastSummary {
+  id: number;
+  created: string;
+  title: string;
+  state: string;
+  round: number;
+  rounds: number;
 }
 
 export class Card {
   name:string;
+  text?:string;
+  full?:string;
+  geniality?:number;
+  mandatory?:string;
   check:{};
   keep:{};
   tags:string[];
