@@ -85,6 +85,8 @@ export class CharacterService {
   private base : Promise<Base>;
   private url = environment.url;
   private hook: string;
+  // The bot's command prefix comes from the backend (/base); the environment value is only the fallback
+  private prefix: string = environment.prefix;
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -132,6 +134,9 @@ export class CharacterService {
         tap(_ => {
           this.logger.log(`fetched base `);
           this.hook = _.hook;
+          if (_.prefix) {
+            this.prefix = _.prefix;
+          }
         }),
         catchError(this.handleError<Base>(`getBase`))
       ).toPromise()
@@ -292,7 +297,7 @@ export class CharacterService {
       new HttpParams()
       .set('username', 'Captain Hook')
       .set('avatar_url','https://senechalweb.duckdns.org/attachments/hook.png')
-      .set('content',environment.prefix+command).toString(),
+      .set('content',this.prefix+command).toString(),
       {
         headers: new HttpHeaders()
           .set('Content-Type', 'application/x-www-form-urlencoded')

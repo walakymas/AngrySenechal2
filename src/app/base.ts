@@ -22,4 +22,5 @@ export class Base {
     familycharacteristics: FamilyCharacteristic[] = [];
     loginNeeded: string = 'false';
     hook: string = '';
+    prefix?: string;
 }
