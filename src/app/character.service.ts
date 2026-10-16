@@ -424,8 +424,12 @@ export class CharacterService {
     );
   }
 
-  getCheckList(): Observable<CheckAll[]> {
-    return this.http.get<CheckAll[]>(this.url+`checks`).pipe(
+  // The latest rolls (server default 10, at most 100), optionally only those of one player's characters
+  getCheckList(limit?: number, player?: number | null): Observable<CheckAll[]> {
+    let params = new HttpParams();
+    if (limit) { params = params.set('limit', ''+limit); }
+    if (player) { params = params.set('player', ''+player); }
+    return this.http.get<CheckAll[]>(this.url+`checks`, { params }).pipe(
       tap(_ => this.logger.log(`fetched player list`)),
       catchError(this.handleError<CheckAll[]>(`getPlayerList`))
     );

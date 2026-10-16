@@ -7,6 +7,7 @@ import { TeamComponent } from './team/team.component';
 import { AdminComponent } from './admin/admin.component';
 import { FeastComponent } from './feast/feast.component';
 import { MapsComponent } from './maps/maps.component';
+import { RollsComponent } from './rolls/rolls.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/character', pathMatch: 'full' },
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'team', component: TeamComponent },
   { path: 'feast', component: FeastComponent },
   { path: 'maps', component: MapsComponent },
+  { path: 'rolls', component: RollsComponent },
   { path: 'chargen/:id', component: ChargenComponent },
   { path: 'chargen', redirectTo: '/character', pathMatch: 'full' },
   { path: 'admin', component: AdminComponent }

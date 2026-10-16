@@ -1,0 +1,3 @@
+.rolls { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 16px 16px 40px; }
+.rolls-filter { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.rolls-count, .rolls-empty { opacity: .75; }

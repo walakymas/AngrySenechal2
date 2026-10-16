@@ -42,6 +42,8 @@ import { FeastSeatingComponent } from './feast-seating/feast-seating.component';
 import { NpcDetail2Component } from './npc-detail2/npc-detail2.component';
 import { MapsComponent } from './maps/maps.component';
 import { PassionGroupsPipe } from './passion-category';
+import { CheckCardComponent } from './check-card/check-card.component';
+import { RollsComponent } from './rolls/rolls.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -70,7 +72,9 @@ import { PassionGroupsPipe } from './passion-category';
         MapEditDialog,
         NpcDetail2Component,
         PassionGroupsPipe,
-        CharacterConnectionDialog
+        CharacterConnectionDialog,
+        CheckCardComponent,
+        RollsComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

@@ -1,0 +1,20 @@
+<div class="rolls">
+  <div class="rolls-filter hidePrint">
+    <mat-form-field appearance="fill">
+      <mat-label>Player</mat-label>
+      <mat-select [value]="player" (selectionChange)="setPlayer($event.value)">
+        <mat-option [value]="null">All characters</mat-option>
+        @for (p of players; track p.id) {
+          <mat-option [value]="p.id">{{p.label}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <span class="rolls-count">{{checks.length}} / {{limit}} rolls</span>
+  </div>
+  @for (c of checks; track c.id) {
+    <check-card [check]="c" [showTime]="true"></check-card>
+  }
+  @if (checks.length == 0) {
+    <div class="rolls-empty">No rolls yet.</div>
+  }
+</div>
