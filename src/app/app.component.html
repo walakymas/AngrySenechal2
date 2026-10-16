@@ -53,7 +53,10 @@
   }
   <mat-menu #myChars="matMenu">
     @for (c of myCharacters(); track c) {
-      <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
+      <button mat-menu-item routerLink="character/{{c.name}}" [class.active-char]="isActive(c)">
+        <mat-icon>{{isActive(c) ? 'star' : 'star_border'}}</mat-icon>
+        <span>{{c.name}}</span>
+      </button>
     }
   </mat-menu>
   <button mat-button routerLink="team">

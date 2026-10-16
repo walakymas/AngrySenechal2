@@ -126,6 +126,11 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.list.filter(c => c.player == this.user.id);
   }
 
+  // The active character of the logged in user has the user's Discord id as memberid
+  isActive(c: LordBase) : boolean {
+    return this.isLoggedIn() && this.user.did != null && '' + c.memberid == '' + this.user.did;
+  }
+
   getLink(c: LordBase) : string {
     return `character/${c.name}`
   }

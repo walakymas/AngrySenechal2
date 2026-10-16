@@ -21,3 +21,11 @@ nav .hidePrint {
     font-weight: bold;
     margin: 0 8px;
 }
+
+.active-char {
+    font-weight: bold;
+}
+
+.active-char mat-icon {
+    color: #f9a825;
+}
