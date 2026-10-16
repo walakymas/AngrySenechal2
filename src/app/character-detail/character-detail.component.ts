@@ -15,6 +15,7 @@ import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { Subscription, interval } from 'rxjs';
 import { checkIconName } from '../check-card/check-card.component';
 import { hasChargenState } from '../chargen/chargen-storage';
+import { increaseCount, markStatusColor, MarkYear, MarksResponse, yearSummary, yearToOpen } from '../marks';
 
 @Component({
     selector: 'app-character-detail',
@@ -554,6 +555,45 @@ export class CharacterDetailComponent implements OnInit {
       }
 
     });
+  }
+
+  marksDialog() {
+    const dialogRef = this.dialog.open(CharacterMarksDialog, {
+      width: '500px',
+      data: {parent: this}
+    });
+    dialogRef.afterClosed().subscribe(changed => {
+      if (changed) {
+        this.refreshLord();
+      }
+    });
+  }
+
+  winterDialog() {
+    const dialogRef = this.dialog.open(CharacterWinterDialog, {
+      width: '600px',
+      data: {parent: this}
+    });
+    dialogRef.afterClosed().subscribe(done => {
+      if (done) {
+        this.refreshLord();
+      }
+    });
+  }
+
+  // reloads the character (a mark update changes its values, a winter adds an event)
+  refreshLord() {
+    this.service.getLord(this.id).subscribe(c => this.setLord(c, true));
+  }
+
+  // the winter and the mark update are for the logged in owner or admin (the server decides)
+  canWinter(): boolean {
+    return this.loggedInUserId() != null;
+  }
+
+  isAdmin(): boolean {
+    const user = JSON.parse(window.localStorage.getItem('user') || '{}');
+    return ((user.rights || 0) & 1) === 1;
   }
 
   showOld(j) {
@@ -1534,4 +1574,136 @@ export class CharacterConnectionDialog {
         }
       }
     }
+}
+
+@Component({
+    selector: 'character-marks-dialog',
+    template: `
+  <h2 mat-dialog-title>Marks - {{parent.char.char['name']}}</h2>
+  <div mat-dialog-content>
+    @if (years.length == 0) {
+      <p>{{loaded ? 'No marks yet' : 'Loading...'}}</p>
+    }
+    <mat-accordion>
+      @for (y of years; track y.year) {
+        <mat-expansion-panel [expanded]="y.year == opened" (opened)="opened = y.year">
+          <mat-expansion-panel-header>
+            <mat-panel-title>{{y.year}}</mat-panel-title>
+            <mat-panel-description>{{summary(y)}}</mat-panel-description>
+          </mat-expansion-panel-header>
+          <table>
+            @for (m of y.marks; track m.id) {
+              <tr>
+                <td>{{m.spec}}</td>
+                <td><b [style.color]="color(m.status)">{{m.status}}</b></td>
+              </tr>
+            }
+          </table>
+          <div class="marks-actions">
+            <button mat-button (click)="update(y)" [disabled]="busy || increases(y) == 0">
+              Update ({{increases(y)}})
+            </button>
+          </div>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+  </div>
+  <div mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="changed">Close</button>
+  </div>`,
+    styles: ['td { padding: 2px 16px 2px 0; } .marks-actions { margin-top: 8px; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
+export class CharacterMarksDialog implements OnInit {
+  parent: CharacterDetailComponent;
+  years: MarkYear[] = [];
+  opened: number | null = null;
+  loaded = false;
+  busy = false;
+  changed = false;
+  summary = yearSummary;
+  color = markStatusColor;
+  increases = increaseCount;
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: {parent: CharacterDetailComponent},
+              private snackBar: MatSnackBar) {
+    this.parent = data.parent;
+  }
+
+  ngOnInit(): void {
+    this.parent.getService().getMarks(this.parent.id).subscribe(r => {
+      this.loaded = true;
+      if (r) {
+        this.years = r.years;
+        this.opened = yearToOpen(r.years, r.year);
+      }
+    });
+  }
+
+  update(y: MarkYear) {
+    this.busy = true;
+    this.parent.getService().updateMarks(this.parent.id, y.year).then(r => {
+      this.busy = false;
+      if (!r) {
+        return;
+      }
+      this.years = r.years;
+      this.changed = true;
+      const text = r.changes && r.changes.length
+        ? r.changes.map(c => `${c.name}: ${c.old} -> ${c.new}`).join(', ')
+        : 'Nothing to update';
+      this.snackBar.open(text, 'Ok', {duration: 4000});
+    });
+  }
+}
+
+@Component({
+    selector: 'character-winter-dialog',
+    template: `
+  <h2 mat-dialog-title>Winter - {{parent.char.char['name']}}</h2>
+  <div mat-dialog-content>
+    @if (!result) {
+      <p>The winter phase is rolled for the character: economy, horses and the Unchecked marks
+        (the checked ones keep their result). The report is saved as a new event of the character.</p>
+      @if (admin) {
+        <mat-checkbox [(ngModel)]="force" [disabled]="busy">Force: roll the checked marks again (admin)</mat-checkbox>
+      }
+    } @else {
+      <pre class="winter-result">{{result}}</pre>
+    }
+  </div>
+  <div mat-dialog-actions align="end">
+    @if (!result) {
+      <button mat-button (click)="start()" [disabled]="busy">Start winter</button>
+    }
+    <button mat-button [mat-dialog-close]="done">{{result ? 'Close' : 'Cancel'}}</button>
+  </div>`,
+    styles: ['.winter-result { white-space: pre-wrap; font-family: monospace; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
+export class CharacterWinterDialog {
+  parent: CharacterDetailComponent;
+  admin: boolean;
+  force = false;
+  busy = false;
+  done = false;
+  result = '';
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: {parent: CharacterDetailComponent}) {
+    this.parent = data.parent;
+    this.admin = this.parent.isAdmin();
+  }
+
+  start() {
+    this.busy = true;
+    this.parent.getService().winter(this.parent.id, this.admin && this.force).then(r => {
+      this.busy = false;
+      if (r) {
+        this.done = true;
+        this.result = r.text || 'Done';
+      }
+    });
+  }
 }

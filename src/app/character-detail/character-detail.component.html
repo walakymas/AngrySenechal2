@@ -30,6 +30,14 @@
               <button mat-menu-item (click)="connectionsDialog()">
                 Connection
               </button>
+              <button mat-menu-item (click)="marksDialog()">
+                Marks
+              </button>
+              @if (canWinter()) {
+                <button mat-menu-item (click)="winterDialog()">
+                  Winter
+                </button>
+              }
               @if (canClaim()) {
                 <button mat-menu-item (click)="claim()">
                   My character

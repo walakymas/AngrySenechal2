@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { CharactersComponent } from './characters/characters.component';
-import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog, PassionDialog, PropertyDialog, CheckModifierDialog, CheckResultDialog } from './character-detail/character-detail.component';
+import { CharacterDetailComponent, DialogContentExampleDialog, CharacterMainDialog, CharacterJsonDialog, CharacterConnectionDialog, CharacterMarksDialog, CharacterWinterDialog, PassionDialog, PropertyDialog, CheckModifierDialog, CheckResultDialog } from './character-detail/character-detail.component';
 import { MessagesComponent } from './messages/messages.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatIconModule} from '@angular/material/icon';
@@ -73,6 +73,8 @@ import { RollsComponent } from './rolls/rolls.component';
         NpcDetail2Component,
         PassionGroupsPipe,
         CharacterConnectionDialog,
+        CharacterMarksDialog,
+        CharacterWinterDialog,
         CheckCardComponent,
         RollsComponent
     ],

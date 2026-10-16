@@ -10,6 +10,7 @@ import { catchError, map, tap,timeout } from 'rxjs/operators';
 import { GameEvent } from './character-detail/character-detail.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { WINDOW } from './windows';
+import { MarksResponse } from './marks';
 
 export class User {
   name: string;
@@ -125,6 +126,33 @@ export class CharacterService {
       }).pipe(
       tap(_ => this.logger.log(`set mark `)),
       catchError(this.handleError<Lord>(`setMark`))
+    ).toPromise();
+  }
+
+  getMarks(id: number): Observable<MarksResponse> {
+    return this.http.get<MarksResponse>(this.url + `marks`, {params: new HttpParams().set('id', '' + id)}).pipe(
+      catchError(this.handleError<MarksResponse>(`getMarks id=${id}`))
+    );
+  }
+
+  // raises the Increase marks of the year (owner or admin)
+  updateMarks(id: number, year: number): Promise<MarksResponse> {
+    return this.postMarks('marks_update', new HttpParams().set('id', '' + id).set('year', '' + year));
+  }
+
+  // the winter of the character (owner or admin); `force` (admin) rolls the checked marks again
+  winter(id: number, force: boolean): Promise<MarksResponse> {
+    return this.postMarks('winter', new HttpParams().set('id', '' + id).set('force', '' + force));
+  }
+
+  private postMarks(path: string, params: HttpParams): Promise<MarksResponse> {
+    return this.http.post<MarksResponse>(this.url + path, params.set('token', this.getToken()).toString(),
+      {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'application/x-www-form-urlencoded')
+      }).pipe(
+      tap(_ => this.logger.log(`${path} done`)),
+      catchError(this.handleError<MarksResponse>(path))
     ).toPromise();
   }
 
