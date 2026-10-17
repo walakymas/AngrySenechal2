@@ -2,6 +2,7 @@
 .rolls-filter { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: center; }
 .rolls-count, .rolls-empty { opacity: .75; }
 .rolls-limit { width: 110px; }
+.rolls-text { width: 220px; }
 
 /* Phone: the rolls one under the other */
 .rolls-list { display: flex; flex-direction: column; align-items: center; gap: 22px; max-width: 100%; }

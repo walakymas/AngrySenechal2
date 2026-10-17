@@ -24,6 +24,7 @@ export class RollsComponent implements OnInit, OnDestroy {
   checks: CheckAll[] = [];
   players: PlayerOption[] = [];
   player: number | null = null;  // null: everybody
+  text = '';  // case insensitive substring filter, applied on the loaded rolls only
   private subscription: Subscription;
 
   constructor(private service: CharacterService, private cdr: ChangeDetectorRef) { }
@@ -75,6 +76,23 @@ export class RollsComponent implements OnInit, OnDestroy {
       window.localStorage.setItem(this.limitStorageKey, '' + limit);
     } catch { }
     this.load();
+  }
+
+  // The rolls whose displayed texts contain the filter text
+  get filteredChecks(): CheckAll[] {
+    const needle = this.text.trim().toLowerCase();
+    return needle ? this.checks.filter(c => this.searchText(c).includes(needle)) : this.checks;
+  }
+
+  private searchText(c: CheckAll): string {
+    const r = c.result || {};
+    const parts = [c.name, c.command, r['action'], c.created];
+    for (const k of ['c1', 'c2']) {
+      if (r[k]) {
+        parts.push(r[k]['success'], r[k]['name']);
+      }
+    }
+    return parts.filter(p => p != null).join(' ').toLowerCase();
   }
 
   load(): void {

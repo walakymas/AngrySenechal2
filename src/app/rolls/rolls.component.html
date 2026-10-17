@@ -17,14 +17,18 @@
         }
       </mat-select>
     </mat-form-field>
-    <span class="rolls-count">{{checks.length}} / {{limit}} rolls</span>
+    <mat-form-field appearance="fill" class="rolls-text">
+      <mat-label>Search</mat-label>
+      <input matInput type="search" [(ngModel)]="text" autocomplete="off">
+    </mat-form-field>
+    <span class="rolls-count">{{filteredChecks.length}} / {{limit}} rolls</span>
   </div>
   <div class="rolls-list">
-    @for (c of checks; track c.id) {
+    @for (c of filteredChecks; track c.id) {
       <check-card [check]="c" [showTime]="true"></check-card>
     }
   </div>
-  @if (checks.length == 0) {
-    <div class="rolls-empty">No rolls yet.</div>
+  @if (filteredChecks.length == 0) {
+    <div class="rolls-empty">{{ text.trim() ? 'No matching rolls.' : 'No rolls yet.' }}</div>
   }
 </div>
