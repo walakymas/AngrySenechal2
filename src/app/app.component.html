@@ -5,6 +5,7 @@
   <mat-menu #mainMenu="matMenu">
     <button mat-menu-item (click)="newChar()"><mat-icon>person_add</mat-icon>New character</button>
     <button mat-menu-item routerLink="feast"><mat-icon>nightlife</mat-icon>Feast</button>
+    <button mat-menu-item (click)="openChangelog()"><mat-icon>history</mat-icon>Changelog</button>
   </mat-menu>
   <button mat-button [matMenuTriggerFor]="players">
     <mat-icon>local_police</mat-icon>
@@ -20,34 +21,7 @@
       }
     }
   </mat-menu>
-  <button mat-button [matMenuTriggerFor]="all"><mat-icon>switch_account</mat-icon>All</button>
-  <mat-menu #all="matMenu">
-
-    <button mat-menu-item [matMenuTriggerFor]="Lords"><mat-icon>male</mat-icon>Lords</button>
-    <button mat-menu-item [matMenuTriggerFor]="Ladies"><mat-icon>female</mat-icon>Ladies</button>
-    <button mat-menu-item [matMenuTriggerFor]="Other"><mat-icon>transgender</mat-icon>Other</button>
-  </mat-menu>
-  <mat-menu #Ladies="matMenu">
-    @for (c of list; track c) {
-      @if (isLady(c)) {
-        <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
-      }
-    }
-  </mat-menu>
-  <mat-menu #Lords="matMenu">
-    @for (c of list; track c) {
-      @if (isLord(c)) {
-        <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
-      }
-    }
-  </mat-menu>
-  <mat-menu #Other="matMenu">
-    @for (c of list; track c) {
-      @if (isOther(c)) {
-        <button mat-menu-item routerLink="character/{{c.name}}">{{c.name}}</button>
-      }
-    }
-  </mat-menu>
+  <button mat-button (click)="openAll()"><mat-icon>switch_account</mat-icon>All</button>
   @if (isLoggedIn()) {
     <button mat-button [matMenuTriggerFor]="myChars"><mat-icon>account_circle</mat-icon>MyCharacters</button>
   }

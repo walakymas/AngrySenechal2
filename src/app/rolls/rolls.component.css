@@ -7,6 +7,13 @@
 /* Phone: the rolls one under the other */
 .rolls-list { display: flex; flex-direction: column; align-items: center; gap: 22px; max-width: 100%; }
 
+/* Grid: a row per player, the rolls of the row side by side (newest on the left), scrolled horizontally */
+.rolls-grid { display: flex; flex-direction: column; gap: 18px; max-width: 100%; width: 100%; }
+.rolls-row-label { font-weight: bold; padding: 0 12px 4px; }
+.rolls-row-list { display: flex; flex-direction: row; align-items: flex-start; gap: 22px;
+  overflow-x: auto; overflow-y: hidden; padding: 4px 12px 12px; }
+.rolls-row-list check-card { flex: 0 0 auto; }
+
 /* PC: the rolls side by side (newest on the left), scrolled horizontally */
 @media (min-width: 900px) {
   .rolls { align-items: stretch; }

@@ -2,7 +2,8 @@
   <div class="rolls-filter hidePrint">
     <mat-form-field appearance="fill">
       <mat-label>Player</mat-label>
-      <mat-select [value]="player || 0" (selectionChange)="setPlayer($event.value)">
+      <mat-select [value]="selected" (selectionChange)="setPlayer($event.value)">
+        <mat-option [value]="-1">Grid</mat-option>
         <mat-option [value]="0">All characters</mat-option>
         @for (p of players; track p.id) {
           <mat-option [value]="p.id">{{p.label}}</mat-option>
@@ -23,11 +24,26 @@
     </mat-form-field>
     <span class="rolls-count">{{filteredChecks.length}} / {{limit}} rolls</span>
   </div>
-  <div class="rolls-list">
-    @for (c of filteredChecks; track c.id) {
-      <check-card [check]="c" [showTime]="true"></check-card>
-    }
-  </div>
+  @if (grid) {
+    <div class="rolls-grid">
+      @for (r of rows; track r.label) {
+        <div class="rolls-row">
+          <div class="rolls-row-label">{{r.label}}</div>
+          <div class="rolls-row-list">
+            @for (c of r.checks; track c.id) {
+              <check-card [check]="c" [showTime]="true"></check-card>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="rolls-list">
+      @for (c of filteredChecks; track c.id) {
+        <check-card [check]="c" [showTime]="true"></check-card>
+      }
+    </div>
+  }
   @if (filteredChecks.length == 0) {
     <div class="rolls-empty">{{ text.trim() ? 'No matching rolls.' : 'No rolls yet.' }}</div>
   }

@@ -8,7 +8,14 @@ interface PlayerOption {
   label: string;
 }
 
-// The storyteller's roll log: the last 100 rolls, of everybody or of the characters of one player
+interface GridRow {
+  label: string;
+  checks: CheckAll[];
+}
+
+const GRID = -1;  // the "Grid" option value of the player select
+
+// The storyteller's roll log: the last 100 rolls, of everybody (as a grid with a row per player, or one list) or of the characters of one player
 @Component({
     selector: 'app-rolls',
     templateUrl: './rolls.component.html',
@@ -24,17 +31,21 @@ export class RollsComponent implements OnInit, OnDestroy {
   checks: CheckAll[] = [];
   players: PlayerOption[] = [];
   player: number | null = null;  // null: everybody
+  grid = true;  // everybody's rolls, one row per player
+  private charPlayer = new Map<number, number>();  // character id -> player id
   text = '';  // case insensitive substring filter, applied on the loaded rolls only
   private subscription: Subscription;
 
   constructor(private service: CharacterService, private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
-    // Without a remembered choice the log shows the logged in player's characters
-    const stored = window.localStorage.getItem(this.playerStorageKey);
-    const userId = Number(window.localStorage.getItem('userId'));
-    const own = this.service.isLoggedIn() && userId > 0 ? userId : null;
-    this.player = stored === 'all' ? null : Number(stored) > 0 ? Number(stored) : own;
+    // Without a remembered choice the log shows everybody's rolls as a grid
+    let stored: string | null = null;
+    try {
+      stored = window.localStorage.getItem(this.playerStorageKey);
+    } catch { }
+    this.grid = stored == null || stored === 'grid';
+    this.player = Number(stored) > 0 ? Number(stored) : null;
     const storedLimit = Number(window.localStorage.getItem(this.limitStorageKey));
     this.limit = this.limits.includes(storedLimit) ? storedLimit : 100;
     this.service.getList().subscribe(l => this.setPlayers(l));
@@ -49,9 +60,14 @@ export class RollsComponent implements OnInit, OnDestroy {
   // One option per player, labelled by the names of their characters
   private setPlayers(chars: LordBase[]): void {
     const names = new Map<number, string[]>();
+    this.charPlayer = new Map<number, number>();
     for (const c of chars || []) {
       if (c.player) {
-        names.set(c.player, [...(names.get(c.player) || []), c.name]);
+        this.charPlayer.set(Number(c.id), Number(c.player));
+      }
+      if (c.player) {
+        const id = Number(c.player);
+        names.set(id, [...(names.get(id) || []), c.name]);
       }
     }
     this.players = [...names.entries()]
@@ -60,14 +76,37 @@ export class RollsComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // 0 is the "All characters" option (a null option value is treated as an empty selection by mat-select)
+  // 0 is the "All characters" option (a null option value is treated as an empty selection by mat-select), -1 the grid
   setPlayer(value: number): void {
     const player = value > 0 ? value : null;
+    this.grid = value === GRID;
     this.player = player;
     try {
-      window.localStorage.setItem(this.playerStorageKey, player ? '' + player : 'all');
+      window.localStorage.setItem(this.playerStorageKey, this.grid ? 'grid' : player ? '' + player : 'all');
     } catch { }
     this.load();
+  }
+
+  get selected(): number {
+    return this.grid ? GRID : this.player || 0;
+  }
+
+  // The grid rows: the rolls of each player (the rolls are already newest first), players without a roll are left out
+  get rows(): GridRow[] {
+    const byPlayer = new Map<number, CheckAll[]>();
+    const others: CheckAll[] = [];
+    for (const c of this.filteredChecks) {
+      const p = this.charPlayer.get(Number(c.character));
+      if (p) {
+        byPlayer.set(p, [...(byPlayer.get(p) || []), c]);
+      } else {
+        others.push(c);
+      }
+    }
+    const rows: GridRow[] = this.players
+      .filter(p => byPlayer.has(p.id))
+      .map(p => ({ label: p.label, checks: byPlayer.get(p.id) }));
+    return others.length ? [...rows, { label: 'Others', checks: others }] : rows;
   }
 
   setLimit(limit: number): void {

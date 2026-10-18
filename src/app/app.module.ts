@@ -44,6 +44,8 @@ import { MapsComponent } from './maps/maps.component';
 import { PassionGroupsPipe } from './passion-category';
 import { CheckCardComponent } from './check-card/check-card.component';
 import { RollsComponent } from './rolls/rolls.component';
+import { AllDialogComponent } from './all-dialog/all-dialog.component';
+import { ChangelogDialogComponent } from './changelog-dialog/changelog-dialog.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -56,6 +58,8 @@ import { RollsComponent } from './rolls/rolls.component';
         EditableComponent,
         DialogContentExampleDialog,
         CharacterMainDialog,
+        AllDialogComponent,
+        ChangelogDialogComponent,
         CharacterJsonDialog,
         PassionDialog,
         PropertyDialog,

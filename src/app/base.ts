@@ -23,4 +23,5 @@ export class Base {
     loginNeeded: string = 'false';
     hook: string = '';
     prefix?: string;
+    changes?: string;
 }

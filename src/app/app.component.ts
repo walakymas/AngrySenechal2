@@ -6,6 +6,8 @@ import { Lord, LordBase } from './lord';
 import { ActivatedRoute, Router, ParamMap, Params } from '@angular/router';
 import { CharacterMain, CharacterMainDialog } from './character-detail/character-detail.component';
 import { MatDialog } from '@angular/material/dialog';
+import { AllDialogComponent } from './all-dialog/all-dialog.component';
+import { ChangelogDialogComponent, changelogIsNew } from './changelog-dialog/changelog-dialog.component';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -52,6 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.handleLoginRedirect();
+    this.showChangelogIfNew();
     this.loadList();
     this.listSubscription = this.service.listChanged.subscribe(() => this.loadList(true));
     this.service.getUser().then( u => this.setUser(u))
@@ -145,6 +148,33 @@ export class AppComponent implements OnInit, OnDestroy {
 
   isOther(c: LordBase) : boolean {
     return !this.isLady(c) && !this.isLord(c);
+  }
+
+  // Opens the changelog on the first visit after it changed
+  async showChangelogIfNew() {
+    try {
+      const base = await this.service.getBase();
+      if (base && changelogIsNew(base['changes'])) {
+        this.openChangelog();
+      }
+    } catch { }
+  }
+
+  openChangelog() {
+    this.dialog.open(ChangelogDialogComponent, { width: '560px', maxWidth: '95vw' });
+  }
+
+  openAll() {
+    const list = this.list || [];
+    this.dialog.open(AllDialogComponent, {
+      width: '420px',
+      maxWidth: '95vw',
+      data: {
+        Lords: list.filter(c => this.isLord(c)),
+        Ladies: list.filter(c => this.isLady(c)),
+        Other: list.filter(c => this.isOther(c))
+      }
+    });
   }
 
   newChar() {
