@@ -44,6 +44,7 @@ import { MapsComponent } from './maps/maps.component';
 import { PassionGroupsPipe } from './passion-category';
 import { CheckCardComponent } from './check-card/check-card.component';
 import { RollsComponent } from './rolls/rolls.component';
+import { ArmsComponent } from './arms/arms.component';
 import { AllDialogComponent } from './all-dialog/all-dialog.component';
 import { ChangelogDialogComponent } from './changelog-dialog/changelog-dialog.component';
 
@@ -80,7 +81,8 @@ import { ChangelogDialogComponent } from './changelog-dialog/changelog-dialog.co
         CharacterMarksDialog,
         CharacterWinterDialog,
         CheckCardComponent,
-        RollsComponent
+        RollsComponent,
+        ArmsComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         AppRoutingModule,

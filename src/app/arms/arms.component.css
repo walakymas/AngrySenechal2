@@ -1,0 +1,26 @@
+.arms { display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 8px 16px 40px; }
+.arms h2 { padding-bottom: 0; }
+.arms-hint { max-width: 640px; text-align: center; opacity: .8; margin: 0; }
+.arms-controls { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.arms-options { display: flex; flex-direction: column; align-items: flex-start; }
+.arms-options-title { font-weight: bold; color: var(--goldHighlight); padding-bottom: 4px; }
+.arms-empty { opacity: .75; }
+
+/* Phone: the shield above the text */
+.arms-result { display: flex; flex-direction: column; align-items: center; gap: 20px; max-width: 100%; }
+.arms-shield { width: min(70vw, 300px); flex: 0 0 auto; }
+.arms-shield ::ng-deep svg { display: block; width: 100%; height: auto; }
+.arms-info { max-width: 560px; width: 100%; }
+.arms-info h4 { padding: 6px 0; margin: 0; }
+.arms-blazon { font-size: 1.25em; font-style: italic; color: var(--contrastedTextColor); margin: 0 0 8px; }
+.arms-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.arms-scope { font-weight: bold; color: var(--contrastedTextColor); margin-top: 10px; }
+.arms-step { color: var(--goldHighlight); font-weight: bold; margin-top: 8px; }
+.arms-log ul { margin: 2px 0 0; padding-left: 20px; }
+.arms-log li { padding: 1px 0; }
+
+/* PC: the shield beside the text */
+@media (min-width: 900px) {
+  .arms-result { flex-direction: row; align-items: flex-start; gap: 40px; }
+  .arms-shield { width: 300px; position: sticky; top: 16px; }
+}

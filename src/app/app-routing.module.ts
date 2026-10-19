@@ -8,6 +8,7 @@ import { AdminComponent } from './admin/admin.component';
 import { FeastComponent } from './feast/feast.component';
 import { MapsComponent } from './maps/maps.component';
 import { RollsComponent } from './rolls/rolls.component';
+import { ArmsComponent } from './arms/arms.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/character', pathMatch: 'full' },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'feast', component: FeastComponent },
   { path: 'maps', component: MapsComponent },
   { path: 'rolls', component: RollsComponent },
+  { path: 'arms', component: ArmsComponent },
   { path: 'chargen/:id', component: ChargenComponent },
   { path: 'chargen', redirectTo: '/character', pathMatch: 'full' },
   { path: 'admin', component: AdminComponent }

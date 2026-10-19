@@ -1,0 +1,60 @@
+<div class="arms">
+  <h2>Coat of Arms</h2>
+  <p class="arms-hint hidePrint">
+    The random coat of arms of Appendix B of the core rulebook: roll the shield design, the tinctures and the charges.
+    The symbols are only approximate pictures, the blazon is the exact result.
+  </p>
+  <div class="arms-controls hidePrint">
+    <button mat-flat-button (click)="roll()">
+      <mat-icon>casino</mat-icon>{{ result ? 'Roll again' : 'Roll a coat of arms' }}
+    </button>
+    <div class="arms-options">
+      <span class="arms-options-title">Optional rules (for the next roll)</span>
+      <mat-checkbox [(ngModel)]="options.headOnly" (ngModelChange)="saveOptions()">
+        Italicized charges: 1D6 5+, only the animal's head
+      </mat-checkbox>
+      <mat-checkbox [(ngModel)]="options.moreCharges" (ngModelChange)="saveOptions()">
+        More charges: 1D6 6, an additional charge
+      </mat-checkbox>
+      <mat-checkbox [(ngModel)]="options.animation" (ngModelChange)="saveOptions()">
+        Animation of quadrupeds (except lions)
+      </mat-checkbox>
+      <mat-checkbox [(ngModel)]="options.swapFur" (ngModelChange)="saveOptions()">
+        Ordinary on a fur: 1D6 5+, the fur and the ordinary swap
+      </mat-checkbox>
+    </div>
+  </div>
+  @if (result) {
+    <div class="arms-result">
+      <div class="arms-shield" [innerHTML]="svg"></div>
+      <div class="arms-info">
+        <h4>Blazon</h4>
+        <p class="arms-blazon">{{ result.blazon }}</p>
+        <div class="arms-actions hidePrint">
+          <button mat-button (click)="copyBlazon()">
+            <mat-icon>content_copy</mat-icon>{{ copied ? 'Copied' : 'Copy blazon' }}
+          </button>
+          <button mat-button (click)="downloadSvg()"><mat-icon>download</mat-icon>Download SVG</button>
+        </div>
+        <h4 class="hidePrint">Rolls</h4>
+        <div class="arms-log hidePrint">
+          @for (g of groups; track g.scope) {
+            @if (g.scope) {
+              <div class="arms-scope">{{ g.scope }}</div>
+            }
+            @for (s of g.steps; track s.step) {
+              <div class="arms-step">{{ s.title }}</div>
+              <ul>
+                @for (e of s.entries; track $index) {
+                  <li>{{ e }}</li>
+                }
+              </ul>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="arms-empty hidePrint">No coat of arms yet.</div>
+  }
+</div>
