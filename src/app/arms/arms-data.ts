@@ -107,6 +107,8 @@ export interface ChargeDef {
   pose?: string;
   glyph?: string;          // drawn as a silhouette of this symbol
   headGlyph?: string;      // ... when only the head is shown
+  image?: string;          // a heraldic drawing (arms-images.ts) instead of the glyph
+  headImage?: string;      // ... when only the head is shown
   shape?: string;          // or drawn as a heraldic shape of arms-svg.ts
   natural?: boolean;       // looks right in its natural colors ("proper")
   italic?: boolean;        // italicized in Table B.3: optional rule 1 (head only)
@@ -119,82 +121,82 @@ const animal = (key: string, name: string, glyph: string, o: Partial<ChargeDef> 
   def(key, name, { glyph, natural: true, ...o });
 
 // 1: Animate
-def('Lion rearing', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'rampant' });
-def('Lion resting', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'couchant' });
-def('Lion standing', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'statant' });
-def('Lion walking', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'passant' });
-animal('Dragon', 'dragon', '🐉');
-animal('Eagle', 'eagle', '🦅', { italic: true, pose: 'displayed' });
-animal('Stag', 'stag', '🦌', { italic: true, quad: 'h' });
-animal('Wolf', 'wolf', '🐺', { italic: true, quad: 'c', plural: 'wolves' });
-animal('Bear', 'bear', '🐻', { italic: true, quad: 'c' });
-animal('Boar', 'boar', '🐗', { italic: true, quad: 'c' });
-animal('Fox', 'fox', '🦊', { italic: true, quad: 'c' });
-animal('Talbot', 'talbot', '🐕', { italic: true, quad: 'c', headGlyph: '🐶' });
+def('Lion rearing', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'rampant', image: 'lion-rampant' });
+def('Lion resting', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'couchant', image: 'lion-couchant' });
+def('Lion standing', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'statant', image: 'lion-statant' });
+def('Lion walking', 'lion', { glyph: '🦁', natural: true, italic: true, pose: 'passant', image: 'lion-passant' });
+animal('Dragon', 'dragon', '🐉', { image: 'dragon' });
+animal('Eagle', 'eagle', '🦅', { italic: true, pose: 'displayed', image: 'eagle' });
+animal('Stag', 'stag', '🦌', { italic: true, quad: 'h', image: 'stag' });
+animal('Wolf', 'wolf', '🐺', { italic: true, quad: 'c', plural: 'wolves', image: 'wolf' });
+animal('Bear', 'bear', '🐻', { italic: true, quad: 'c', image: 'bear' });
+animal('Boar', 'boar', '🐗', { italic: true, quad: 'c', image: 'boar', headImage: 'boar-head' });
+animal('Fox', 'fox', '🦊', { italic: true, quad: 'c', image: 'fox' });
+animal('Talbot', 'talbot', '🐕', { italic: true, quad: 'c', headGlyph: '🐶', image: 'talbot' });
 // 2: Animate
-animal('Bee', 'bee', '🐝');
-animal('Hound', 'hound', '🐕', { italic: true, quad: 'c', headGlyph: '🐶' });
-animal('Goat', 'goat', '🐐', { italic: true, quad: 'h' });
-animal('Ram', 'ram', '🐏', { italic: true, quad: 'h' });
-animal('Sheep', 'sheep', '🐑', { quad: 'h', plural: 'sheep' });
-animal('Bull', 'bull', '🐂', { italic: true, quad: 'h', headGlyph: '🐮' });
-animal('Horse', 'horse', '🐎', { italic: true, quad: 'h', headGlyph: '🐴' });
-animal('Fish', 'fish', '🐟', { plural: 'fish' });
-animal('Dolphin', 'dolphin', '🐬');
-animal('Escallop', 'escallop', '🐚');
-animal('Crab', 'crab', '🦀');
-animal('Eel', 'eel', '🐍');
-animal('Serpent', 'serpent', '🐍');
-animal('Bat', 'bat', '🦇');
-animal('Spider', 'spider', '🕷');
-animal('Fly', 'fly', '🪰');
-animal('Scorpion', 'scorpion', '🦂');
-animal('Ant', 'ant', '🐜');
-animal('Leopard', 'leopard', '🐆', { quad: 'c' });
-def('Crow', 'crow', { glyph: '🐦' });
-def('Raven', 'raven', { glyph: '🐦' });
+animal('Bee', 'bee', '🐝', { image: 'bee' });
+animal('Hound', 'hound', '🐕', { italic: true, quad: 'c', headGlyph: '🐶', image: 'greyhound' });
+animal('Goat', 'goat', '🐐', { italic: true, quad: 'h', image: 'goat' });
+animal('Ram', 'ram', '🐏', { italic: true, quad: 'h', image: 'ram', headImage: 'ram-head' });
+animal('Sheep', 'sheep', '🐑', { quad: 'h', plural: 'sheep', image: 'ewe' });
+animal('Bull', 'bull', '🐂', { italic: true, quad: 'h', headGlyph: '🐮', image: 'bull', headImage: 'bull-head' });
+animal('Horse', 'horse', '🐎', { italic: true, quad: 'h', headGlyph: '🐴', image: 'horse' });
+animal('Fish', 'fish', '🐟', { plural: 'fish', image: 'fish' });
+animal('Dolphin', 'dolphin', '🐬', { image: 'dolphin' });
+animal('Escallop', 'escallop', '🐚', { image: 'escallop' });
+animal('Crab', 'crab', '🦀', { image: 'crab' });
+animal('Eel', 'eel', '🐍', { image: 'eel' });
+animal('Serpent', 'serpent', '🐍', { image: 'serpent' });
+animal('Bat', 'bat', '🦇', { image: 'bat' });
+animal('Spider', 'spider', '🕷', { image: 'spider' });
+animal('Fly', 'fly', '🪰', { image: 'fly' });
+animal('Scorpion', 'scorpion', '🦂', { image: 'scorpion' });
+animal('Ant', 'ant', '🐜', { image: 'ant' });
+animal('Leopard', 'leopard', '🐆', { quad: 'c', image: 'leopard' });
+def('Crow', 'crow', { glyph: '🐦', image: 'crow' });
+def('Raven', 'raven', { glyph: '🐦', image: 'raven' });
 // 3: Animate
-animal('Sea-horse', 'sea-horse', '🐴');
-animal('Unicorn', 'unicorn', '🦄', { italic: true, quad: 'h' });
-animal('Gryphon', 'gryphon', '🦅', { italic: true });
+animal('Sea-horse', 'sea-horse', '🐴', { image: 'sea-horse' });
+animal('Unicorn', 'unicorn', '🦄', { italic: true, quad: 'h', image: 'unicorn' });
+animal('Gryphon', 'gryphon', '🦅', { italic: true, image: 'gryphon' });
 animal('Hippogriff', 'hippogriff', '🐴');
-animal('Wyvern', 'wyvern', '🐉');
-animal('Wyrm', 'wyrm', '🐍');
-animal('Cockatrice', 'cockatrice', '🐓');
-animal('Manticore', 'manticore', '🦁');
+animal('Wyvern', 'wyvern', '🐉', { image: 'wyvern' });
+animal('Wyrm', 'wyrm', '🐍', { image: 'wyrm' });
+animal('Cockatrice', 'cockatrice', '🐓', { image: 'cockatrice' });
+animal('Manticore', 'manticore', '🦁', { image: 'manticore' });
 animal('Giant', 'giant', '👹');
-animal('Ogre', 'ogre', '👹');
-animal('Centaur', 'centaur', '🏹');
+animal('Ogre', 'ogre', '👹', { image: 'ogre' });
+animal('Centaur', 'centaur', '🏹', { image: 'centaur' });
 animal('Satyr', 'satyr', '🐐');
-animal('Pegasus', 'pegasus', '🐴');
-animal('Sea-dog', 'sea-dog', '🐕');
-animal('Mermaid', 'mermaid', '🧜');
-animal('Merman', 'merman', '🧜');
-animal('Camelopard', 'camelopard', '🦒', { quad: 'h' });
-animal('Harpy', 'harpy', '🦅');
-animal('Phoenix', 'phoenix', '🦅');
+animal('Pegasus', 'pegasus', '🐴', { image: 'pegasus' });
+animal('Sea-dog', 'sea-dog', '🐕', { image: 'sea-dog' });
+animal('Mermaid', 'mermaid', '🧜', { image: 'mermaid' });
+animal('Merman', 'merman', '🧜', { image: 'merman' });
+animal('Camelopard', 'camelopard', '🦒', { quad: 'h', image: 'camelopard' });
+animal('Harpy', 'harpy', '🦅', { image: 'harpy' });
+animal('Phoenix', 'phoenix', '🦅', { image: 'phoenix' });
 animal('Opinicus', 'opinicus', '🦅');
-animal('Salamander', 'salamander', '🦎');
+animal('Salamander', 'salamander', '🦎', { image: 'salamander' });
 animal('Yale', 'yale', '🐐');
-animal('Enfield', 'enfield', '🦊');
+animal('Enfield', 'enfield', '🦊', { image: 'enfield' });
 // 4: Inanimate
-def('Sword', 'sword', { glyph: '🗡' });
-def('Church Bell', 'church bell', { glyph: '🔔' });
-def('Lymphad', 'lymphad', { glyph: '⛵' });
-def('Castle', 'castle', { glyph: '🏰' });
-def('Tower', 'tower', { glyph: '🏯' });
-def('Sun', 'sun', { glyph: '☀' });
-def('Moon', 'moon', { glyph: '🌙' });
+def('Sword', 'sword', { glyph: '🗡', image: 'sword' });
+def('Church Bell', 'church bell', { glyph: '🔔', image: 'bell' });
+def('Lymphad', 'lymphad', { glyph: '⛵', image: 'lymphad' });
+def('Castle', 'castle', { glyph: '🏰', image: 'castle' });
+def('Tower', 'tower', { glyph: '🏯', image: 'tower' });
+def('Sun', 'sun', { glyph: '☀', image: 'sun' });
+def('Moon', 'moon', { glyph: '🌙', image: 'moon' });
 def('Head', 'head', { glyph: '👤' });
-def('Skull', 'skull', { glyph: '💀' });
-def('Hand', 'hand', { glyph: '✋' });
-def('Arm', 'arm', { glyph: '💪' });
+def('Skull', 'skull', { glyph: '💀', image: 'skull' });
+def('Hand', 'hand', { glyph: '✋', image: 'hand' });
+def('Arm', 'arm', { glyph: '💪', image: 'arm' });
 def('Gauntlet', 'gauntlet', { glyph: '🧤' });
-def('Anchor', 'anchor', { glyph: '⚓' });
-def('Crown', 'crown', { glyph: '👑' });
-def('Rose', 'rose', { glyph: '🌹', natural: true });
-def('Thistle', 'thistle', { glyph: '🌿', natural: true });
-def('Tree', 'tree', { glyph: '🌳', natural: true });
+def('Anchor', 'anchor', { glyph: '⚓', image: 'anchor' });
+def('Crown', 'crown', { glyph: '👑', image: 'crown' });
+def('Rose', 'rose', { glyph: '🌹', natural: true, image: 'rose' });
+def('Thistle', 'thistle', { glyph: '🌿', natural: true, image: 'thistle' });
+def('Tree', 'tree', { glyph: '🌳', natural: true, image: 'tree' });
 // 5: Inanimate (heraldic shapes)
 def('Cross', 'cross couped', { shape: 'cross', plural: 'crosses couped' });
 def('Cross Crosslet', 'cross crosslet', { shape: 'crosslet', plural: 'crosses crosslet' });
@@ -219,50 +221,50 @@ def('Fleur-de-lis', 'fleur-de-lis', { shape: 'fleur', plural: 'fleurs-de-lis' })
 def('Heart', 'heart', { shape: 'heart' });
 def('Billet', 'billet', { shape: 'billet' });
 // B.3.1 Chivalry
-def('Knight', 'knight', { glyph: '🏇' });
+def('Knight', 'knight', { glyph: '🏇', image: 'knight' });
 def('Spur', 'spur', { glyph: '⚙' });
-def('Helm', 'helm', { glyph: '🪖' });
-def('Warhorse', 'warhorse', { glyph: '🐎', natural: true, headGlyph: '🐴' });
-def('Lance', 'lance', { glyph: '🔱' });
-def('Spear', 'spear', { glyph: '🔱' });
-def('Cup', 'cup', { glyph: '🏆' });
+def('Helm', 'helm', { glyph: '🪖', image: 'helm' });
+def('Warhorse', 'warhorse', { glyph: '🐎', natural: true, headGlyph: '🐴', image: 'horse' });
+def('Lance', 'lance', { glyph: '🔱', image: 'lance' });
+def('Spear', 'spear', { glyph: '🔱', image: 'spear' });
+def('Cup', 'cup', { glyph: '🏆', image: 'cup' });
 // Weapons
-def('Warhammer', 'warhammer', { glyph: '🔨' });
-def('Battle-axe', 'battle-axe', { glyph: '🪓' });
-def('Arrow', 'arrow', { glyph: '🏹' });
-def('Mace', 'mace', { glyph: '🔨' });
-def('Flail', 'flail', { glyph: '⛓' });
+def('Warhammer', 'warhammer', { glyph: '🔨', image: 'warhammer' });
+def('Battle-axe', 'battle-axe', { glyph: '🪓', image: 'battle-axe' });
+def('Arrow', 'arrow', { glyph: '🏹', image: 'arrow' });
+def('Mace', 'mace', { glyph: '🔨', image: 'mace' });
+def('Flail', 'flail', { glyph: '⛓', image: 'flail' });
 def('Morningstar', 'morningstar', { glyph: '✴' });
 // Tools
-def('Hammer', 'hammer', { glyph: '🔨' });
+def('Hammer', 'hammer', { glyph: '🔨', image: 'hammer' });
 def('Anvil', 'anvil', { glyph: '⚒' });
-def('Hunting Horn', 'hunting horn', { glyph: '📯' });
-def('Wheel', 'wheel', { glyph: '☸' });
-def('Horseshoe', 'horseshoe', { glyph: '🧲' });
-def('Sickle', 'sickle', { glyph: '🌙' });
-def('Shovel', 'shovel', { glyph: '⛏' });
+def('Hunting Horn', 'hunting horn', { glyph: '📯', image: 'hunting-horn' });
+def('Wheel', 'wheel', { glyph: '☸', image: 'wheel' });
+def('Horseshoe', 'horseshoe', { glyph: '🧲', image: 'horseshoe' });
+def('Sickle', 'sickle', { glyph: '🌙', image: 'sickle' });
+def('Shovel', 'shovel', { glyph: '⛏', image: 'shovel' });
 // Household
 def('Fetterlock', 'fetterlock', { glyph: '🔒' });
-def('Key', 'key', { glyph: '🗝' });
+def('Key', 'key', { glyph: '🗝', image: 'key' });
 def('Buckle', 'buckle', { glyph: '🔗' });
 def('Scale', 'scale', { glyph: '⚖' });
-def('Maunch', 'maunch', { glyph: '👘' });
+def('Maunch', 'maunch', { glyph: '👘', image: 'maunch' });
 def('Harp', 'harp', { glyph: '🎻' });
-def('Book', 'book', { glyph: '📖' });
+def('Book', 'book', { glyph: '📖', image: 'book' });
 // Birds
-animal('Falcon', 'falcon', '🦅');
-animal('Owl', 'owl', '🦉');
-animal('Heron', 'heron', '🦢');
-animal('Crane', 'crane', '🦩');
+animal('Falcon', 'falcon', '🦅', { image: 'falcon' });
+animal('Owl', 'owl', '🦉', { image: 'owl' });
+animal('Heron', 'heron', '🦢', { image: 'heron' });
+animal('Crane', 'crane', '🦩', { image: 'crane' });
 animal('Martlet', 'martlet', '🐦');
 animal('Cock', 'cock', '🐓');
-animal('Swan', 'swan', '🦢');
+animal('Swan', 'swan', '🦢', { image: 'swan' });
 // Religious
 def('Mary & Child', 'Virgin and Child', { glyph: '🤱' });
 def('Saint', 'saint', { glyph: '😇' });
-def('Angel', 'angel', { glyph: '👼' });
+def('Angel', 'angel', { glyph: '👼', image: 'angel' });
 def('Crucifixion', 'crucifixion', { glyph: '✝' });
-def('Pascal lamb', 'Pascal lamb', { glyph: '🐑', natural: true });
+def('Pascal lamb', 'Pascal lamb', { glyph: '🐑', natural: true, image: 'lamb' });
 def('Roman god', 'Roman god', { glyph: '🏛' });
 def('Celtic god', 'Celtic god', { glyph: '☘' });
 // Christian
@@ -279,7 +281,7 @@ def('Flory', 'cross flory', { shape: 'flory', plural: 'crosses flory' });
 def('Bottony', 'cross bottony', { shape: 'bottony', plural: 'crosses bottony' });
 // Pagan
 def('Caduceus', 'caduceus', { glyph: '⚕' });
-def('Thunderbolt', 'thunderbolt', { glyph: '⚡' });
+def('Thunderbolt', 'thunderbolt', { glyph: '⚡', image: 'thunderbolt' });
 def('Medusa', 'Medusa', { glyph: '🐍', italic: true });
 def('Horned God', 'Horned God', { glyph: '🦌', italic: true });
 def('Shining spear', 'shining spear', { glyph: '🔱' });
@@ -288,16 +290,16 @@ def('Woman rider', 'woman rider', { glyph: '🏇' });
 def('Mountain', 'mountain', { glyph: '⛰', natural: true });
 def('Shooting star', 'shooting star', { glyph: '🌠' });
 def('Fountain', 'fountain', { glyph: '⛲' });
-def('Acorn', 'acorn', { glyph: '🌰', natural: true });
+def('Acorn', 'acorn', { glyph: '🌰', natural: true, image: 'acorn' });
 def('Apple', 'apple', { glyph: '🍎', natural: true });
 def('Wild man', 'wild man', { glyph: '🧔', natural: true, italic: true, plural: 'wild men' });
-def('Garb', 'garb', { glyph: '🌾', natural: true });
+def('Garb', 'garb', { glyph: '🌾', natural: true, image: 'garb' });
 // Constructs
 def('Pavilion', 'pavilion', { glyph: '⛺' });
-def('Walls', 'wall', { glyph: '🧱' });
+def('Walls', 'wall', { glyph: '🧱', image: 'walls' });
 def('Bridge', 'bridge', { glyph: '🌉' });
 def('Gateworks', 'gate', { glyph: '🚪' });
-def('Church', 'church', { glyph: '⛪' });
+def('Church', 'church', { glyph: '⛪', image: 'church' });
 def('Lighthouse', 'lighthouse', { glyph: '🗼' });
 
 export const CHARGE_DEFS: Record<string, ChargeDef> = Object.fromEntries(D.map(d => [d.key, d]));

@@ -8,7 +8,7 @@ import {
 } from './arms-builder';
 import { blazonOf } from './arms-blazon';
 import { armsBattlePrompt, armsPhotoPrompt, armsPrompt, PromptCharacter } from './arms-prompt';
-import { renderArmsSvg } from './arms-svg';
+import { armsImagesLoaded, loadArmsImages, renderArmsSvg } from './arms-svg';
 
 interface LogStep {
   step: number;
@@ -69,6 +69,15 @@ export class ArmsComponent implements OnInit {
   constructor(private sanitizer: DomSanitizer, private cdr: ChangeDetectorRef, private characters: CharacterService) { }
 
   ngOnInit(): void {
+    if (!armsImagesLoaded()) {
+      // the drawings come in a lazy chunk: draw the page again with them when they have arrived
+      loadArmsImages().then(() => {
+        if (armsImagesLoaded() && this.result) {
+          this.show(this.result);
+          this.cdr.markForCheck();
+        }
+      });
+    }
     try {
       const options = JSON.parse(window.localStorage.getItem(this.optionsKey) || 'null');
       if (options) {

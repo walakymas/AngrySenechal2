@@ -1,6 +1,6 @@
 import { CHARGE_COLUMNS, CHARGE_DEFS, isFur, isMetal, ORDINARY_NAMES, SUBTABLES } from './arms-data';
 import { ArmsOptions, generateArms, Roller } from './arms-generator';
-import { renderArmsSvg } from './arms-svg';
+import { armsImagesLoaded, loadArmsImages, renderArmsSvg } from './arms-svg';
 import { blazonOf } from './arms-blazon';
 import { buildDesign, defaultChoice, designToChoice, newCharge, validDesign } from './arms-builder';
 import { armsPhotoPrompt, armsPrompt } from './arms-prompt';
@@ -168,5 +168,17 @@ describe('Coat of Arms by choice', () => {
     expect(validDesign({ ...d, charges: [{ key: 'Cross', count: 1000, tincture: 'or' }] })).toBe(false);
     expect(validDesign({ ...d, field: { kind: 'solid', tincture: 'pink' } })).toBe(false);
     expect(validDesign(null)).toBe(false);
+  });
+
+  it('draws the animals as heraldic drawings once the lazy image chunk is loaded', async () => {
+    const choice = defaultChoice();
+    choice.charges = [newCharge('Wolf')];
+    const design = buildDesign(choice);
+    expect(renderArmsSvg(design)).toContain('🐺');
+    await loadArmsImages();
+    expect(armsImagesLoaded()).toBeTrue();
+    const svg = renderArmsSvg(design);
+    expect(svg).not.toContain('🐺');
+    expect(svg).toContain('wolf_svg__');  // the id prefix of the drawing
   });
 });

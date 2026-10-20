@@ -92,3 +92,9 @@ violations in the browser console, then set `reportOnly: false` in `server.js` t
 The check result icons (`src/assets/icons/`: laurel-crown, shield-reflect, broken-shield, broken-skull) come from
 [game-icons.net](https://game-icons.net) (authors Lorc, Delapouite and contributors), licensed under
 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+
+The heraldic animals of the coat of arms generator (`src/app/arms/images/`) are Wikimedia Commons SVGs, mostly public
+domain or CC0 drawings (A. C. Fox-Davies' *Complete Guide to Heraldry* and others); some are CC BY-SA 3.0/4.0 (the lions, crab,
+spider, fly, scorpion, bat, sea-horse, fish, merman, ant). Authors and
+licences per file: `src/app/arms/images/README.md`. `arms-images.ts` is generated from them by
+`node scripts/build-arms-images.mjs`.

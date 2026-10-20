@@ -1,10 +1,19 @@
 // Draws a generated coat of arms as an SVG string (viewBox around 0 0 100 120). Everything in it comes from the tables of
 // arms-data.ts, never from user input.
+import type { ArmsImage } from './arms-images';
 import { CHARGE_DEFS, ChargeTincture, isFur, OrdinaryType, TINCTURE_COLORS, Tincture } from './arms-data';
 import type { ChargeGroup, Design, Field, PatternSpec } from './arms-generator';
 
 const SHIELD = 'M0,0 H100 V58 C100,92 78,110 50,120 C22,110 0,92 0,58 Z';
 const INK = '#2a1d12';
+
+// The heraldic drawings (~1.5 MB) are a separate chunk, loaded when the first coat of arms is shown; until then (or when the
+// load fails) the animals are drawn as emoji silhouettes
+let ARMS_IMAGES: Record<string, ArmsImage> = {};
+export const armsImagesLoaded = (): boolean => Object.keys(ARMS_IMAGES).length > 0;
+export function loadArmsImages(): Promise<void> {
+  return import('./arms-images').then(m => { ARMS_IMAGES = m.ARMS_IMAGES; }, () => { });
+}
 const EMOJI_FONT = "'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji','Segoe UI Symbol',sans-serif";
 
 type Pt = [number, number];
@@ -142,9 +151,15 @@ function drawCharge(ctx: Ctx, g: ChargeGroup, tincture: ChargeTincture, x: numbe
   if (def.shape) {
     inner = `<g fill="${ctx.fill(t)}" stroke="${INK}" stroke-width="${f(1.3 / s)}" stroke-linejoin="round">${SHAPES[def.shape]}</g>`;
   } else {
-    const glyph = g.head && def.headGlyph ? def.headGlyph : def.glyph;
-    inner = `<g filter="url(#${ctx.glyphFilter(t)})"><text x="0" y="0" font-size="86" text-anchor="middle" `
-      + `dominant-baseline="central" font-family="${EMOJI_FONT}">${glyph}</text></g>`;
+    const image = ARMS_IMAGES[g.head && def.headImage ? def.headImage : def.image ?? ''];
+    if (image) {
+      inner = `<g filter="url(#${ctx.glyphFilter(t)})"><svg x="-47" y="-47" width="94" height="94" viewBox="${image.viewBox}" `
+        + `preserveAspectRatio="xMidYMid meet">${image.body}</svg></g>`;
+    } else {
+      const glyph = g.head && def.headGlyph ? def.headGlyph : def.glyph;
+      inner = `<g filter="url(#${ctx.glyphFilter(t)})"><text x="0" y="0" font-size="86" text-anchor="middle" `
+        + `dominant-baseline="central" font-family="${EMOJI_FONT}">${glyph}</text></g>`;
+    }
   }
   return `<g transform="translate(${f(x)} ${f(y)}) scale(${+s.toFixed(4)})">${inner}</g>`;
 }
