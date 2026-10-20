@@ -4,26 +4,175 @@
     The random coat of arms of Appendix B of the core rulebook: roll the shield design, the tinctures and the charges.
     The symbols are only approximate pictures, the blazon is the exact result.
   </p>
-  <div class="arms-controls hidePrint">
-    <button mat-flat-button (click)="roll()">
-      <mat-icon>casino</mat-icon>{{ result ? 'Roll again' : 'Roll a coat of arms' }}
-    </button>
-    <div class="arms-options">
-      <span class="arms-options-title">Optional rules (for the next roll)</span>
-      <mat-checkbox [(ngModel)]="options.headOnly" (ngModelChange)="saveOptions()">
-        Italicized charges: 1D6 5+, only the animal's head
-      </mat-checkbox>
-      <mat-checkbox [(ngModel)]="options.moreCharges" (ngModelChange)="saveOptions()">
-        More charges: 1D6 6, an additional charge
-      </mat-checkbox>
-      <mat-checkbox [(ngModel)]="options.animation" (ngModelChange)="saveOptions()">
-        Animation of quadrupeds (except lions)
-      </mat-checkbox>
-      <mat-checkbox [(ngModel)]="options.swapFur" (ngModelChange)="saveOptions()">
-        Ordinary on a fur: 1D6 5+, the fur and the ordinary swap
-      </mat-checkbox>
+  <mat-button-toggle-group class="hidePrint" [(ngModel)]="mode" (ngModelChange)="setMode()" aria-label="How to make the coat of arms">
+    <mat-button-toggle value="roll"><mat-icon>casino</mat-icon> Roll</mat-button-toggle>
+    <mat-button-toggle value="choose"><mat-icon>tune</mat-icon> Choose</mat-button-toggle>
+  </mat-button-toggle-group>
+  @if (mode === 'roll') {
+    <div class="arms-controls hidePrint">
+      <button mat-flat-button (click)="roll()">
+        <mat-icon>casino</mat-icon>{{ result ? 'Roll again' : 'Roll a coat of arms' }}
+      </button>
+      <div class="arms-options">
+        <span class="arms-options-title">Optional rules (for the next roll)</span>
+        <mat-checkbox [(ngModel)]="options.headOnly" (ngModelChange)="saveOptions()">
+          Italicized charges: 1D6 5+, only the animal's head
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="options.moreCharges" (ngModelChange)="saveOptions()">
+          More charges: 1D6 6, an additional charge
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="options.animation" (ngModelChange)="saveOptions()">
+          Animation of quadrupeds (except lions)
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="options.swapFur" (ngModelChange)="saveOptions()">
+          Ordinary on a fur: 1D6 5+, the fur and the ordinary swap
+        </mat-checkbox>
+      </div>
     </div>
-  </div>
+  } @else {
+    <div class="arms-choose hidePrint">
+      <div class="arms-section">Field</div>
+      <div class="arms-row">
+        <mat-form-field>
+          <mat-label>Field</mat-label>
+          <mat-select [(ngModel)]="choice.fieldKind" (ngModelChange)="applyChoice()">
+            <mat-option value="solid">Solid</mat-option>
+            <mat-option value="division">Divided</mat-option>
+            <mat-option value="variation">Variation</mat-option>
+          </mat-select>
+        </mat-form-field>
+        @if (choice.fieldKind === 'division') {
+          <mat-form-field>
+            <mat-label>Division</mat-label>
+            <mat-select [(ngModel)]="choice.division" (ngModelChange)="applyChoice()">
+              @for (d of divisions; track d) {
+                <mat-option [value]="d">per {{ d.replace('-', ' ') }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        @if (choice.fieldKind === 'variation') {
+          <mat-form-field>
+            <mat-label>Variation</mat-label>
+            <mat-select [(ngModel)]="choice.pattern" (ngModelChange)="applyChoice()">
+              @for (p of patterns; track p) {
+                <mat-option [value]="p">{{ p.replace('-', ' ') }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (patternCounts(choice.pattern).length) {
+            <mat-form-field class="arms-narrow">
+              <mat-label>Number</mat-label>
+              <mat-select [(ngModel)]="choice.count" (ngModelChange)="applyChoice()">
+                @for (n of patternCounts(choice.pattern); track n) {
+                  <mat-option [value]="n">{{ n }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+        }
+        <mat-form-field>
+          <mat-label>{{ choice.fieldKind === 'solid' ? 'Tincture' : 'First tincture' }}</mat-label>
+          <mat-select [(ngModel)]="choice.a" (ngModelChange)="applyChoice()">
+            @for (t of tinctures; track t) {
+              <mat-option [value]="t">{{ t }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (choice.fieldKind !== 'solid') {
+          <mat-form-field>
+            <mat-label>Second tincture</mat-label>
+            <mat-select [(ngModel)]="choice.b" (ngModelChange)="applyChoice()">
+              @for (t of tinctures; track t) {
+                <mat-option [value]="t">{{ t }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+      </div>
+
+      <div class="arms-section">Ordinary</div>
+      <div class="arms-row">
+        <mat-form-field>
+          <mat-label>Ordinary</mat-label>
+          <mat-select [(ngModel)]="choice.ordinary" (ngModelChange)="applyChoice()">
+            <mat-option value="">None</mat-option>
+            @for (o of ordinaries; track o.type) {
+              <mat-option [value]="o.type">{{ o.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (choice.ordinary) {
+          <mat-form-field>
+            <mat-label>Tincture</mat-label>
+            <mat-select [(ngModel)]="choice.ordinaryTincture" (ngModelChange)="applyChoice()">
+              @for (t of tinctures; track t) {
+                <mat-option [value]="t">{{ t }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <button mat-button (click)="toggleOrdinaryCharge()">
+            <mat-icon>{{ choice.onOrdinary ? 'remove' : 'add' }}</mat-icon>{{ choice.onOrdinary ? 'No charge on it' : 'Charge on it' }}
+          </button>
+        }
+      </div>
+      @if (choice.ordinary && choice.onOrdinary) {
+        <ng-container *ngTemplateOutlet="chargeRow; context: { c: choice.onOrdinary, i: -1 }"></ng-container>
+      }
+
+      <div class="arms-section">Charges on the field</div>
+      @for (c of choice.charges; track $index) {
+        <ng-container *ngTemplateOutlet="chargeRow; context: { c: c, i: $index }"></ng-container>
+      }
+      @if (choice.charges.length < maxFieldCharges) {
+        <button mat-button (click)="addCharge()"><mat-icon>add</mat-icon>Add a charge</button>
+      }
+      <p class="arms-hint">
+        The countercharged designs, minor charges around a main charge, semé and the two halves of a shield can only be rolled.
+      </p>
+    </div>
+  }
+  <ng-template #chargeRow let-c="c" let-i="i">
+    <div class="arms-row">
+      <mat-form-field class="arms-wide">
+        <mat-label>Charge</mat-label>
+        <mat-select [(ngModel)]="c.key" (ngModelChange)="chargeKeyChanged(c)">
+          @for (o of chargeOptions; track o.key) {
+            <mat-option [value]="o.key">{{ o.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="arms-narrow">
+        <mat-label>Number</mat-label>
+        <input matInput type="number" min="1" max="17" [(ngModel)]="c.count" (ngModelChange)="applyChoice()">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Tincture</mat-label>
+        <mat-select [(ngModel)]="c.tincture" (ngModelChange)="applyChoice()">
+          @for (t of chargeTinctures; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if (canPose(c.key)) {
+        <mat-form-field>
+          <mat-label>Pose</mat-label>
+          <mat-select [(ngModel)]="c.pose" (ngModelChange)="applyChoice()">
+            <mat-option value="">Default</mat-option>
+            @for (p of poses; track p) {
+              <mat-option [value]="p">{{ p }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+      @if (canHead(c.key)) {
+        <mat-checkbox [(ngModel)]="c.head" (ngModelChange)="applyChoice()">Head only</mat-checkbox>
+      }
+      @if (i >= 0) {
+        <button mat-icon-button (click)="removeCharge(i)" aria-label="Remove the charge"><mat-icon>delete</mat-icon></button>
+      }
+    </div>
+  </ng-template>
   @if (result) {
     <div class="arms-result">
       <div class="arms-shield" [innerHTML]="svg"></div>
@@ -34,8 +183,36 @@
           <button mat-button (click)="copyBlazon()">
             <mat-icon>content_copy</mat-icon>{{ copied ? 'Copied' : 'Copy blazon' }}
           </button>
+          <button mat-button (click)="copyPrompt()">
+            <mat-icon>auto_awesome</mat-icon>{{ promptCopied ? 'Copied' : 'Copy AI prompt' }}
+          </button>
+          <button mat-button (click)="copyPhotoPrompt()">
+            <mat-icon>photo_camera</mat-icon>{{ photoCopied ? 'Copied' : 'Copy photo prompt' }}
+          </button>
+          @if (fighter) {
+            <button mat-button (click)="copyBattlePrompt()">
+              <mat-icon>shield</mat-icon>{{ battleCopied ? 'Copied' : 'Copy battle prompt (' + fighter.name + ')' }}
+            </button>
+          }
           <button mat-button (click)="downloadSvg()"><mat-icon>download</mat-icon>Download SVG</button>
+          <button mat-button (click)="downloadPng()"><mat-icon>image</mat-icon>Download PNG</button>
+          @if (character) {
+            @if (isLoggedIn()) {
+              <button mat-button (click)="saveToCharacter()">
+                <mat-icon>save</mat-icon>{{ saveState === 'saved' ? 'Saved' : 'Save to ' + character.name }}
+              </button>
+            }
+            @if (character.arms) {
+              <button mat-button (click)="loadFromCharacter()"><mat-icon>upload</mat-icon>Load from {{ character.name }}</button>
+            }
+          }
         </div>
+        @if (saveState === 'error') {
+          <p class="arms-hint hidePrint">The coat of arms could not be saved, log in again and try once more.</p>
+        }
+        @if (loadNote) {
+          <p class="arms-hint hidePrint">{{ loadNote }}</p>
+        }
         <h4 class="hidePrint">Rolls</h4>
         <div class="arms-log hidePrint">
           @for (g of groups; track g.scope) {

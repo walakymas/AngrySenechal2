@@ -24,3 +24,11 @@
   .arms-result { flex-direction: row; align-items: flex-start; gap: 40px; }
   .arms-shield { width: 300px; position: sticky; top: 16px; }
 }
+
+/* Choosing by hand */
+.arms-choose { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; max-width: 900px; }
+.arms-section { font-weight: bold; color: var(--goldHighlight); padding-top: 8px; }
+.arms-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.arms-row .mat-mdc-form-field { width: 170px; }
+.arms-row .arms-narrow { width: 90px; }
+.arms-row .arms-wide { width: 230px; }

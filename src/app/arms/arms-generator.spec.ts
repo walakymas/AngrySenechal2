@@ -1,6 +1,9 @@
 import { CHARGE_COLUMNS, CHARGE_DEFS, isFur, isMetal, ORDINARY_NAMES, SUBTABLES } from './arms-data';
 import { ArmsOptions, generateArms, Roller } from './arms-generator';
 import { renderArmsSvg } from './arms-svg';
+import { blazonOf } from './arms-blazon';
+import { buildDesign, defaultChoice, designToChoice, newCharge, validDesign } from './arms-builder';
+import { armsPhotoPrompt, armsPrompt } from './arms-prompt';
 
 // A roller that gives the rolls of the book's examples, in the order the generator asks for them
 const scripted = (rolls: number[]): Roller => sides => {
@@ -92,5 +95,78 @@ describe('Coat of Arms generator (Appendix B)', () => {
       const def = CHARGE_DEFS[key];
       expect(def.shape || def.glyph).withContext(key).toBeTruthy();
     }
+  });
+});
+
+describe('Coat of Arms by choice', () => {
+  it('builds the blazon of the chosen design', () => {
+    const c = defaultChoice();
+    c.fieldKind = 'division';
+    c.division = 'pale';
+    c.a = 'argent';
+    c.b = 'gules';
+    c.ordinary = 'bend';
+    c.ordinaryTincture = 'vert';
+    c.charges = [{ ...newCharge('Mullet'), count: 2, tincture: 'sable' }];
+    expect(blazonOf(buildDesign(c))).toBe('Per pale argent and gules, a bend vert between two sable mullets.');
+  });
+
+  it('renders every charge of the form', () => {
+    for (const key of Object.keys(CHARGE_DEFS)) {
+      const c = defaultChoice();
+      c.charges = [newCharge(key)];
+      expect(renderArmsSvg(buildDesign(c))).toContain('<svg');
+    }
+  });
+
+  it('keeps a pattern count of the pattern', () => {
+    const c = defaultChoice();
+    c.fieldKind = 'variation';
+    c.pattern = 'gyronny';
+    c.count = 6;
+    expect((buildDesign(c).field as { count: number }).count).toBe(8);
+  });
+
+  it('makes the prompts of a blazon', () => {
+    const blazon = 'Azure, a lion rampant or.';
+    expect(armsPrompt(blazon)).toContain('- azure: blue');
+    expect(armsPhotoPrompt(blazon, 'A test scene.')).toContain('SCENE (edit this line to change the situation): A test scene.');
+  });
+
+  it('takes a chosen design back into the form', () => {
+    const c = defaultChoice();
+    c.fieldKind = 'variation';
+    c.pattern = 'barry';
+    c.count = 8;
+    c.a = 'gules';
+    c.b = 'or';
+    c.ordinary = 'chief';
+    c.onOrdinary = { ...newCharge('Roundel'), count: 3 };
+    c.charges = [{ ...newCharge('Wolf'), pose: 'passant', head: true }];
+    const back = designToChoice(JSON.parse(JSON.stringify(buildDesign(c))))!;
+    expect(blazonOf(buildDesign(back))).toBe(blazonOf(buildDesign(c)));
+  });
+
+  it('does not take the rolled-only designs into the form', () => {
+    const rolled = generateArms(() => 1);
+    for (let i = 0; i < 300; i++) {
+      const r = generateArms();
+      const d = JSON.parse(JSON.stringify(r.design));
+      expect(validDesign(d)).toBe(true);
+      const c = designToChoice(d);
+      if (c) {
+        expect(blazonOf(buildDesign(c))).toBe(r.blazon);
+      }
+    }
+    expect(rolled.blazon).toBeTruthy();
+  });
+
+  it('refuses an unknown value of the stored data', () => {
+    const d = buildDesign(defaultChoice());
+    expect(validDesign(d)).toBe(true);
+    expect(validDesign({ ...d, charges: [{ key: 'constructor', count: 1, tincture: 'or' }] })).toBe(false);
+    expect(validDesign({ ...d, charges: [{ key: 'Cross', count: 1000, tincture: 'or' }] })).toBe(false);
+    expect(validDesign({ ...d, field: { kind: 'solid', tincture: 'pink' } })).toBe(false);
+    expect(validDesign(null)).toBe(false);
   });
 });
