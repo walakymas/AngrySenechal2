@@ -90,7 +90,7 @@ export function armsPhotoPrompt(blazon: string, scene = DEFAULT_SCENE): string {
   ].join('\n');
 }
 
-export interface PromptCharacter { name: string; url: string; description?: string; }
+export interface PromptCharacter { name: string; url: string; }
 
 export const DEFAULT_BATTLE_SCENE = 'In the middle of a medieval battle, the knight in chainmail with a sword in his right hand '
   + 'holds the shield up in his left hand to block a blow; mud, dust, banners and fighting men in the background, dramatic light.';
@@ -105,8 +105,7 @@ export function armsBattlePrompt(blazon: string, character: PromptCharacter, sce
     `SCENE (edit this line to change the situation): ${scene}`,
     '',
     `CHARACTER: ${character.name}. The knight must look like the person in the reference image: ${character.url} `
-    + '(if you cannot open links, ask me to attach the image). Keep his face, hair and age as in the reference.'
-    + (character.description ? ` Notes: ${character.description}` : ''),
+    + '(if you cannot open links, ask me to attach the image). Keep his face, hair and age as in the reference.',
     '',
     ...blazonLines(blazon),
     '',

@@ -104,7 +104,7 @@ export class ArmsComponent implements OnInit {
       }
       this.character = { id, name: '' + c['name'], arms: this.storedArms(c['arms']) };
       if (c['url']) {
-        this.fighter = { name: '' + c['name'], url: '' + c['url'], description: c['description'] ? '' + c['description'] : undefined };
+        this.fighter = { name: '' + c['name'], url: '' + c['url'] };
       }
       this.cdr.markForCheck();
     });
