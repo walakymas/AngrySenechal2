@@ -6,3 +6,7 @@
 .map-item .thumb { opacity: 1; }
 .edit-map-button { margin-bottom: 4px; width: 100%; }
 .preview img { width: 100%; height: auto; display: block; }
+.pdf-thumb { align-items: center; background: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; color: #b71c1c; display: flex; flex-direction: column; height: 150px; justify-content: center; }
+.pdf-thumb mat-icon { font-size: 56px; height: 56px; width: 56px; }
+.preview .pdf-frame { background: #fff; border: 0; display: block; height: 80vh; min-height: 400px; width: 100%; }
+.preview .pdf-open { background: #fff; display: block; font-size: 12px; text-align: right; }

@@ -58,6 +58,7 @@ app.use(helmet({
             fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
             imgSrc: ["'self'", 'data:', 'https:', 'http:'],
             connectSrc: ["'self'", 'https:', 'http:'],
+            frameSrc: ["'self'", 'https:', 'http:'],
             objectSrc: ["'none'"],
             baseUri: ["'self'"],
             formAction: ["'self'"],

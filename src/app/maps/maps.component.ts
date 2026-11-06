@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CharacterService, MapEntry } from '../character.service';
 import { MapEditDialog } from '../admin/maps-admin.component';
 
@@ -20,8 +21,32 @@ export class MapsComponent implements OnInit {
   currentPreview: MapEntry | null = null;
   previewStyle: any = {};
   keepPreviewFlag = false;
+  private pdfUrlCache = new Map<string, SafeResourceUrl>();
 
-  constructor(private service: CharacterService, public dialog: MatDialog, private snack: MatSnackBar) { }
+  constructor(private service: CharacterService, public dialog: MatDialog, private snack: MatSnackBar,
+              private sanitizer: DomSanitizer) { }
+
+  /** True if the map url points to a PDF document (query string / fragment are ignored). */
+  isPdf(m: MapEntry | null): boolean {
+    if (!m || !m.url) return false;
+    try {
+      return new URL(m.url).pathname.toLowerCase().endsWith('.pdf');
+    } catch {
+      return m.url.split(/[?#]/)[0].toLowerCase().endsWith('.pdf');
+    }
+  }
+
+  /** Safe resource url for the PDF viewer iframe (only http(s) addresses are accepted by the API). */
+  pdfUrl(m: MapEntry): SafeResourceUrl {
+    // Cached per url: a new SafeResourceUrl object on every change detection would reset the iframe src
+    // and reload the PDF continuously.
+    let safe = this.pdfUrlCache.get(m.url);
+    if (!safe) {
+      safe = this.sanitizer.bypassSecurityTrustResourceUrl(m.url);
+      this.pdfUrlCache.set(m.url, safe);
+    }
+    return safe;
+  }
   ngOnInit(): void {
     this.loadMaps();
   }

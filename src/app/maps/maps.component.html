@@ -5,7 +5,11 @@
         <div class="maps-grid">
           @for (m of grouped[c]; track m) {
             <div class="map-item" (click)="showPreview($event, m)">
-              <img class="thumb" [src]="m.url" [alt]="m.name || m.id"/>
+              @if (isPdf(m)) {
+                <div class="pdf-thumb"><mat-icon>picture_as_pdf</mat-icon><span>PDF</span></div>
+              } @else {
+                <img class="thumb" [src]="m.url" [alt]="m.name || m.id"/>
+              }
               <div class="map-caption"  (click)="editMap($event, m)">{{m.name || m.url}}</div>
             </div>
           }
@@ -16,7 +20,12 @@
 
   @if (currentPreview) {
     <div class="preview">
-      <img [src]="currentPreview.url" [alt]="currentPreview.name || currentPreview.id"/>
+      @if (isPdf(currentPreview)) {
+        <iframe class="pdf-frame" [src]="pdfUrl(currentPreview)" [title]="currentPreview.name || 'PDF'"></iframe>
+        <a class="pdf-open" [href]="currentPreview.url" target="_blank" rel="noopener noreferrer">Open in new tab</a>
+      } @else {
+        <img [src]="currentPreview.url" [alt]="currentPreview.name || currentPreview.id"/>
+      }
     </div>
   }
 </div>
