@@ -204,7 +204,6 @@ button.advanced .mat-icon{
   width: 34px;
   height: 51px;
   background: var(--die-idle) center / contain no-repeat;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
   transition: transform 0.12s ease;
 }
 .die:hover .die-face, .die:focus-visible .die-face { background-image: var(--die-hover); }
