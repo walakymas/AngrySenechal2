@@ -328,3 +328,6 @@ button.advanced .mat-icon{
 }
 .mode-switch button + button { border-left: 1px solid rgba(149, 128, 97, 0.45); }
 .mode-switch button.active { background: var(--color-gold); color: var(--color-ink-900); }
+.damage-line .dice-caption { display: flex; justify-content: flex-end; }
+.damage-switch { margin-left: 0; }
+.damage-switch button { padding: 3px 8px; font-size: 0.9rem; }

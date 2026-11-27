@@ -118,19 +118,19 @@
         <button class="die die-d6" (click)="bot('d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D6</span></button>
         <button class="die die-d20" (click)="bot('d20')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D20</span></button>
       </div>
-      <div class="dice-line">
-        <div class="dice-caption">Weapon damage</div>
-        <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1}}d6</span></button>
-        <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1 +4}}d6</span></button>
-      </div>
-      <div class="dice-line">
-        <div class="dice-caption">Horse damage</div>
-        @if (main_horse) {
-          <button class="die die-d6" (click)="bot(horseDamageDice()+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{horseDamageDice()}}d6</span></button>
-        }
-        @if (main_horse) {
-          <button class="die die-d6" (click)="bot((horseDamageDice()+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{horseDamageDice()+4}}d6</span></button>
-        }
+      <div class="dice-line damage-line">
+        <div class="dice-caption">
+          @if (main_horse) {
+            <span class="mode-switch damage-switch" role="group" aria-label="Damage of">
+              <button type="button" [class.active]="damageSource == 'weapon'" [attr.aria-pressed]="damageSource == 'weapon'" (click)="damageSource = 'weapon'">Weapon</button>
+              <button type="button" [class.active]="damageSource == 'horse'" [attr.aria-pressed]="damageSource == 'horse'" (click)="damageSource = 'horse'">Horse</button>
+            </span>
+          } @else {
+            Weapon damage
+          }
+        </div>
+        <button class="die die-d6" (click)="bot(damageDice()+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{damageDice()}}d6</span></button>
+        <button class="die die-d6" (click)="bot((damageDice()+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{damageDice()+4}}d6</span></button>
       </div>
       <div class="dice-line check-modifier">
         <div class="dice-caption" title="Added to every check you roll by clicking a trait, skill or passion">Check modifier</div>
@@ -141,10 +141,10 @@
         </span>
       </div>
       <div class="dice-line check-mode">
-        <div class="dice-caption">When rolling</div>
-        <span class="mode-switch" role="group" aria-label="When rolling a check">
-          <button type="button" [class.active]="!isAdvancedMode()" [attr.aria-pressed]="!isAdvancedMode()" (click)="mode = 'simple'" title="Roll right away with the check modifier">Quick roll</button>
-          <button type="button" [class.active]="isAdvancedMode()" [attr.aria-pressed]="isAdvancedMode()" (click)="mode = 'advanced'" title="Ask for an extra modifier for that check first">Ask each time</button>
+        <div class="dice-caption" title="What happens when you click a trait, skill or passion name">Clicking a skill</div>
+        <span class="mode-switch" role="group" aria-label="What clicking a skill does">
+          <button type="button" [class.active]="!isAdvancedMode()" [attr.aria-pressed]="!isAdvancedMode()" (click)="mode = 'simple'" title="Roll the check right away, with the check modifier">Rolls at once</button>
+          <button type="button" [class.active]="isAdvancedMode()" [attr.aria-pressed]="isAdvancedMode()" (click)="mode = 'advanced'" title="First ask for an extra modifier for that skill (remembered per skill)">Asks modifier first</button>
         </span>
       </div>
     </div>

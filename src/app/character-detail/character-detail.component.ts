@@ -34,6 +34,8 @@ export class CharacterDetailComponent implements OnInit {
   healthmod: number = 0;
   // amounts next to the - (wound) and + (heal) ends of the health bar
   woundAmount: number = 1;
+  // which damage the second dice row rolls: the knight's weapon or the main horse
+  damageSource: 'weapon' | 'horse' = 'weapon';
   healAmount: number = 1;
   actualCheck: number = 1;
   lastCheck: number = -1;
@@ -505,6 +507,13 @@ export class CharacterDetailComponent implements OnInit {
   public isEq(s1: string, s2:string):boolean{
     let result = s1==s2;
     return result;
+  }
+
+  damageDice(): number {
+    if (this.damageSource == 'horse' && this.main_horse) {
+      return this.horseDamageDice();
+    }
+    return this.getDetail('Damage') + this.weapon['damage'] * 1;
   }
 
   woundBy() {
