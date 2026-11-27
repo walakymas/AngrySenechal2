@@ -280,3 +280,51 @@ button.advanced .mat-icon{
 }
 .hp-small .mat-icon { font-size: 18px; width: 18px; height: 18px; }
 .hp-small:hover { background: linear-gradient(180deg, #363640, #2a2a30); }
+
+/* Check modifier and roll mode, under the dice (replaces the old Settings box) */
+.dice-panel { width: fit-content; margin: 0 auto; }
+.dice-line { display: flex; align-items: center; min-height: 56px; }
+.check-modifier, .check-mode { min-height: 40px; }
+.dice-panel .dice-caption { flex: 0 0 130px; width: 130px; }
+.mod-stepper { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; }
+.mod-stepper input {
+  width: 48px;
+  display: inline-block;
+  text-align: center;
+  background: var(--color-ink-850);
+  color: var(--color-text-strong);
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  padding: 3px 2px;
+  font: inherit;
+}
+.mod-stepper.is-plus input { color: #8fc16f; border-color: var(--color-green); }
+.mod-stepper.is-minus input { color: #e0735c; border-color: var(--color-red-bright); }
+.mod-step {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  background: var(--color-ink-850);
+  color: var(--color-gold-bright);
+  font: 700 1.1rem/1 var(--font-body);
+  cursor: pointer;
+}
+.mod-step:hover { border-color: var(--color-gold-bright); color: #f3ead9; }
+.mode-switch {
+  display: inline-flex;
+  margin-left: 6px;
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.mode-switch button {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 4px 10px;
+  border: none;
+  background: var(--color-ink-850);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.mode-switch button + button { border-left: 1px solid rgba(149, 128, 97, 0.45); }
+.mode-switch button.active { background: var(--color-gold); color: var(--color-ink-900); }

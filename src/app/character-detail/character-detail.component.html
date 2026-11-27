@@ -111,22 +111,19 @@
 </div>
 <div class="row hero-strip">
   <div class="col-1">
-    <div class="FontSizeBig">
-      <span class="gold">GLORY:</span>
-      <span id="glory"> {{details['glory']}}</span>
-    </div>
-    <div style="text-align: center;" class="hidePrint">
-      <div style="padding-bottom: 10px;">
-        <div class="dice-caption">Rolls</div>
+    <div class="FontSizeBig rolls-title"><span class="gold">ROLLS</span></div>
+    <div class="dice-panel hidePrint">
+      <div class="dice-line">
+        <div class="dice-caption">Dice</div>
         <button class="die die-d6" (click)="bot('d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D6</span></button>
         <button class="die die-d20" (click)="bot('d20')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D20</span></button>
       </div>
-      <div style="padding-bottom: 10px;">
+      <div class="dice-line">
         <div class="dice-caption">Weapon damage</div>
         <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1}}d6</span></button>
         <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1 +4}}d6</span></button>
       </div>
-      <div>
+      <div class="dice-line">
         <div class="dice-caption">Horse damage</div>
         @if (main_horse) {
           <button class="die die-d6" (click)="bot(horseDamageDice()+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{horseDamageDice()}}d6</span></button>
@@ -135,9 +132,28 @@
           <button class="die die-d6" (click)="bot((horseDamageDice()+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{horseDamageDice()+4}}d6</span></button>
         }
       </div>
+      <div class="dice-line check-modifier">
+        <div class="dice-caption" title="Added to every check you roll by clicking a trait, skill or passion">Check modifier</div>
+        <span class="mod-stepper" [class.is-plus]="modifier > 0" [class.is-minus]="modifier < 0">
+          <button type="button" class="mod-step" aria-label="Lower the modifier" (click)="modifier = modifier - 1; clampModifier()">&minus;</button>
+          <input type="number" min="-20" max="20" aria-label="Check modifier" [(ngModel)]="modifier" (ngModelChange)="clampModifier()">
+          <button type="button" class="mod-step" aria-label="Raise the modifier" (click)="modifier = modifier + 1; clampModifier()">+</button>
+        </span>
+      </div>
+      <div class="dice-line check-mode">
+        <div class="dice-caption">When rolling</div>
+        <span class="mode-switch" role="group" aria-label="When rolling a check">
+          <button type="button" [class.active]="!isAdvancedMode()" [attr.aria-pressed]="!isAdvancedMode()" (click)="mode = 'simple'" title="Roll right away with the check modifier">Quick roll</button>
+          <button type="button" [class.active]="isAdvancedMode()" [attr.aria-pressed]="isAdvancedMode()" (click)="mode = 'advanced'" title="Ask for an extra modifier for that check first">Ask each time</button>
+        </span>
+      </div>
     </div>
   </div>
   <div class="col-1">
+    <div class="FontSizeBig">
+      <span class="gold">GLORY:</span>
+      <span id="glory"> {{details['glory']}}</span>
+    </div>
     @if (!checks || checks.length==0) {
       <div class="FontSizeBig hidePrint knight"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
     }
@@ -288,21 +304,6 @@
   }
 }
 </ul>
-<h2>Settings</h2>
-<div class="settings-controls">
-  <button  color="accent" class="advanced" mat-stroked-button type="button" (click)="toggleMode()">
-    @if (isAdvancedMode()) {
-      <mat-icon>trending_down</mat-icon>
-    }
-    @if (!isAdvancedMode()) {
-      <mat-icon>trending_up</mat-icon>
-    }
-  </button>
-  <mat-form-field appearance="fill" class="modifier-field">
-    <mat-label>Modifier</mat-label>
-    <input matInput type="number" min="-20" max="20" [(ngModel)]="modifier" (ngModelChange)="clampModifier()">
-  </mat-form-field>
-</div>
 </div>
 </div>
 <div class="row hidePrint">
