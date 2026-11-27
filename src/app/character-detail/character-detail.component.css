@@ -331,3 +331,13 @@ button.advanced .mat-icon{
 .damage-line .dice-caption { display: flex; justify-content: flex-end; }
 .damage-switch { margin-left: 0; }
 .damage-switch button { padding: 3px 8px; font-size: 0.9rem; }
+.skills-check-mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(142, 118, 77, 0.35);
+}
+.skills-check-mode .dice-caption { width: auto; padding-right: 0; }

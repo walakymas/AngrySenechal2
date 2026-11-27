@@ -140,13 +140,6 @@
           <button type="button" class="mod-step" aria-label="Raise the modifier" (click)="modifier = modifier + 1; clampModifier()">+</button>
         </span>
       </div>
-      <div class="dice-line check-mode">
-        <div class="dice-caption" title="What happens when you click a trait, skill or passion name">Clicking a skill</div>
-        <span class="mode-switch" role="group" aria-label="What clicking a skill does">
-          <button type="button" [class.active]="!isAdvancedMode()" [attr.aria-pressed]="!isAdvancedMode()" (click)="mode = 'simple'" title="Roll the check right away, with the check modifier">Rolls at once</button>
-          <button type="button" [class.active]="isAdvancedMode()" [attr.aria-pressed]="isAdvancedMode()" (click)="mode = 'advanced'" title="First ask for an extra modifier for that skill (remembered per skill)">Asks modifier first</button>
-        </span>
-      </div>
     </div>
   </div>
   <div class="col-1">
@@ -270,6 +263,13 @@
       ></app-editable></li>
     }
   </ul>
+      <div class="check-mode skills-check-mode hidePrint">
+        <div class="dice-caption" title="What happens when you click a trait, skill or passion name">Clicking a skill</div>
+        <span class="mode-switch" role="group" aria-label="What clicking a skill does">
+          <button type="button" [class.active]="!isAdvancedMode()" [attr.aria-pressed]="!isAdvancedMode()" (click)="mode = 'simple'" title="Roll the check right away, with the check modifier">Rolls at once</button>
+          <button type="button" [class.active]="isAdvancedMode()" [attr.aria-pressed]="isAdvancedMode()" (click)="mode = 'advanced'" title="First ask for an extra modifier for that skill (remembered per skill)">Asks modifier first</button>
+        </span>
+      </div>
 </div>
 <div class="col-1">
   <h2 class="skillhead clickableHeader" (click)="addSkillProperty('Weapons')" title="Add a skill">Combat Skills</h2>
