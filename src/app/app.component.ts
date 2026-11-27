@@ -51,18 +51,17 @@ export class AppComponent implements OnInit, OnDestroy {
     this.applyLook();
   }
 
-  // Page look: 'ornate' (patterned page edges, diamond frames, pictures) or 'plain' (same layout, no images).
-  // A per-browser preference in localStorage, applied as a class on <body> so every page's CSS can follow it.
-  look: 'ornate' | 'plain' = window.localStorage.getItem('look') == 'plain' ? 'plain' : 'ornate';
+  // Skill pictures on the character sheet: shown unless switched off in the main menu.
+  // A per-browser preference in localStorage, applied as a class on <body> so the CSS can hide them.
+  showSkillArt = window.localStorage.getItem('skillArt') != 'off';
 
   applyLook() {
-    document.body.classList.toggle('look-ornate', this.look == 'ornate');
-    document.body.classList.toggle('look-plain', this.look == 'plain');
+    document.body.classList.toggle('no-skill-art', !this.showSkillArt);
   }
 
-  toggleLook() {
-    this.look = this.look == 'ornate' ? 'plain' : 'ornate';
-    window.localStorage.setItem('look', this.look);
+  toggleSkillArt() {
+    this.showSkillArt = !this.showSkillArt;
+    window.localStorage.setItem('skillArt', this.showSkillArt ? 'on' : 'off');
     this.applyLook();
   }
 

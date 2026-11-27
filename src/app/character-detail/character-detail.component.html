@@ -117,29 +117,29 @@
     </div>
     <div style="text-align: center;" class="hidePrint">
       <div style="padding-bottom: 10px;">
-        <div style="display: inline-block; width: 120px;">Rolls</div>
-        <button class="dice-button" (click)="bot('d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>D6</button>
-        <button class="dice-button" (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
+        <div class="dice-caption">Rolls</div>
+        <button class="die die-d6" (click)="bot('d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D6</span></button>
+        <button class="die die-d20" (click)="bot('d20')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D20</span></button>
       </div>
       <div style="padding-bottom: 10px;">
-        <div style="display: inline-block; width: 120px;">Weapon damage</div>
-        <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-        <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+        <div class="dice-caption">Weapon damage</div>
+        <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1}}d6</span></button>
+        <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1 +4}}d6</span></button>
       </div>
       <div>
-        <div style="display: inline-block; width: 120px;">Horse damage</div>
+        <div class="dice-caption">Horse damage</div>
         @if (main_horse) {
-          <button class="dice-button" (click)="bot(horseDamageDice()+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{horseDamageDice()}}d6</button>
+          <button class="die die-d6" (click)="bot(horseDamageDice()+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{horseDamageDice()}}d6</span></button>
         }
         @if (main_horse) {
-          <button class="dice-button" (click)="bot((horseDamageDice()+4)+'d6')"><mat-icon>casino</mat-icon>{{horseDamageDice()+4}}d6</button>
+          <button class="die die-d6" (click)="bot((horseDamageDice()+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{horseDamageDice()+4}}d6</span></button>
         }
       </div>
     </div>
   </div>
   <div class="col-1">
     @if (!checks || checks.length==0) {
-      <div class="FontSizeBig hidePrint ornate-only knight"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
+      <div class="FontSizeBig hidePrint knight"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
     }
     @if (checks.length>0) {
       <div style="text-align: center;" class="check hidePrint" >
@@ -249,7 +249,7 @@
   <ul id="skills">
     @for (m of char.char['skills']['Other'] | keyvalue; track m) {
       <li><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)"
-        (change)="mark($event.checked, m.key)"></mat-checkbox>@if (skillArt(m.key); as art) {<span class="skill-art ornate-only" tabindex="0"><img class="skill-art-thumb" [src]="art" alt=""><span class="skill-art-popup"><img [src]="art" alt="{{m.key}}"></span></span>} @else {<span class="skill-art is-empty ornate-only"></span>}<span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
+        (change)="mark($event.checked, m.key)"></mat-checkbox>@if (skillArt(m.key); as art) {<span class="skill-art" tabindex="0"><img class="skill-art-thumb" [src]="art" alt=""><span class="skill-art-popup"><img [src]="art" alt="{{m.key}}"></span></span>} @else {<span class="skill-art is-empty"></span>}<span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
         [enabled]="hasUser()"
         value="{{char.char['skills']['Other'][m.key]}}"
         (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
@@ -553,8 +553,8 @@
           <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
           <tr>
             <td></td><td>
-            <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-            <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+            <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1}}d6</span></button>
+            <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1 +4}}d6</span></button>
           </td>
         </tr>
         <tr>

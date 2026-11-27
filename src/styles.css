@@ -402,9 +402,9 @@ html, body { height: 100%; }
 
 
 /* ==========================================================================
-   Pendragon look (design system port). Two variations, chosen in the main menu:
-   body.look-ornate: patterned page edges, patterned heading rules, diamond frames, pictures
-   body.look-plain:  same layout and colours, no images
+   Pendragon look (design system port): patterned page edges, patterned heading
+   rules, diamond frames. Skill pictures can be switched off in the main menu
+   (body.no-skill-art).
    ========================================================================== */
 body {
   background: var(--color-ink-900);
@@ -430,33 +430,21 @@ h2 { font-size: 1.6rem; }
 .page-content { display: block; min-height: calc(100vh - 48px); }
 
 /* Ornate: blue-gold manuscript edges, dark content column, patterned heading rules */
-body.look-ornate { background: var(--asset-pattern-bluegold) repeat fixed; }
-body.look-ornate .topbar { margin: 0 40px; }
-body.look-ornate .page-content {
+body { background: var(--asset-pattern-bluegold) repeat fixed; }
+body .topbar { margin: 0 40px; }
+body .page-content {
   background: var(--color-ink-900);
   max-width: 1260px;
   margin: 0 auto;
   padding-bottom: 32px;
 }
-body.look-ornate .sheet h2 {
+body .sheet h2 {
   padding: 10px 15px;
   border-style: solid;
   border-width: 6px 0;
   border-image: var(--asset-pattern-dark) 6 0 round;
 }
-/* Plain: no images at all */
-body.look-plain .ornate-only { display: none !important; }
-body.look-plain .sheet h2 {
-  padding: 10px 15px 12px;
-  border-bottom: 1px solid var(--color-line);
-}
-body.look-plain .Image-Frame,
-body.look-plain h4,
-body.look-plain .health-box {
-  border: 1px solid var(--color-line);
-  border-image: none;
-}
-body.look-plain .Image-Frame { padding: 6px; }
+body.no-skill-art .skill-art { display: none; }
 
 /* Buttons: design-system "enamel" style */
 .dice-button {
@@ -483,7 +471,7 @@ body.look-plain .Image-Frame { padding: 6px; }
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 10px rgba(188, 146, 86, 0.12);
 }
 
-/* Skill pictures (ornate only) with hover enlargement */
+/* Skill pictures with hover enlargement */
 .skill-art {
   position: relative;
   display: inline-flex;
@@ -527,7 +515,7 @@ body.look-plain .Image-Frame { padding: 6px; }
 .sheet #main li, .sheet #statistics li { margin: 4px 0; font-size: 1.05rem; }
 .sheet .gold { color: var(--color-muted); font-weight: 400; }
 .sheet .FontSizeBig .gold { color: var(--color-gold-bright); }
-body.look-ornate .health-box {
+body .health-box {
   border: 15px solid transparent;
   border-image: var(--asset-diamonds) 25 stretch;
 }
@@ -543,8 +531,8 @@ body.look-ornate .health-box {
 
 /* Phones */
 @media (max-width: 720px) {
-  body.look-ornate .topbar { margin: 0 12px; }
-  body.look-ornate .page-content { margin: 0 12px; }
+  body .topbar { margin: 0 12px; }
+  body .page-content { margin: 0 12px; }
   .name-title { font-size: 1.7rem; }
   .FontSizeBig { font-size: 40px; }
   .hero-strip > .col-1 { min-height: 0; }
@@ -565,7 +553,7 @@ body.look-ornate .health-box {
   gap: 10px;
   align-items: center;
 }
-body.look-ornate .feast fieldset { border: 15px solid transparent; border-image: var(--asset-diamonds) 25 stretch; }
+body .feast fieldset { border: 15px solid transparent; border-image: var(--asset-diamonds) 25 stretch; }
 .feast legend { color: var(--color-muted); padding: 0 6px; font-family: var(--font-display); font-size: 1.2rem; }
 .feast .line { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; width: 100%; }
 .feast input, .feast select {
@@ -594,3 +582,7 @@ body.look-ornate .feast fieldset { border: 15px solid transparent; border-image:
 .feast button:not(.mat-mdc-button-base):hover { background: linear-gradient(180deg, #363640, #2a2a30); border-top-color: #d4ad6a; }
 .feast button:disabled { opacity: 0.5; cursor: default; }
 .feast .hint { color: var(--color-muted); font-style: italic; }
+
+/* Dice faces for the roll buttons (character-detail.component.css) */
+.die-d6 { --die-idle: url('assets/pendragon/dice/d6-idle.png'); --die-hover: url('assets/pendragon/dice/d6-hover.png'); }
+.die-d20 { --die-idle: url('assets/pendragon/dice/d20-idle.png'); --die-hover: url('assets/pendragon/dice/d20-hover.png'); }

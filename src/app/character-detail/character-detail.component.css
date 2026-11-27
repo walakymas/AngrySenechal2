@@ -175,3 +175,40 @@ button.advanced .mat-icon{
 .knight img { width: 150px; margin: 0 auto; filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35)); }
 .health-box { max-width: 340px; margin: 0 auto; padding: 10px 12px 14px; }
 .health-box legend { color: var(--color-muted); padding: 0 6px; }
+
+/* Roll buttons: Cseperke's dice (Pendragon/images/DICE), idle face that changes on hover */
+.dice-caption {
+  display: inline-block;
+  width: 120px;
+  vertical-align: middle;
+  text-align: right;
+  padding-right: 10px;
+  color: var(--color-muted);
+}
+.die {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+  margin: 0 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-strong);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.die-face {
+  display: inline-block;
+  width: 34px;
+  height: 51px;
+  background: var(--die-idle) center / contain no-repeat;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.45));
+  transition: transform 0.12s ease;
+}
+.die:hover .die-face, .die:focus-visible .die-face { background-image: var(--die-hover); }
+.die:active .die-face { transform: translateY(1px) rotate(-6deg); }
+.die:hover .die-label, .die:focus-visible .die-label { color: #f3ead9; }
+.die:focus-visible { outline: 1px solid var(--color-gold-bright); outline-offset: 3px; }
+.die-label { min-width: 2.6em; text-align: left; }

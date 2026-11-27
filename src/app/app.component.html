@@ -5,7 +5,7 @@
   <mat-menu #mainMenu="matMenu">
     <button mat-menu-item (click)="newChar()"><mat-icon>person_add</mat-icon>New character</button>
     <button mat-menu-item routerLink="feast"><mat-icon>nightlife</mat-icon>Feast</button>
-    <button mat-menu-item (click)="toggleLook()"><mat-icon>{{look == 'ornate' ? 'crop_square' : 'auto_awesome'}}</mat-icon>{{look == 'ornate' ? 'Plain look' : 'Ornate look'}}</button>
+    <button mat-menu-item (click)="toggleSkillArt()"><mat-icon>{{showSkillArt ? 'hide_image' : 'image'}}</mat-icon>{{showSkillArt ? 'Hide skill pictures' : 'Show skill pictures'}}</button>
   </mat-menu>
   <button mat-button [matMenuTriggerFor]="players">
     <mat-icon>local_police</mat-icon>
