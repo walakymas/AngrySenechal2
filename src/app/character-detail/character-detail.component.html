@@ -1,59 +1,6 @@
 @if (char) {
-  <div >
-    <div class="row">
-      <div class="col-1">
-        <div>
-          <h2 id="stathead">
-            {{char.char['name']}}
-            <button mat-icon-button [matMenuTriggerFor]="character">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #character="matMenu">
-              @if (hasUser()) {
-                <button mat-menu-item (click)="editMain(char)">
-                  Main info
-                </button>
-              }
-              @if (hasUser()) {
-                <button mat-menu-item [routerLink]="['/chargen', char.char['dbid']]">
-                  {{hasChargenState(char.char['dbid']) ? 'Karakter alkotás folytatása' : 'Karakter alkotás'}}
-                </button>
-              }
-              @if (hasUser()) {
-                <button mat-menu-item (click)="jsonDialog()">
-                  Json
-                </button>
-              }
-              <button mat-menu-item (click)="pdf()">
-                Pdf
-              </button>
-              <button mat-menu-item (click)="connectionsDialog()">
-                Connection
-              </button>
-              @if (canClaim()) {
-                <button mat-menu-item (click)="claim()">
-                  My character
-                </button>
-              }
-              @if (canActivate()) {
-                <button mat-menu-item (click)="activate()">
-                  Activate
-                </button>
-              }
-            </mat-menu>
-          </h2>
-        </div>
-        <div style="text-align: center">
-          <img
-            class="Image-Frame charimg"
-            id="charimg"
-            src="{{char.char['url']}}"
-            width="200"
-            [class.charimg-zoomed]="charImgZoomed"
-            (click)="toggleCharImageZoom()"
-            >
-          </div>
-        </div> <!-- 33.33% -->
+  <div class="sheet">
+    <div class="row sheet-top">
         <div class="col-1"><h2 id="mainhead" class="clickableHeader" (click)="addMainProperty()" title="Add a main value">Main </h2>
         <ul id='main'>
           @for (m of char.char['main'] | keyvalue ; track m) {
@@ -108,8 +55,61 @@
       <li><span class="gold">Knockdown</span><em>(SIZ)=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
     </ul>
   </div> <!-- 33.33% -->
+      <div class="col-1 portrait-panel">
+        <div>
+          <h2 id="namehead" class="name-title">
+            {{char.char['name']}}
+            <button mat-icon-button [matMenuTriggerFor]="character">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #character="matMenu">
+              @if (hasUser()) {
+                <button mat-menu-item (click)="editMain(char)">
+                  Main info
+                </button>
+              }
+              @if (hasUser()) {
+                <button mat-menu-item [routerLink]="['/chargen', char.char['dbid']]">
+                  {{hasChargenState(char.char['dbid']) ? 'Karakter alkotás folytatása' : 'Karakter alkotás'}}
+                </button>
+              }
+              @if (hasUser()) {
+                <button mat-menu-item (click)="jsonDialog()">
+                  Json
+                </button>
+              }
+              <button mat-menu-item (click)="pdf()">
+                Pdf
+              </button>
+              <button mat-menu-item (click)="connectionsDialog()">
+                Connection
+              </button>
+              @if (canClaim()) {
+                <button mat-menu-item (click)="claim()">
+                  My character
+                </button>
+              }
+              @if (canActivate()) {
+                <button mat-menu-item (click)="activate()">
+                  Activate
+                </button>
+              }
+            </mat-menu>
+          </h2>
+        </div>
+        <div class="portrait-frame-wrap">
+          <img
+            class="Image-Frame charimg"
+            id="charimg"
+            src="{{char.char['url']}}"
+            width="200"
+            [class.charimg-zoomed]="charImgZoomed"
+            (click)="toggleCharImageZoom()"
+            >
+          </div>
+        </div> <!-- 33.33% -->
 </div>
-<div class="row">
+<div class="row hero-strip">
   <div class="col-1">
     <div class="FontSizeBig">
       <span class="gold">GLORY:</span>
@@ -118,28 +118,28 @@
     <div style="text-align: center;" class="hidePrint">
       <div style="padding-bottom: 10px;">
         <div style="display: inline-block; width: 120px;">Rolls</div>
-        <button (click)="bot('d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>D6</button>
-        <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
+        <button class="dice-button" (click)="bot('d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>D6</button>
+        <button class="dice-button" (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
       </div>
       <div style="padding-bottom: 10px;">
         <div style="display: inline-block; width: 120px;">Weapon damage</div>
-        <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-        <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+        <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
+        <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
       </div>
       <div>
         <div style="display: inline-block; width: 120px;">Horse damage</div>
         @if (main_horse) {
-          <button (click)="bot(horseDamageDice()+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{horseDamageDice()}}d6</button>
+          <button class="dice-button" (click)="bot(horseDamageDice()+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{horseDamageDice()}}d6</button>
         }
         @if (main_horse) {
-          <button (click)="bot((horseDamageDice()+4)+'d6')"><mat-icon>casino</mat-icon>{{horseDamageDice()+4}}d6</button>
+          <button class="dice-button" (click)="bot((horseDamageDice()+4)+'d6')"><mat-icon>casino</mat-icon>{{horseDamageDice()+4}}d6</button>
         }
       </div>
     </div>
   </div>
   <div class="col-1">
     @if (!checks || checks.length==0) {
-      <div class="FontSizeBig hidePrint"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
+      <div class="FontSizeBig hidePrint ornate-only knight"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
     }
     @if (checks.length>0) {
       <div style="text-align: center;" class="check hidePrint" >
@@ -189,7 +189,7 @@
       }
     </div>
     <div class="hidePrint">
-      <fieldset id="health">
+      <fieldset id="health" class="health-box">
         <legend>Health</legend>
         <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
           <mat-icon>remove</mat-icon>
@@ -211,7 +211,7 @@
     </div>
   </div>
 </div>
-<div class="row">
+<div class="row sheet-bottom">
   <div class="col-1">
     <h2 id="traithead">Personality Traits</h2>
     <table class="traits">
@@ -249,7 +249,7 @@
   <ul id="skills">
     @for (m of char.char['skills']['Other'] | keyvalue; track m) {
       <li><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)"
-        (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
+        (change)="mark($event.checked, m.key)"></mat-checkbox>@if (skillArt(m.key); as art) {<span class="skill-art ornate-only" tabindex="0"><img class="skill-art-thumb" [src]="art" alt=""><span class="skill-art-popup"><img [src]="art" alt="{{m.key}}"></span></span>} @else {<span class="skill-art is-empty ornate-only"></span>}<span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
         [enabled]="hasUser()"
         value="{{char.char['skills']['Other'][m.key]}}"
         (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
@@ -553,8 +553,8 @@
           <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
           <tr>
             <td></td><td>
-            <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-            <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+            <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
+            <button class="dice-button" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
           </td>
         </tr>
         <tr>

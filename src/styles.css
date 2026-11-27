@@ -1,8 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 /* fonts */
-@import url('https://fonts.googleapis.com/css2?family=Overlock&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Unicase&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@500;600&family=Overlock:wght@400;700&display=swap');
 
 .ng-star-inserted .mat-mdc-dialog-content {
   max-height: none;
@@ -17,16 +15,41 @@
 
 /*colors*/
 :root {
---darkGray:#1c1c1c;
---lightGray:#afafb4;
---contrastedTextColor:#cccdd1;
---goldHighlight:#958061;
---goldHighlight2:#9B8565;
+/* Pendragon design system tokens (D:\GITHUB3\Pendragon\design-system.css) */
+--color-ink-950: #161514;
+--color-ink-900: #1b1b1a;
+--color-ink-850: #222328;
+--color-ink-800: #2b2b32;
+--color-text: #afafb4;
+--color-text-strong: #cccdd1;
+--color-heading: #ebe5d9;
+--color-muted: #b9a486;
+--color-line: #8e764d;
+--color-gold: #958061;
+--color-gold-bright: #a28c69;
+--color-red: #792818;
+--color-red-bright: #993421;
+--color-blue: #2c3c7e;
+--color-blue-bright: #425bc0;
+--color-green: #546b49;
+--shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.32);
+--font-body: 'Overlock', serif;
+--font-display: 'Cormorant Unicase', serif;
+--asset-diamonds: url('assets/pendragon/borders/Diamonds_60x60.png');
+--asset-pattern-bluegold: url('assets/pendragon/borders/Medieval-pattern_03-BlueGold-with-diagonals-and-4whitedots.jpg');
+--asset-pattern-dark: url('assets/pendragon/borders/pattern_01_4x4_framed_dark_76x76.jpg');
+
+/* the app's older names, now pointing at the design-system values */
+--darkGray: var(--color-ink-900);
+--lightGray: var(--color-text);
+--contrastedTextColor: var(--color-text-strong);
+--goldHighlight: var(--color-gold);
+--goldHighlight2: var(--color-gold-bright);
 --goldHighlight3: #61533f;
---blue:#446ac0;
---medievalGreen:#5B8647;
---medievalRed:#8F3826;
---mainFont: 'Overlock', serif;
+--blue: var(--color-blue-bright);
+--medievalGreen: var(--color-green);
+--medievalRed: var(--color-red-bright);
+--mainFont: var(--font-body);
 }
 
 .mat-mdc-tab-group.mat-primary .mat-ink-bar, .mat-mdc-tab-nav-bar.mat-primary .mat-ink-bar {
@@ -89,11 +112,12 @@ body {
 /*Headings */
 h1, h2, h4 {color:var(--contrastedTextColor);font-family: 'Cormorant Unicase', serif;  padding: 15px;}
 
-h1, h2 {    
-  border: 5px solid;
-  border-image: url(https://pappcseperke.hu/wp-content/uploads/2021/02/Pattern_03.jpg) 5 0 5 0 round;
+h1, h2 {
+  margin: 0 0 18px;
+  font-weight: 600;
+  color: var(--color-heading);
   text-align:center;
-  letter-spacing: 1px;}
+  letter-spacing: 0.04em;}
 
 h3 {
   font-family: 'Cormorant Unicase', serif;  padding: 15px;
@@ -103,7 +127,7 @@ h3 {
   letter-spacing: 1px;}
 
 h4 { border: 15px solid transparent;
-    border-image: url(https://pappcseperke.hu/wp-content/uploads/2021/02/Diamonds_60x60.png) 25 stretch; 
+    border-image: var(--asset-diamonds) 25 stretch; 
   text-align:center;
   letter-spacing: 1.5px;}
 
@@ -123,7 +147,7 @@ ul {
 }
 
 .Image-Frame {border: 15px solid transparent;
-    border-image: url(https://pappcseperke.hu/wp-content/uploads/2021/02/Diamonds_60x60.png) 25 stretch; 
+    border-image: var(--asset-diamonds) 25 stretch; 
    }
 
 
@@ -376,3 +400,197 @@ html, body { height: 100%; }
   .check { display: none; }
 }
 
+
+/* ==========================================================================
+   Pendragon look (design system port). Two variations, chosen in the main menu:
+   body.look-ornate: patterned page edges, patterned heading rules, diamond frames, pictures
+   body.look-plain:  same layout and colours, no images
+   ========================================================================== */
+body {
+  background: var(--color-ink-900);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.25;
+}
+h2 { font-size: 1.6rem; }
+
+.topbar {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.18)),
+    linear-gradient(90deg, rgba(44, 60, 126, 0.12), rgba(149, 128, 97, 0.1), rgba(121, 40, 24, 0.12)),
+    var(--color-gold-bright);
+  color: #f1e4cd;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.topbar .mat-mdc-button, .topbar .mat-mdc-icon-button { color: #f8eedc; }
+
+.page-content { display: block; min-height: calc(100vh - 48px); }
+
+/* Ornate: blue-gold manuscript edges, dark content column, patterned heading rules */
+body.look-ornate { background: var(--asset-pattern-bluegold) repeat fixed; }
+body.look-ornate .topbar { margin: 0 40px; }
+body.look-ornate .page-content {
+  background: var(--color-ink-900);
+  max-width: 1260px;
+  margin: 0 auto;
+  padding-bottom: 32px;
+}
+body.look-ornate .sheet h2 {
+  padding: 10px 15px;
+  border-style: solid;
+  border-width: 6px 0;
+  border-image: var(--asset-pattern-dark) 6 0 round;
+}
+/* Plain: no images at all */
+body.look-plain .ornate-only { display: none !important; }
+body.look-plain .sheet h2 {
+  padding: 10px 15px 12px;
+  border-bottom: 1px solid var(--color-line);
+}
+body.look-plain .Image-Frame,
+body.look-plain h4,
+body.look-plain .health-box {
+  border: 1px solid var(--color-line);
+  border-image: none;
+}
+body.look-plain .Image-Frame { padding: 6px; }
+
+/* Buttons: design-system "enamel" style */
+.dice-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid var(--color-gold-bright);
+  border-radius: 3px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  background: linear-gradient(180deg, #2e2e34, #222228);
+  color: #eee;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 2px 4px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s;
+}
+.dice-button .mat-icon { font-size: 18px; width: 18px; height: 18px; color: var(--color-gold-bright); }
+.dice-button:hover, .dice-button:focus-visible {
+  outline: none;
+  background: linear-gradient(180deg, #363640, #2a2a30);
+  border-top-color: #d4ad6a;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 10px rgba(188, 146, 86, 0.12);
+}
+
+/* Skill pictures (ornate only) with hover enlargement */
+.skill-art {
+  position: relative;
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  margin-left: 6px;
+  border: 1px solid rgba(149, 128, 97, 0.38);
+  vertical-align: middle;
+}
+.skill-art-thumb, .skill-art-popup img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.skill-art-popup {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  width: 92px;
+  height: 92px;
+  padding: 4px;
+  border: 1px solid var(--color-line);
+  background: var(--color-ink-900);
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) scale(0.96);
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 60;
+}
+.skill-art:hover .skill-art-popup, .skill-art:focus-visible .skill-art-popup {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+/* Zebra rows for the long lists, as in the design */
+.sheet #skills li:nth-child(odd), .sheet #combat li:nth-child(odd), .sheet #passions li:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.025);
+}
+.sheet ul#skills, .sheet ul#combat, .sheet ul#passions, .sheet ul#main, .sheet ul#statistics {
+  margin: 0; padding: 0;
+}
+.sheet #skills li, .sheet #combat li, .sheet #passions li { padding: 3px 6px; }
+.sheet #main li, .sheet #statistics li { margin: 4px 0; font-size: 1.05rem; }
+.sheet .gold { color: var(--color-muted); font-weight: 400; }
+.sheet .FontSizeBig .gold { color: var(--color-gold-bright); }
+body.look-ornate .health-box {
+  border: 15px solid transparent;
+  border-image: var(--asset-diamonds) 25 stretch;
+}
+.skill-art.is-empty { background: rgba(255, 255, 255, 0.02); }
+.sheet #skills li > .skill-art + span { margin-left: 8px; }
+.sheet input[type="number"]:not(.mat-mdc-input-element), #health input[type="number"] {
+  background: var(--color-ink-850);
+  color: var(--color-text-strong);
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  padding: 3px 6px;
+}
+
+/* Phones */
+@media (max-width: 720px) {
+  body.look-ornate .topbar { margin: 0 12px; }
+  body.look-ornate .page-content { margin: 0 12px; }
+  .name-title { font-size: 1.7rem; }
+  .FontSizeBig { font-size: 40px; }
+  .hero-strip > .col-1 { min-height: 0; }
+  [class*="col-"] { padding: 12px 10px; }
+}
+
+/* Feast page: same column width as the character sheet, design-system form controls */
+.feast { max-width: 1200px; margin: 0 auto; padding: 24px 15px 40px; }
+.feast > h2 { margin-bottom: 18px; }
+.feast > h2 small { display: block; margin-top: 6px; font-size: 1rem; color: var(--color-muted); font-family: var(--font-body); }
+.feast fieldset {
+  border: 1px solid var(--color-line);
+  border-radius: 3px;
+  padding: 12px 16px 16px;
+  margin: 0 0 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+body.look-ornate .feast fieldset { border: 15px solid transparent; border-image: var(--asset-diamonds) 25 stretch; }
+.feast legend { color: var(--color-muted); padding: 0 6px; font-family: var(--font-display); font-size: 1.2rem; }
+.feast .line { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; width: 100%; }
+.feast input, .feast select {
+  display: inline-block;
+  font: inherit;
+  background: var(--color-ink-850);
+  color: var(--color-text-strong);
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  padding: 6px 8px;
+}
+.feast input:focus, .feast select:focus { outline: 1px solid var(--color-gold-bright); }
+.feast input.small { width: 64px; }
+.feast button:not(.mat-mdc-button-base) {
+  font: inherit;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid var(--color-gold-bright);
+  border-radius: 3px;
+  padding: 6px 16px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #2e2e34, #222228);
+  color: #eee;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.feast button:not(.mat-mdc-button-base):hover { background: linear-gradient(180deg, #363640, #2a2a30); border-top-color: #d4ad6a; }
+.feast button:disabled { opacity: 0.5; cursor: default; }
+.feast .hint { color: var(--color-muted); font-style: italic; }

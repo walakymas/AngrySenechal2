@@ -48,6 +48,22 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     this.snackBarConfig.duration = 2000;
     this.token = window.localStorage.getItem('token')
+    this.applyLook();
+  }
+
+  // Page look: 'ornate' (patterned page edges, diamond frames, pictures) or 'plain' (same layout, no images).
+  // A per-browser preference in localStorage, applied as a class on <body> so every page's CSS can follow it.
+  look: 'ornate' | 'plain' = window.localStorage.getItem('look') == 'plain' ? 'plain' : 'ornate';
+
+  applyLook() {
+    document.body.classList.toggle('look-ornate', this.look == 'ornate');
+    document.body.classList.toggle('look-plain', this.look == 'plain');
+  }
+
+  toggleLook() {
+    this.look = this.look == 'ornate' ? 'plain' : 'ornate';
+    window.localStorage.setItem('look', this.look);
+    this.applyLook();
   }
 
   ngOnInit(): void {

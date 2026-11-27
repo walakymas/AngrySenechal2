@@ -634,6 +634,19 @@ export class CharacterDetailComponent implements OnInit {
     }
   }
 
+  // Skill illustrations from the Pendragon design system (src/assets/pendragon/skills), keyed by the skill name
+  // in lower case without spaces; skills without a picture get none.
+  private static readonly SKILL_ART = new Set(['awareness', 'boating', 'compose', 'courtesy', 'dancing', 'faerielore',
+    'falconry', 'firstaid', 'flirting', 'folklore', 'gambling', 'heraldry', 'hunting']);
+
+  private static readonly SKILL_ART_ALIAS: { [skill: string]: string } = { 'gaming': 'gambling' };
+
+  skillArt(skill: string): string | null {
+    let key = (skill || '').toLowerCase().replace(/\s+/g, '');
+    key = CharacterDetailComponent.SKILL_ART_ALIAS[key] || key;
+    return CharacterDetailComponent.SKILL_ART.has(key) ? `assets/pendragon/skills/${key}.png` : null;
+  }
+
   toggleCharImageZoom(): void {
     this.charImgZoomed = !this.charImgZoomed;
   }

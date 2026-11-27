@@ -153,3 +153,25 @@ button.advanced .mat-icon{
     width: 24px;
     color:black;
 }
+
+/* Pendragon layout: name + portrait in the right-hand column, as in Pendragon/base.html */
+.name-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 2rem;
+}
+.portrait-frame-wrap {
+  display: flex;
+  justify-content: center;
+}
+.portrait-frame-wrap .charimg {
+  width: 200px;
+  max-height: 280px;
+  object-fit: cover;
+}
+.hero-strip > .col-1 { min-height: 220px; }
+.knight img { width: 150px; margin: 0 auto; filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35)); }
+.health-box { max-width: 340px; margin: 0 auto; padding: 10px 12px 14px; }
+.health-box legend { color: var(--color-muted); padding: 0 6px; }
