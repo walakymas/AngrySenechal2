@@ -180,34 +180,32 @@
     }
   </div>
   <div class="col-1">
-    <div class="FontSizeBig">
-      <span class="gold">HP:</span>
-      @if (details['hp']==details['ahp']) {
-        <span> {{details['hp']}}</span>
-      } @else {
-        <span matTooltip="{{details['wounds']}}"> {{details['ahp']}}/{{details['hp']}}</span>
-      }
-    </div>
-    <div class="hidePrint">
-      <fieldset id="health" class="health-box">
-        <legend>Health</legend>
-        <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
-          <mat-icon>remove</mat-icon>
-        </button>
-        <button  mat-mini-fab color="accent" title="Heal" (click)="heal('heal')">
-          <mat-icon>add</mat-icon>
-        </button>
-        <input id="healthmod" type="number" matInput [(ngModel)]="healthmod"/>
-        <br/>
-        <button  mat-mini-fab color="accent" title="Weakly Healing" (click)="heal('sunday')">
-          <mat-icon>healing</mat-icon>
-        </button>
-        <button  mat-mini-fab color="accent" title="Complette (Winter)" (click)="heal('full')">
-          <mat-icon>favorite</mat-icon>
-        </button>
-        <label for="chineed">Chirurgery</label>
-        <mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>
-      </fieldset>
+    <div class="hp-panel">
+      <div class="hp-total" [matTooltip]="details['wounds'] ? 'Wounds: ' + details['wounds'] : ''">
+        <span class="gold">HP:</span>
+        @if (details['hp']==details['ahp']) {
+          <span> {{details['hp']}}</span>
+        } @else {
+          <span> {{details['ahp']}}<span class="hp-max">/{{details['hp']}}</span></span>
+        }
+      </div>
+      <div class="hp-bar-row hidePrint">
+        <button class="hp-sign hp-minus" type="button" title="Wound" (click)="woundBy()">&minus;</button>
+        <input class="hp-amount" type="number" min="0" aria-label="Wound amount" [(ngModel)]="woundAmount"/>
+        <div class="hp-bar" role="meter" aria-label="Hit points" [attr.aria-valuenow]="details['ahp']" aria-valuemin="0" [attr.aria-valuemax]="details['hp']">
+          <div class="hp-lost" [style.width.%]="100 - hpPercent()"></div>
+          <div class="hp-unconscious" [style.left.%]="unconsciousPercent()" title="Unconscious at {{getDetail('Unconscious')}}"></div>
+        </div>
+        <input class="hp-amount" type="number" min="0" aria-label="Heal amount" [(ngModel)]="healAmount"/>
+        <button class="hp-sign hp-plus" type="button" title="Heal" (click)="healBy()">+</button>
+      </div>
+      <div class="hp-below hidePrint">
+        <label class="hp-chirurgery"><mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>Chirurgery needed</label>
+        <span class="hp-extra">
+          <button class="hp-small" type="button" title="Weekly healing (+{{details['hr']}})" (click)="heal('sunday')"><mat-icon>healing</mat-icon></button>
+          <button class="hp-small" type="button" title="Complete healing (winter)" (click)="heal('full')"><mat-icon>favorite</mat-icon></button>
+        </span>
+      </div>
     </div>
   </div>
 </div>

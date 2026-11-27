@@ -32,6 +32,9 @@ export class CharacterDetailComponent implements OnInit {
   traits: Trait[] = []
   checks: CheckAll[] = []
   healthmod: number = 0;
+  // amounts next to the - (wound) and + (heal) ends of the health bar
+  woundAmount: number = 1;
+  healAmount: number = 1;
   actualCheck: number = 1;
   lastCheck: number = -1;
   char : Lord;
@@ -502,6 +505,26 @@ export class CharacterDetailComponent implements OnInit {
   public isEq(s1: string, s2:string):boolean{
     let result = s1==s2;
     return result;
+  }
+
+  woundBy() {
+    this.healthmod = Math.abs(this.woundAmount * 1 || 0);
+    this.heal('wound');
+  }
+
+  healBy() {
+    this.healthmod = Math.abs(this.healAmount * 1 || 0);
+    this.heal('heal');
+  }
+
+  hpPercent(): number {
+    const max = this.details['hp'] * 1;
+    return max > 0 ? Math.max(0, Math.min(100, 100 * this.details['ahp'] / max)) : 0;
+  }
+
+  unconsciousPercent(): number {
+    const max = this.details['hp'] * 1;
+    return max > 0 ? Math.min(100, 100 * this.getDetail('Unconscious') / max) : 0;
   }
 
   public heal(action:string) {

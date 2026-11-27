@@ -211,3 +211,73 @@ button.advanced .mat-icon{
 .die:hover .die-label, .die:focus-visible .die-label { color: #f3ead9; }
 .die:focus-visible { outline: 1px solid var(--color-gold-bright); outline-offset: 3px; }
 .die-label { min-width: 2.6em; text-align: left; }
+
+/* Health: total above, a red-to-green bar with - (wound) and + (heal) at its ends, chirurgery below */
+.hp-panel { max-width: 400px; margin: 0 auto; text-align: center; }
+.hp-total { font-size: 48px; line-height: 1.1; margin-bottom: 14px; }
+.hp-total .gold { color: var(--color-gold-bright); }
+.hp-max { font-size: 0.55em; color: var(--color-muted); }
+.hp-bar-row { display: flex; align-items: center; gap: 6px; }
+.hp-bar {
+  position: relative;
+  flex: 1 1 auto;
+  height: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: 7px;
+  overflow: hidden;
+  background: linear-gradient(90deg, var(--color-red-bright), #a5682a 45%, var(--color-green) 75%, #6d9a4e);
+}
+.hp-lost {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  background: var(--color-ink-850);
+  box-shadow: inset 2px 0 0 rgba(0, 0, 0, 0.5);
+  transition: width 0.3s ease;
+}
+.hp-unconscious {
+  position: absolute;
+  top: -1px; bottom: -1px;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(235, 229, 217, 0.55);
+}
+.hp-sign {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  color: #f3ead9;
+  font: 700 1.4rem/1 var(--font-body);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.hp-minus { background: var(--color-red-bright); }
+.hp-plus { background: var(--color-green); }
+.hp-sign:hover, .hp-sign:focus-visible { filter: brightness(1.2); outline: none; }
+.hp-amount {
+  flex: 0 0 auto;
+  width: 48px !important;
+  display: inline-block !important;
+  text-align: center;
+  background: var(--color-ink-850);
+  color: var(--color-text-strong);
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  padding: 3px 2px;
+  font: inherit;
+}
+.hp-below { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.hp-chirurgery { display: inline-flex !important; align-items: center; gap: 6px; color: var(--color-muted); cursor: pointer; }
+.hp-extra { display: inline-flex; gap: 6px; }
+.hp-small {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid var(--color-gold-bright);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2e2e34, #222228);
+  color: var(--color-gold-bright);
+  cursor: pointer;
+}
+.hp-small .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.hp-small:hover { background: linear-gradient(180deg, #363640, #2a2a30); }
