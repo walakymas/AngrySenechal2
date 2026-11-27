@@ -1,59 +1,6 @@
 @if (char) {
-  <div >
-    <div class="row">
-      <div class="col-1">
-        <div>
-          <h2 id="stathead">
-            {{char.char['name']}}
-            <button mat-icon-button [matMenuTriggerFor]="character">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #character="matMenu">
-              @if (hasUser()) {
-                <button mat-menu-item (click)="editMain(char)">
-                  Main info
-                </button>
-              }
-              @if (hasUser()) {
-                <button mat-menu-item [routerLink]="['/chargen', char.char['dbid']]">
-                  {{hasChargenState(char.char['dbid']) ? 'Karakter alkotás folytatása' : 'Karakter alkotás'}}
-                </button>
-              }
-              @if (hasUser()) {
-                <button mat-menu-item (click)="jsonDialog()">
-                  Json
-                </button>
-              }
-              <button mat-menu-item (click)="pdf()">
-                Pdf
-              </button>
-              <button mat-menu-item (click)="connectionsDialog()">
-                Connection
-              </button>
-              @if (canClaim()) {
-                <button mat-menu-item (click)="claim()">
-                  My character
-                </button>
-              }
-              @if (canActivate()) {
-                <button mat-menu-item (click)="activate()">
-                  Activate
-                </button>
-              }
-            </mat-menu>
-          </h2>
-        </div>
-        <div style="text-align: center">
-          <img
-            class="Image-Frame charimg"
-            id="charimg"
-            src="{{char.char['url']}}"
-            width="200"
-            [class.charimg-zoomed]="charImgZoomed"
-            (click)="toggleCharImageZoom()"
-            >
-          </div>
-        </div> <!-- 33.33% -->
+  <div class="sheet">
+    <div class="row sheet-top">
         <div class="col-1"><h2 id="mainhead" class="clickableHeader" (click)="addMainProperty()" title="Add a main value">Main </h2>
         <ul id='main'>
           @for (m of char.char['main'] | keyvalue ; track m) {
@@ -108,38 +55,100 @@
       <li><span class="gold">Knockdown</span><em>(SIZ)=</em> <strong> {{getDetail('Knockdown')}}</strong></li>
     </ul>
   </div> <!-- 33.33% -->
+      <div class="col-1 portrait-panel">
+        <div>
+          <h2 id="namehead" class="name-title">
+            {{char.char['name']}}
+            <button mat-icon-button [matMenuTriggerFor]="character">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #character="matMenu">
+              @if (hasUser()) {
+                <button mat-menu-item (click)="editMain(char)">
+                  Main info
+                </button>
+              }
+              @if (hasUser()) {
+                <button mat-menu-item [routerLink]="['/chargen', char.char['dbid']]">
+                  {{hasChargenState(char.char['dbid']) ? 'Karakter alkotás folytatása' : 'Karakter alkotás'}}
+                </button>
+              }
+              @if (hasUser()) {
+                <button mat-menu-item (click)="jsonDialog()">
+                  Json
+                </button>
+              }
+              <button mat-menu-item (click)="pdf()">
+                Pdf
+              </button>
+              <button mat-menu-item (click)="connectionsDialog()">
+                Connection
+              </button>
+              @if (canClaim()) {
+                <button mat-menu-item (click)="claim()">
+                  My character
+                </button>
+              }
+              @if (canActivate()) {
+                <button mat-menu-item (click)="activate()">
+                  Activate
+                </button>
+              }
+            </mat-menu>
+          </h2>
+        </div>
+        <div class="portrait-frame-wrap">
+          <img
+            class="Image-Frame charimg"
+            id="charimg"
+            src="{{char.char['url']}}"
+            width="200"
+            [class.charimg-zoomed]="charImgZoomed"
+            (click)="toggleCharImageZoom()"
+            >
+          </div>
+        </div> <!-- 33.33% -->
 </div>
-<div class="row">
+<div class="row hero-strip">
+  <div class="col-1">
+    <div class="FontSizeBig rolls-title"><span class="gold">ROLLS</span></div>
+    <div class="dice-panel hidePrint">
+      <div class="dice-line">
+        <div class="dice-caption">Dice</div>
+        <button class="die die-d6" (click)="bot('d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D6</span></button>
+        <button class="die die-d20" (click)="bot('d20')"><span class="die-face" aria-hidden="true"></span><span class="die-label">D20</span></button>
+      </div>
+      <div class="dice-line damage-line">
+        <div class="dice-caption">
+          @if (main_horse) {
+            <span class="mode-switch damage-switch" role="group" aria-label="Damage of">
+              <button type="button" [class.active]="damageSource == 'weapon'" [attr.aria-pressed]="damageSource == 'weapon'" (click)="damageSource = 'weapon'">Weapon</button>
+              <button type="button" [class.active]="damageSource == 'horse'" [attr.aria-pressed]="damageSource == 'horse'" (click)="damageSource = 'horse'">Horse</button>
+            </span>
+          } @else {
+            Weapon damage
+          }
+        </div>
+        <button class="die die-d6" (click)="bot(damageDice()+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{damageDice()}}d6</span></button>
+        <button class="die die-d6" (click)="bot((damageDice()+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{damageDice()+4}}d6</span></button>
+      </div>
+      <div class="dice-line check-modifier">
+        <div class="dice-caption" title="Added to every check you roll by clicking a trait, skill or passion">Check modifier</div>
+        <span class="mod-stepper" [class.is-plus]="modifier > 0" [class.is-minus]="modifier < 0">
+          <button type="button" class="mod-step" aria-label="Lower the modifier" (click)="modifier = modifier - 1; clampModifier()">&minus;</button>
+          <input type="number" min="-20" max="20" aria-label="Check modifier" [(ngModel)]="modifier" (ngModelChange)="clampModifier()">
+          <button type="button" class="mod-step" aria-label="Raise the modifier" (click)="modifier = modifier + 1; clampModifier()">+</button>
+        </span>
+      </div>
+    </div>
+  </div>
   <div class="col-1">
     <div class="FontSizeBig">
       <span class="gold">GLORY:</span>
       <span id="glory"> {{details['glory']}}</span>
     </div>
-    <div style="text-align: center;" class="hidePrint">
-      <div style="padding-bottom: 10px;">
-        <div style="display: inline-block; width: 120px;">Rolls</div>
-        <button (click)="bot('d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>D6</button>
-        <button (click)="bot('d20')"><mat-icon>casino</mat-icon>D20</button>
-      </div>
-      <div style="padding-bottom: 10px;">
-        <div style="display: inline-block; width: 120px;">Weapon damage</div>
-        <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-        <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
-      </div>
-      <div>
-        <div style="display: inline-block; width: 120px;">Horse damage</div>
-        @if (main_horse) {
-          <button (click)="bot(horseDamageDice()+'d6')" style="margin-right: 10px;"><mat-icon>casino</mat-icon>{{horseDamageDice()}}d6</button>
-        }
-        @if (main_horse) {
-          <button (click)="bot((horseDamageDice()+4)+'d6')"><mat-icon>casino</mat-icon>{{horseDamageDice()+4}}d6</button>
-        }
-      </div>
-    </div>
-  </div>
-  <div class="col-1">
     @if (!checks || checks.length==0) {
-      <div class="FontSizeBig hidePrint"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
+      <div class="FontSizeBig hidePrint knight"><img src="https://pappcseperke.hu/wp-content/uploads/2021/02/Codex_Knight_Transparent.png" alt="knight" ></div>
     }
     @if (checks.length>0) {
       <div style="text-align: center;" class="check hidePrint" >
@@ -180,38 +189,36 @@
     }
   </div>
   <div class="col-1">
-    <div class="FontSizeBig">
-      <span class="gold">HP:</span>
-      @if (details['hp']==details['ahp']) {
-        <span> {{details['hp']}}</span>
-      } @else {
-        <span matTooltip="{{details['wounds']}}"> {{details['ahp']}}/{{details['hp']}}</span>
-      }
-    </div>
-    <div class="hidePrint">
-      <fieldset id="health">
-        <legend>Health</legend>
-        <button  mat-mini-fab color="accent" title="Wound" (click)="heal('wound')">
-          <mat-icon>remove</mat-icon>
-        </button>
-        <button  mat-mini-fab color="accent" title="Heal" (click)="heal('heal')">
-          <mat-icon>add</mat-icon>
-        </button>
-        <input id="healthmod" type="number" matInput [(ngModel)]="healthmod"/>
-        <br/>
-        <button  mat-mini-fab color="accent" title="Weakly Healing" (click)="heal('sunday')">
-          <mat-icon>healing</mat-icon>
-        </button>
-        <button  mat-mini-fab color="accent" title="Complette (Winter)" (click)="heal('full')">
-          <mat-icon>favorite</mat-icon>
-        </button>
-        <label for="chineed">Chirurgery</label>
-        <mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>
-      </fieldset>
+    <div class="hp-panel">
+      <div class="hp-total" [matTooltip]="details['wounds'] ? 'Wounds: ' + details['wounds'] : ''">
+        <span class="gold">HP:</span>
+        @if (details['hp']==details['ahp']) {
+          <span> {{details['hp']}}</span>
+        } @else {
+          <span> {{details['ahp']}}<span class="hp-max">/{{details['hp']}}</span></span>
+        }
+      </div>
+      <div class="hp-bar-row hidePrint">
+        <button class="hp-sign hp-minus" type="button" title="Wound" (click)="woundBy()">&minus;</button>
+        <input class="hp-amount" type="number" min="0" aria-label="Wound amount" [(ngModel)]="woundAmount"/>
+        <div class="hp-bar" role="meter" aria-label="Hit points" [attr.aria-valuenow]="details['ahp']" aria-valuemin="0" [attr.aria-valuemax]="details['hp']">
+          <div class="hp-fill" [style.width.%]="hpPercent()"></div>
+          <div class="hp-unconscious" [style.left.%]="unconsciousPercent()" title="Unconscious at {{getDetail('Unconscious')}}"></div>
+        </div>
+        <input class="hp-amount" type="number" min="0" aria-label="Heal amount" [(ngModel)]="healAmount"/>
+        <button class="hp-sign hp-plus" type="button" title="Heal" (click)="healBy()">+</button>
+      </div>
+      <div class="hp-below hidePrint">
+        <label class="hp-chirurgery"><mat-checkbox name="chineed" [checked]="char.char['health']['chirurgery']" (change)="modifyProp('health.chirurgery',$event.checked)"></mat-checkbox>Chirurgery needed</label>
+        <span class="hp-extra">
+          <button class="hp-small" type="button" title="Weekly healing (+{{details['hr']}})" (click)="heal('sunday')"><mat-icon>healing</mat-icon></button>
+          <button class="hp-small" type="button" title="Complete healing (winter)" (click)="heal('full')"><mat-icon>favorite</mat-icon></button>
+        </span>
+      </div>
     </div>
   </div>
 </div>
-<div class="row">
+<div class="row sheet-bottom">
   <div class="col-1">
     <h2 id="traithead">Personality Traits</h2>
     <table class="traits">
@@ -249,13 +256,20 @@
   <ul id="skills">
     @for (m of char.char['skills']['Other'] | keyvalue; track m) {
       <li><mat-checkbox [disabled]="!hasUser()" [checked]="isMarked(m.key)"
-        (change)="mark($event.checked, m.key)"></mat-checkbox><span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
+        (change)="mark($event.checked, m.key)"></mat-checkbox>@if (skillArt(m.key); as art) {<span class="skill-art" tabindex="0"><img class="skill-art-thumb" [src]="art" alt=""><span class="skill-art-popup"><img [src]="art" alt="{{m.key}}"></span></span>} @else {<span class="skill-art is-empty"></span>}<span class="gold" (click)="checkCommand('c ' + safeKey(m.key))">{{m.key}}</span><app-editable
         [enabled]="hasUser()"
         value="{{char.char['skills']['Other'][m.key]}}"
         (valueChange)="modifyProp( 'skills.Other.' +m.key, $event )"
       ></app-editable></li>
     }
   </ul>
+      <div class="check-mode skills-check-mode hidePrint">
+        <div class="dice-caption" title="What happens when you click a trait, skill or passion name">Clicking a skill</div>
+        <span class="mode-switch" role="group" aria-label="What clicking a skill does">
+          <button type="button" [class.active]="!isAdvancedMode()" [attr.aria-pressed]="!isAdvancedMode()" (click)="mode = 'simple'" title="Roll the check right away, with the check modifier">Rolls at once</button>
+          <button type="button" [class.active]="isAdvancedMode()" [attr.aria-pressed]="isAdvancedMode()" (click)="mode = 'advanced'" title="First ask for an extra modifier for that skill (remembered per skill)">Asks modifier first</button>
+        </span>
+      </div>
 </div>
 <div class="col-1">
   <h2 class="skillhead clickableHeader" (click)="addSkillProperty('Weapons')" title="Add a skill">Combat Skills</h2>
@@ -290,21 +304,6 @@
   }
 }
 </ul>
-<h2>Settings</h2>
-<div class="settings-controls">
-  <button  color="accent" class="advanced" mat-stroked-button type="button" (click)="toggleMode()">
-    @if (isAdvancedMode()) {
-      <mat-icon>trending_down</mat-icon>
-    }
-    @if (!isAdvancedMode()) {
-      <mat-icon>trending_up</mat-icon>
-    }
-  </button>
-  <mat-form-field appearance="fill" class="modifier-field">
-    <mat-label>Modifier</mat-label>
-    <input matInput type="number" min="-20" max="20" [(ngModel)]="modifier" (ngModelChange)="clampModifier()">
-  </mat-form-field>
-</div>
 </div>
 </div>
 <div class="row hidePrint">
@@ -553,8 +552,8 @@
           <tr><th>Damage</th><td>{{getDetail('Damage')+weapon['damage']*1}}d6</td></tr>
           <tr>
             <td></td><td>
-            <button (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1}}d6</button>
-            <button (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><mat-icon>casino</mat-icon>{{getDetail('Damage')+weapon['damage']*1 +4}}d6</button>
+            <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1}}d6</span></button>
+            <button class="die die-d6" (click)="bot((getDetail('Damage')+weapon['damage']*1+4)+'d6')"><span class="die-face" aria-hidden="true"></span><span class="die-label">{{getDetail('Damage')+weapon['damage']*1 +4}}d6</span></button>
           </td>
         </tr>
         <tr>

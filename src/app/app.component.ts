@@ -48,6 +48,21 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     this.snackBarConfig.duration = 2000;
     this.token = window.localStorage.getItem('token')
+    this.applyLook();
+  }
+
+  // Skill pictures on the character sheet: shown unless switched off in the main menu.
+  // A per-browser preference in localStorage, applied as a class on <body> so the CSS can hide them.
+  showSkillArt = window.localStorage.getItem('skillArt') != 'off';
+
+  applyLook() {
+    document.body.classList.toggle('no-skill-art', !this.showSkillArt);
+  }
+
+  toggleSkillArt() {
+    this.showSkillArt = !this.showSkillArt;
+    window.localStorage.setItem('skillArt', this.showSkillArt ? 'on' : 'off');
+    this.applyLook();
   }
 
   ngOnInit(): void {

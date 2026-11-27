@@ -1,0 +1,39 @@
+// Angular Material theme in the Pendragon design-system colours (gold primary, red accent).
+// Replaces the prebuilt pink-bluegrey theme; same M2 component look, only the colours change.
+@use '@angular/material' as mat;
+
+$_dark: rgba(22, 21, 20, 0.87);
+$_light: #ebe5d9;
+
+$pendragon-gold: (
+  50: #f4f0ea, 100: #e3d9ca, 200: #d0c0a7, 300: #bca784, 400: #ae9670, 500: #a28c69,
+  600: #958061, 700: #857256, 800: #75644b, 900: #5a4c38,
+  A100: #f0dcb8, A200: #e2c592, A400: #d4ad6a, A700: #b9935a,
+  contrast: (50: $_dark, 100: $_dark, 200: $_dark, 300: $_dark, 400: $_dark, 500: $_dark,
+             600: $_dark, 700: $_light, 800: $_light, 900: $_light,
+             A100: $_dark, A200: $_dark, A400: $_dark, A700: $_dark)
+);
+
+$pendragon-red: (
+  50: #f3e6e3, 100: #e0c0b9, 200: #cc978b, 300: #b86d5d, 400: #a84e3b, 500: #993421,
+  600: #8f3826, 700: #792818, 800: #682214, 900: #4d190f,
+  A100: #ffb4a4, A200: #f08a74, A400: #d0644d, A700: #b24a34,
+  contrast: (50: $_dark, 100: $_dark, 200: $_dark, 300: $_light, 400: $_light, 500: $_light,
+             600: $_light, 700: $_light, 800: $_light, 900: $_light,
+             A100: $_dark, A200: $_dark, A400: $_light, A700: $_light)
+);
+
+$theme: mat.m2-define-dark-theme((
+  color: (
+    primary: mat.m2-define-palette($pendragon-gold, 500),
+    accent: mat.m2-define-palette($pendragon-gold, 600, 300, 800),
+    warn: mat.m2-define-palette($pendragon-red, 500),
+  ),
+  typography: mat.m2-define-typography-config($font-family: "'Overlock', serif"),
+  density: 0,
+));
+
+@include mat.core();
+html {
+  @include mat.all-component-themes($theme);
+}

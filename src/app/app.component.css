@@ -3,10 +3,6 @@ div.nav {
     text-align: center;
 }
 
-nav {
-    background-color: #958061;
-}
-
 nav .hidePrint {
     display: flex;
     align-items: center;
@@ -20,4 +16,11 @@ nav .hidePrint {
     color: white;
     font-weight: bold;
     margin: 0 8px;
+}
+
+/* Phones: the top bar keeps only its icons, so it fits on one line */
+@media (max-width: 720px) {
+    .nav-label, .user-name { display: none; }
+    nav .mat-mdc-button { min-width: 0; padding: 0 10px; }
+    nav .mat-mdc-button .mat-icon { margin: 0; }
 }

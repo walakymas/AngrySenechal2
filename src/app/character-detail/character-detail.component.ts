@@ -32,6 +32,11 @@ export class CharacterDetailComponent implements OnInit {
   traits: Trait[] = []
   checks: CheckAll[] = []
   healthmod: number = 0;
+  // amounts next to the - (wound) and + (heal) ends of the health bar
+  woundAmount: number = 1;
+  // which damage the second dice row rolls: the knight's weapon or the main horse
+  damageSource: 'weapon' | 'horse' = 'weapon';
+  healAmount: number = 1;
   actualCheck: number = 1;
   lastCheck: number = -1;
   char : Lord;
@@ -504,6 +509,33 @@ export class CharacterDetailComponent implements OnInit {
     return result;
   }
 
+  damageDice(): number {
+    if (this.damageSource == 'horse' && this.main_horse) {
+      return this.horseDamageDice();
+    }
+    return this.getDetail('Damage') + this.weapon['damage'] * 1;
+  }
+
+  woundBy() {
+    this.healthmod = Math.abs(this.woundAmount * 1 || 0);
+    this.heal('wound');
+  }
+
+  healBy() {
+    this.healthmod = Math.abs(this.healAmount * 1 || 0);
+    this.heal('heal');
+  }
+
+  hpPercent(): number {
+    const max = this.details['hp'] * 1;
+    return max > 0 ? Math.max(0, Math.min(100, 100 * this.details['ahp'] / max)) : 0;
+  }
+
+  unconsciousPercent(): number {
+    const max = this.details['hp'] * 1;
+    return max > 0 ? Math.min(100, 100 * this.getDetail('Unconscious') / max) : 0;
+  }
+
   public heal(action:string) {
     console.log(action+JSON.stringify(this.char.char['health']['changes']));
     if (action=='wound') {
@@ -632,6 +664,19 @@ export class CharacterDetailComponent implements OnInit {
     if (l.char['name']) {
       window.localStorage.setItem(this.lastCharacterStorageKey + 'Name', '' + l.char['name']);
     }
+  }
+
+  // Skill illustrations from the Pendragon design system (src/assets/pendragon/skills), keyed by the skill name
+  // in lower case without spaces; skills without a picture get none.
+  private static readonly SKILL_ART = new Set(['awareness', 'boating', 'compose', 'courtesy', 'dancing', 'faerielore',
+    'falconry', 'firstaid', 'flirting', 'folklore', 'gambling', 'heraldry', 'hunting']);
+
+  private static readonly SKILL_ART_ALIAS: { [skill: string]: string } = { 'gaming': 'gambling' };
+
+  skillArt(skill: string): string | null {
+    let key = (skill || '').toLowerCase().replace(/\s+/g, '');
+    key = CharacterDetailComponent.SKILL_ART_ALIAS[key] || key;
+    return CharacterDetailComponent.SKILL_ART.has(key) ? `assets/pendragon/skills/${key}.png` : null;
   }
 
   toggleCharImageZoom(): void {

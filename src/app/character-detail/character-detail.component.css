@@ -153,3 +153,191 @@ button.advanced .mat-icon{
     width: 24px;
     color:black;
 }
+
+/* Pendragon layout: name + portrait in the right-hand column, as in Pendragon/base.html */
+.name-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 2rem;
+}
+.portrait-frame-wrap {
+  display: flex;
+  justify-content: center;
+}
+.portrait-frame-wrap .charimg {
+  width: 200px;
+  max-height: 280px;
+  object-fit: cover;
+}
+.hero-strip > .col-1 { min-height: 220px; }
+.knight img { width: 150px; margin: 0 auto; filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35)); }
+.health-box { max-width: 340px; margin: 0 auto; padding: 10px 12px 14px; }
+.health-box legend { color: var(--color-muted); padding: 0 6px; }
+
+/* Roll buttons: Cseperke's dice (Pendragon/images/DICE), idle face that changes on hover */
+.dice-caption {
+  display: inline-block;
+  width: 120px;
+  vertical-align: middle;
+  text-align: right;
+  padding-right: 10px;
+  color: var(--color-muted);
+}
+.die {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  vertical-align: middle;
+  margin: 0 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-text-strong);
+  font: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.die-face {
+  display: inline-block;
+  width: 34px;
+  height: 51px;
+  background: var(--die-idle) center / contain no-repeat;
+  transition: transform 0.12s ease;
+}
+.die:hover .die-face, .die:focus-visible .die-face { background-image: var(--die-hover); }
+.die:active .die-face { transform: translateY(1px) rotate(-6deg); }
+.die:hover .die-label, .die:focus-visible .die-label { color: #f3ead9; }
+.die:focus-visible { outline: 1px solid var(--color-gold-bright); outline-offset: 3px; }
+.die-label { min-width: 2.6em; text-align: left; }
+
+/* Health: total above, a red-to-green bar with - (wound) and + (heal) at its ends, chirurgery below */
+.hp-panel { max-width: 400px; margin: 0 auto; text-align: center; }
+.hp-total { font-size: 48px; line-height: 1.1; margin-bottom: 14px; }
+.hp-total .gold { color: var(--color-gold-bright); }
+.hp-max { font-size: 0.55em; color: var(--color-muted); }
+.hp-bar-row { display: flex; align-items: center; gap: 6px; }
+/* Same idea and colours as the trait bars: green = HP left, red = HP lost, relative to full HP */
+.hp-bar {
+  position: relative;
+  flex: 1 1 auto;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--medievalRed);
+}
+.hp-fill {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  background: var(--medievalGreen);
+  transition: width 0.3s ease;
+}
+.hp-unconscious {
+  position: absolute;
+  top: -1px; bottom: -1px;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(235, 229, 217, 0.55);
+}
+.hp-sign {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  color: #f3ead9;
+  font: 700 1.4rem/1 var(--font-body);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.hp-minus { background: var(--color-red-bright); }
+.hp-plus { background: var(--color-green); }
+.hp-sign:hover, .hp-sign:focus-visible { filter: brightness(1.2); outline: none; }
+.hp-amount {
+  flex: 0 0 auto;
+  width: 48px !important;
+  display: inline-block !important;
+  text-align: center;
+  background: var(--color-ink-850);
+  color: var(--color-text-strong);
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  padding: 3px 2px;
+  font: inherit;
+}
+.hp-below { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+.hp-chirurgery { display: inline-flex !important; align-items: center; gap: 6px; color: var(--color-muted); cursor: pointer; }
+.hp-extra { display: inline-flex; gap: 6px; }
+.hp-small {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 2px solid var(--color-gold-bright);
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2e2e34, #222228);
+  color: var(--color-gold-bright);
+  cursor: pointer;
+}
+.hp-small .mat-icon { font-size: 18px; width: 18px; height: 18px; }
+.hp-small:hover { background: linear-gradient(180deg, #363640, #2a2a30); }
+
+/* Check modifier and roll mode, under the dice (replaces the old Settings box) */
+.dice-panel { width: fit-content; margin: 0 auto; }
+.dice-line { display: flex; align-items: center; min-height: 56px; }
+.check-modifier, .check-mode { min-height: 40px; }
+.dice-panel .dice-caption { flex: 0 0 130px; width: 130px; }
+.mod-stepper { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; }
+.mod-stepper input {
+  width: 48px;
+  display: inline-block;
+  text-align: center;
+  background: var(--color-ink-850);
+  color: var(--color-text-strong);
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  padding: 3px 2px;
+  font: inherit;
+}
+.mod-stepper.is-plus input { color: #8fc16f; border-color: var(--color-green); }
+.mod-stepper.is-minus input { color: #e0735c; border-color: var(--color-red-bright); }
+.mod-step {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  background: var(--color-ink-850);
+  color: var(--color-gold-bright);
+  font: 700 1.1rem/1 var(--font-body);
+  cursor: pointer;
+}
+.mod-step:hover { border-color: var(--color-gold-bright); color: #f3ead9; }
+.mode-switch {
+  display: inline-flex;
+  margin-left: 6px;
+  border: 1px solid rgba(149, 128, 97, 0.45);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.mode-switch button {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 4px 10px;
+  border: none;
+  background: var(--color-ink-850);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.mode-switch button + button { border-left: 1px solid rgba(149, 128, 97, 0.45); }
+.mode-switch button.active { background: var(--color-gold); color: var(--color-ink-900); }
+.damage-line .dice-caption { display: flex; justify-content: flex-end; }
+.damage-switch { margin-left: 0; }
+.damage-switch button { padding: 3px 8px; font-size: 0.9rem; }
+.skills-check-mode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(142, 118, 77, 0.35);
+}
+.skills-check-mode .dice-caption { width: auto; padding-right: 0; }

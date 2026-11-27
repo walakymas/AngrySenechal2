@@ -1,14 +1,15 @@
-<nav><div class="hidePrint">
+<nav class="topbar"><div class="hidePrint">
   <button mat-icon-button [matMenuTriggerFor]="mainMenu">
     <mat-icon>more_vert</mat-icon>
   </button>
   <mat-menu #mainMenu="matMenu">
     <button mat-menu-item (click)="newChar()"><mat-icon>person_add</mat-icon>New character</button>
     <button mat-menu-item routerLink="feast"><mat-icon>nightlife</mat-icon>Feast</button>
+    <button mat-menu-item (click)="toggleSkillArt()"><mat-icon>{{showSkillArt ? 'hide_image' : 'image'}}</mat-icon>{{showSkillArt ? 'Hide skill pictures' : 'Show skill pictures'}}</button>
   </mat-menu>
   <button mat-button [matMenuTriggerFor]="players">
     <mat-icon>local_police</mat-icon>
-    Players
+    <span class="nav-label">Players</span>
   </button>
   <mat-menu #players="matMenu">
     @for (c of list; track c) {
@@ -20,7 +21,7 @@
       }
     }
   </mat-menu>
-  <button mat-button [matMenuTriggerFor]="all"><mat-icon>switch_account</mat-icon>All</button>
+  <button mat-button [matMenuTriggerFor]="all"><mat-icon>switch_account</mat-icon><span class="nav-label">All</span></button>
   <mat-menu #all="matMenu">
 
     <button mat-menu-item [matMenuTriggerFor]="Lords"><mat-icon>male</mat-icon>Lords</button>
@@ -49,7 +50,7 @@
     }
   </mat-menu>
   @if (isLoggedIn()) {
-    <button mat-button [matMenuTriggerFor]="myChars"><mat-icon>account_circle</mat-icon>MyCharacters</button>
+    <button mat-button [matMenuTriggerFor]="myChars"><mat-icon>account_circle</mat-icon><span class="nav-label">MyCharacters</span></button>
   }
   <mat-menu #myChars="matMenu">
     @for (c of myCharacters(); track c) {
@@ -58,23 +59,25 @@
   </mat-menu>
   <button mat-button routerLink="team">
     <mat-icon>groups</mat-icon>
-    Team
+    <span class="nav-label">Team</span>
   </button>
   <button mat-button routerLink="maps">
     <mat-icon>map</mat-icon>
-    Maps
+    <span class="nav-label">Maps</span>
   </button>
   <span class="spacer"></span>
   @if (!hasToken()) {
-    <button mat-button (click)="loginWithDiscord()"><mat-icon>login</mat-icon>Login with Discord</button>
+    <button mat-button (click)="loginWithDiscord()"><mat-icon>login</mat-icon><span class="nav-label">Login with Discord</span></button>
   }
   @if (hasToken()) {
-    <button mat-button (click)="logout()"><mat-icon>logout</mat-icon>Logout</button>
+    <button mat-button (click)="logout()"><mat-icon>logout</mat-icon><span class="nav-label">Logout</span></button>
   }
   @if (isLoggedIn()) {
     <span class="user-name">{{user.name}}</span>
   }
   </div><div></div>
 </nav>
+<main class="page-content">
 <router-outlet></router-outlet>
+</main>
 <app-messages></app-messages>
