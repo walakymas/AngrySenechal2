@@ -586,3 +586,12 @@ body .feast fieldset { border: 15px solid transparent; border-image: var(--asset
 /* Dice faces for the roll buttons (character-detail.component.css) */
 .die-d6 { --die-idle: url('assets/pendragon/dice/d6-idle.png'); --die-hover: url('assets/pendragon/dice/d6-hover.png'); }
 .die-d20 { --die-idle: url('assets/pendragon/dice/d20-idle.png'); --die-hover: url('assets/pendragon/dice/d20-hover.png'); }
+
+/* Tab and button labels: half of Material's default letter spacing (0.089em), easier to read */
+html, .mat-mdc-tab-group, .mat-mdc-tab-header, .mat-mdc-tab-nav-bar, .mat-mdc-tab {
+  --mat-tab-label-text-tracking: 0.045em;
+  --mat-button-text-label-text-tracking: 0.045em;
+  --mat-button-filled-label-text-tracking: 0.045em;
+  --mat-button-outlined-label-text-tracking: 0.045em;
+  --mat-button-protected-label-text-tracking: 0.045em;
+}
