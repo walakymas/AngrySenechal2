@@ -193,7 +193,7 @@
         <button class="hp-sign hp-minus" type="button" title="Wound" (click)="woundBy()">&minus;</button>
         <input class="hp-amount" type="number" min="0" aria-label="Wound amount" [(ngModel)]="woundAmount"/>
         <div class="hp-bar" role="meter" aria-label="Hit points" [attr.aria-valuenow]="details['ahp']" aria-valuemin="0" [attr.aria-valuemax]="details['hp']">
-          <div class="hp-lost" [style.width.%]="100 - hpPercent()"></div>
+          <div class="hp-fill" [style.width.%]="hpPercent()"></div>
           <div class="hp-unconscious" [style.left.%]="unconsciousPercent()" title="Unconscious at {{getDetail('Unconscious')}}"></div>
         </div>
         <input class="hp-amount" type="number" min="0" aria-label="Heal amount" [(ngModel)]="healAmount"/>

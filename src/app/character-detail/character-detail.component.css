@@ -218,20 +218,19 @@ button.advanced .mat-icon{
 .hp-total .gold { color: var(--color-gold-bright); }
 .hp-max { font-size: 0.55em; color: var(--color-muted); }
 .hp-bar-row { display: flex; align-items: center; gap: 6px; }
+/* Same idea and colours as the trait bars: green = HP left, red = HP lost, relative to full HP */
 .hp-bar {
   position: relative;
   flex: 1 1 auto;
-  height: 14px;
-  border: 1px solid var(--color-line);
-  border-radius: 7px;
+  height: 12px;
+  border-radius: 6px;
   overflow: hidden;
-  background: linear-gradient(90deg, var(--color-red-bright), #a5682a 45%, var(--color-green) 75%, #6d9a4e);
+  background: var(--medievalRed);
 }
-.hp-lost {
+.hp-fill {
   position: absolute;
-  top: 0; right: 0; bottom: 0;
-  background: var(--color-ink-850);
-  box-shadow: inset 2px 0 0 rgba(0, 0, 0, 0.5);
+  top: 0; left: 0; bottom: 0;
+  background: var(--medievalGreen);
   transition: width 0.3s ease;
 }
 .hp-unconscious {
